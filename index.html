@@ -1,159 +1,81 @@
  <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NovaStream Live</title>
+  <title>Movie App</title>
+  <style>
+    body {
+      background: black;
+      color: white;
+      font-family: Arial;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
 
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{
-font-family:Segoe UI, sans-serif;
-background:#0b0b0f;
-color:#fff;
-overflow-x:hidden;
-}
-.header{
-position:fixed;top:0;width:100%;padding:15px 20px;
-background:#111;z-index:1000;
-}
-.hero{
-margin-top:60px;height:65vh;position:relative;overflow:hidden;
-}
-.hero img{
-width:100%;height:100%;object-fit:cover;
-}
-.hero-overlay{
-position:absolute;bottom:15px;left:15px;
-background:rgba(0,0,0,0.7);
-padding:12px;border-radius:8px;
-}
-.section{padding:25px 20px}
-.section h3{font-size:22px;margin-bottom:15px}
-.row{display:flex;gap:15px;overflow-x:auto}
-.card{min-width:150px;border-radius:12px;overflow:hidden;cursor:pointer}
-.card img{width:100%;height:220px;object-fit:cover}
-#detailsPage{display:none;padding:90px 20px}
-.back-btn{
-padding:8px 15px;background:#e50914;border:none;border-radius:20px;color:#fff;
-cursor:pointer;margin-bottom:15px;
-}
-iframe{
-width:100%;aspect-ratio:16/9;border-radius:12px;margin-top:20px;
-}
-.loading{
-padding:40px;text-align:center;font-size:18px;
-}
-</style>
+    h1 {
+      padding: 20px;
+    }
+
+    #trendingRow {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      padding: 20px;
+    }
+
+    .card {
+      width: 150px;
+      cursor: pointer;
+    }
+
+    .card img {
+      width: 100%;
+      border-radius: 8px;
+    }
+
+    .card p {
+      font-size: 14px;
+      margin: 5px 0;
+    }
+  </style>
 </head>
+
 <body>
 
-<div class="header">
-<h2>NovaStream</h2>
-</div>
+<h1>🔥 Trending Movies</h1>
 
-<div id="homePage">
-<div class="hero" id="hero"></div>
-
-<div class="section">
-<h3>🔥 Trending</h3>
-<div class="row" id="trendingRow"></div>
-</div>
-</div>
-
-<div id="detailsPage"></div>
+<div id="trendingRow"></div>
 
 <script>
-const TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0ZmIxNWU0YzkxOGIzOWJkN2E5NGUzZTFmMzM3NzJjYiIsIm5iZiI6MTc3MDkwMTExNy41MzYsInN1YiI6IjY5OGRjZTdkZjQ5NjQ5NjdhZjc4ZGIyZiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.Nbh-i1WF-_jLe6sWaNCIGO1itxqHiWoco6dNlQNhHFM";
+async function loadTrending() {
+  try {
+    const res = await fetch("/api/trending");
+    const data = await res.json();
 
-const API = "https://api.themoviedb.org/3";
-const IMG = "https://image.tmdb.org/t/p";
+    const row = document.getElementById("trendingRow");
+    row.innerHTML = "";
 
-async function fetchData(url){
-try{
-let res = await fetch(url,{
-headers:{
-Authorization: "Bearer " + TOKEN,
-"Content-Type": "application/json"
-}
-});
-if(!res.ok) throw new Error("Status: "+res.status);
-return await res.json();
-}catch(e){
-console.error("Fetch failed:",e);
-return null;
-}
-}
+    data.results.forEach(movie => {
+      if (!movie.poster_path) return;
 
-async function loadHero(){
-let data = await fetchData(`${API}/trending/movie/week`);
-if(!data || !data.results) return;
+      const card = document.createElement("div");
+      card.className = "card";
 
-let movie = data.results[0];
-document.getElementById("hero").innerHTML = `
-<img src="${IMG}/original${movie.backdrop_path}">
-<div class="hero-overlay">
-<h2>${movie.title}</h2>
-<p>⭐ ${movie.vote_average}</p>
-</div>`;
+      card.innerHTML = `
+        <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}">
+        <p>${movie.title}</p>
+      `;
+
+      row.appendChild(card);
+    });
+
+  } catch (error) {
+    document.body.innerHTML = "<h2>Something went wrong</h2>";
+    console.log(error);
+  }
 }
 
-async function loadTrending(){
-let data = await fetchData(`${API}/trending/movie/week`);
-if(!data || !data.results) return;
-
-const row = document.getElementById("trendingRow");
-row.innerHTML = "";
-
-data.results.forEach(m=>{
-if(!m.poster_path) return;
-let card = document.createElement("div");
-card.className = "card";
-card.onclick = ()=>showDetails(m.id);
-card.innerHTML = `<img src="${IMG}/w500${m.poster_path}">`;
-row.appendChild(card);
-});
-}
-
-async function showDetails(id){
-document.getElementById("homePage").style.display="none";
-let page = document.getElementById("detailsPage");
-page.style.display="block";
-page.innerHTML = "<div class='loading'>Loading...</div>";
-
-let data = await fetchData(`${API}/movie/${id}?append_to_response=videos`);
-
-if(!data || !data.title){
-page.innerHTML = `
-<button class="back-btn" onclick="goBack()">← Back</button>
-<p>Failed to load movie details</p>
-`;
-return;
-}
-
-let trailer="";
-if(data.videos && data.videos.results){
-let t = data.videos.results.find(v => v.type==="Trailer");
-if(t){
-trailer=`<iframe src="https://www.youtube.com/embed/${t.key}" allowfullscreen></iframe>`;
-}
-}
-
-page.innerHTML=`
-<button class="back-btn" onclick="goBack()">← Back</button>
-<h2>${data.title}</h2>
-<p>⭐ ${data.vote_average}</p>
-<p>${data.overview}</p>
-${trailer}
-`;
-}
-
-function goBack(){
-document.getElementById("detailsPage").style.display="none";
-document.getElementById("homePage").style.display="block";
-}
-
-loadHero();
 loadTrending();
 </script>
 
