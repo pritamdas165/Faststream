@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html>
 <head>
   <title>Movie App</title>
@@ -41,6 +41,20 @@
     img {
       width: 100%;
       border-radius: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    img:hover {
+      transform: scale(1.05);
+    }
+
+    #details {
+      margin: 30px;
+    }
+
+    #details img {
+      width: 300px;
     }
   </style>
 </head>
@@ -51,11 +65,14 @@
   <input type="text" id="searchInput" placeholder="Search movie...">
   <button onclick="searchMovie()">Search</button>
 
-  <h2>🔥 Trending Movies</h2>
+  <h2>🔥 Movies</h2>
   <div id="movies"></div>
+
+  <div id="details"></div>
 
 <script>
   const movieContainer = document.getElementById("movies");
+  const detailsContainer = document.getElementById("details");
 
   async function getTrending() {
     const res = await fetch("/api/trending");
@@ -74,13 +91,30 @@
 
   function displayMovies(movies) {
     movieContainer.innerHTML = "";
+    detailsContainer.innerHTML = "";
+
     movies.forEach(movie => {
       if (movie.poster_path) {
         const img = document.createElement("img");
         img.src = "https://image.tmdb.org/t/p/w500" + movie.poster_path;
+
+        img.onclick = () => showDetails(movie);
+
         movieContainer.appendChild(img);
       }
     });
+  }
+
+  function showDetails(movie) {
+    detailsContainer.innerHTML = `
+      <h2>${movie.title}</h2>
+      <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}">
+      <p><strong>Release:</strong> ${movie.release_date}</p>
+      <p><strong>Rating:</strong> ${movie.vote_average}</p>
+      <p>${movie.overview}</p>
+    `;
+
+    window.scrollTo(0, document.body.scrollHeight);
   }
 
   getTrending();
