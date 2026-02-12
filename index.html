@@ -41,6 +41,9 @@ cursor:pointer;margin-bottom:15px;
 iframe{
 width:100%;aspect-ratio:16/9;border-radius:12px;margin-top:20px;
 }
+.loading{
+padding:40px;text-align:center;font-size:18px;
+}
 </style>
 </head>
 <body>
@@ -61,15 +64,19 @@ width:100%;aspect-ratio:16/9;border-radius:12px;margin-top:20px;
 <div id="detailsPage"></div>
 
 <script>
-const KEY="4fb15e4c918b39bd7a94e3e1f33772cb";
-const API="https://api.themoviedb.org/3";
-const IMG="https://image.tmdb.org/t/p";
+const TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0ZmIxNWU0YzkxOGIzOWJkN2E5NGUzZTFmMzM3NzJjYiIsIm5iZiI6MTc3MDkwMTExNy41MzYsInN1YiI6IjY5OGRjZTdkZjQ5NjQ5NjdhZjc4ZGIyZiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.Nbh-i1WF-_jLe6sWaNCIGO1itxqHiWoco6dNlQNhHFM"; // ← এখানে তোমার token বসাও
+const API = "https://api.themoviedb.org/3";
+const IMG = "https://image.tmdb.org/t/p";
 
-/* CORS FIXED FETCH */
+/* FETCH WITH BEARER TOKEN */
 async function fetchData(url){
 try{
-const proxy="https://api.allorigins.win/raw?url=";
-let res=await fetch(proxy+encodeURIComponent(url));
+let res = await fetch(url,{
+headers:{
+Authorization: "Bearer " + TOKEN,
+"Content-Type": "application/json"
+}
+});
 if(!res.ok) throw new Error("Status: "+res.status);
 return await res.json();
 }catch(e){
@@ -80,11 +87,11 @@ return null;
 
 /* HERO */
 async function loadHero(){
-let data=await fetchData(`${API}/trending/movie/week?api_key=${KEY}`);
+let data = await fetchData(`${API}/trending/movie/week`);
 if(!data || !data.results) return;
 
-let movie=data.results[0];
-document.getElementById("hero").innerHTML=`
+let movie = data.results[0];
+document.getElementById("hero").innerHTML = `
 <img src="${IMG}/original${movie.backdrop_path}">
 <div class="hero-overlay">
 <h2>${movie.title}</h2>
@@ -94,18 +101,18 @@ document.getElementById("hero").innerHTML=`
 
 /* TRENDING */
 async function loadTrending(){
-let data=await fetchData(`${API}/trending/movie/week?api_key=${KEY}`);
+let data = await fetchData(`${API}/trending/movie/week`);
 if(!data || !data.results) return;
 
-const row=document.getElementById("trendingRow");
-row.innerHTML="";
+const row = document.getElementById("trendingRow");
+row.innerHTML = "";
 
 data.results.forEach(m=>{
 if(!m.poster_path) return;
-let card=document.createElement("div");
-card.className="card";
-card.onclick=()=>showDetails(m.id);
-card.innerHTML=`<img src="${IMG}/w500${m.poster_path}">`;
+let card = document.createElement("div");
+card.className = "card";
+card.onclick = ()=>showDetails(m.id);
+card.innerHTML = `<img src="${IMG}/w500${m.poster_path}">`;
 row.appendChild(card);
 });
 }
@@ -113,18 +120,23 @@ row.appendChild(card);
 /* DETAILS */
 async function showDetails(id){
 document.getElementById("homePage").style.display="none";
-let page=document.getElementById("detailsPage");
+let page = document.getElementById("detailsPage");
 page.style.display="block";
+page.innerHTML = "<div class='loading'>Loading...</div>";
 
-let data=await fetchData(`${API}/movie/${id}?api_key=${KEY}&append_to_response=videos`);
-if(!data){
-page.innerHTML="<p>Failed to load details</p>";
+let data = await fetchData(`${API}/movie/${id}?append_to_response=videos`);
+
+if(!data || !data.title){
+page.innerHTML = `
+<button class="back-btn" onclick="goBack()">← Back</button>
+<p>Failed to load movie details</p>
+`;
 return;
 }
 
 let trailer="";
-if(data.videos && data.videos.results.length){
-let t=data.videos.results.find(v=>v.type==="Trailer");
+if(data.videos && data.videos.results){
+let t = data.videos.results.find(v => v.type==="Trailer");
 if(t){
 trailer=`<iframe src="https://www.youtube.com/embed/${t.key}" allowfullscreen></iframe>`;
 }
