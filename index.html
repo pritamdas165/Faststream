@@ -1,7 +1,7 @@
  <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF‑8">
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NovaStream Live</title>
 
@@ -23,7 +23,7 @@ margin-top:60px;height:65vh;position:relative;overflow:hidden;
 .hero img{
 width:100%;height:100%;object-fit:cover;
 }
-.hero‑overlay{
+.hero-overlay{
 position:absolute;bottom:15px;left:15px;
 background:rgba(0,0,0,0.7);
 padding:12px;border-radius:8px;
@@ -51,6 +51,7 @@ width:100%;aspect-ratio:16/9;border-radius:12px;margin-top:20px;
 
 <div id="homePage">
 <div class="hero" id="hero"></div>
+
 <div class="section">
 <h3>🔥 Trending</h3>
 <div class="row" id="trendingRow"></div>
@@ -64,25 +65,26 @@ const KEY="4fb15e4c918b39bd7a94e3e1f33772cb";
 const API="https://api.themoviedb.org/3";
 const IMG="https://image.tmdb.org/t/p";
 
-/* SAFE FETCH WITH ERROR HANDLING */
+/* CORS FIXED FETCH */
 async function fetchData(url){
 try{
-let res = await fetch(url);
+const proxy="https://api.allorigins.win/raw?url=";
+let res=await fetch(proxy+encodeURIComponent(url));
 if(!res.ok) throw new Error("Status: "+res.status);
 return await res.json();
 }catch(e){
-console.error("Fetch failed:", e);
+console.error("Fetch failed:",e);
 return null;
 }
 }
 
-/* HERO LOAD */
+/* HERO */
 async function loadHero(){
-let data = await fetchData(`${API}/trending/movie/week?api_key=${KEY}`);
-if(!data || !data.results || data.results.length === 0) return;
+let data=await fetchData(`${API}/trending/movie/week?api_key=${KEY}`);
+if(!data || !data.results) return;
 
-let movie = data.results[0];
-document.getElementById("hero").innerHTML = `
+let movie=data.results[0];
+document.getElementById("hero").innerHTML=`
 <img src="${IMG}/original${movie.backdrop_path}">
 <div class="hero-overlay">
 <h2>${movie.title}</h2>
@@ -90,43 +92,45 @@ document.getElementById("hero").innerHTML = `
 </div>`;
 }
 
-/* TRENDING LOAD */
+/* TRENDING */
 async function loadTrending(){
-let data = await fetchData(`${API}/trending/movie/week?api_key=${KEY}`);
+let data=await fetchData(`${API}/trending/movie/week?api_key=${KEY}`);
 if(!data || !data.results) return;
 
-const row = document.getElementById("trendingRow");
-row.innerHTML = "";
+const row=document.getElementById("trendingRow");
+row.innerHTML="";
 
-data.results.forEach(m => {
+data.results.forEach(m=>{
 if(!m.poster_path) return;
-let card = document.createElement("div");
-card.className = "card";
-card.onclick = () => showDetails(m.id);
-card.innerHTML = `<img src="${IMG}/w500${m.poster_path}">`;
+let card=document.createElement("div");
+card.className="card";
+card.onclick=()=>showDetails(m.id);
+card.innerHTML=`<img src="${IMG}/w500${m.poster_path}">`;
 row.appendChild(card);
 });
 }
 
 /* DETAILS */
 async function showDetails(id){
-document.getElementById("homePage").style.display = "none";
-let page = document.getElementById("detailsPage");
-page.style.display = "block";
+document.getElementById("homePage").style.display="none";
+let page=document.getElementById("detailsPage");
+page.style.display="block";
 
-let data = await fetchData(`${API}/movie/${id}?api_key=${KEY}&append_to_response=videos`);
-if(!data) {
-page.innerHTML = "<p>Failed to load details</p>";
+let data=await fetchData(`${API}/movie/${id}?api_key=${KEY}&append_to_response=videos`);
+if(!data){
+page.innerHTML="<p>Failed to load details</p>";
 return;
 }
 
-let trailer = "";
+let trailer="";
 if(data.videos && data.videos.results.length){
-let t = data.videos.results.find(v => v.type==="Trailer");
-if(t) trailer = `<iframe src="https://www.youtube.com/embed/${t.key}" allowfullscreen></iframe>`;
+let t=data.videos.results.find(v=>v.type==="Trailer");
+if(t){
+trailer=`<iframe src="https://www.youtube.com/embed/${t.key}" allowfullscreen></iframe>`;
+}
 }
 
-page.innerHTML = `
+page.innerHTML=`
 <button class="back-btn" onclick="goBack()">← Back</button>
 <h2>${data.title}</h2>
 <p>⭐ ${data.vote_average}</p>
