@@ -1,24 +1,46 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
+<meta charset="UTF‑8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NovaStream Live</title>
+
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:Segoe UI;background:#0b0b0f;color:#fff;overflow-x:hidden}
-.header{position:fixed;top:0;width:100%;padding:15px 20px;background:#111;z-index:1000}
-.hero{height:70vh;margin-top:60px;position:relative}
-.hero img{width:100%;height:100%;object-fit:cover}
-.hero-overlay{position:absolute;bottom:20px;left:20px;background:rgba(0,0,0,.7);padding:15px;border-radius:10px}
+body{
+font-family:Segoe UI, sans-serif;
+background:#0b0b0f;
+color:#fff;
+overflow-x:hidden;
+}
+.header{
+position:fixed;top:0;width:100%;padding:15px 20px;
+background:#111;z-index:1000;
+}
+.hero{
+margin-top:60px;height:65vh;position:relative;overflow:hidden;
+}
+.hero img{
+width:100%;height:100%;object-fit:cover;
+}
+.hero‑overlay{
+position:absolute;bottom:15px;left:15px;
+background:rgba(0,0,0,0.7);
+padding:12px;border-radius:8px;
+}
 .section{padding:25px 20px}
+.section h3{font-size:22px;margin-bottom:15px}
 .row{display:flex;gap:15px;overflow-x:auto}
-.card{min-width:150px;border-radius:12px;overflow:hidden;cursor:pointer;transition:.3s}
+.card{min-width:150px;border-radius:12px;overflow:hidden;cursor:pointer}
 .card img{width:100%;height:220px;object-fit:cover}
-.card:hover{transform:scale(1.07)}
-#detailsPage{display:none;padding:90px 20px 30px}
-.back-btn{padding:8px 15px;background:#e50914;border:none;border-radius:20px;color:#fff;cursor:pointer;margin-bottom:15px}
-iframe{width:100%;aspect-ratio:16/9;border-radius:12px;margin-top:20px}
+#detailsPage{display:none;padding:90px 20px}
+.back-btn{
+padding:8px 15px;background:#e50914;border:none;border-radius:20px;color:#fff;
+cursor:pointer;margin-bottom:15px;
+}
+iframe{
+width:100%;aspect-ratio:16/9;border-radius:12px;margin-top:20px;
+}
 </style>
 </head>
 <body>
@@ -42,53 +64,75 @@ const KEY="4fb15e4c918b39bd7a94e3e1f33772cb";
 const API="https://api.themoviedb.org/3";
 const IMG="https://image.tmdb.org/t/p";
 
+/* SAFE FETCH WITH ERROR HANDLING */
 async function fetchData(url){
-const res=await fetch(url);
-return res.json();
+try{
+let res = await fetch(url);
+if(!res.ok) throw new Error("Status: "+res.status);
+return await res.json();
+}catch(e){
+console.error("Fetch failed:", e);
+return null;
+}
 }
 
+/* HERO LOAD */
 async function loadHero(){
-const data=await fetchData(`${API}/trending/movie/week?api_key=${KEY}`);
-const movie=data.results[0];
-document.getElementById("hero").innerHTML=`
+let data = await fetchData(`${API}/trending/movie/week?api_key=${KEY}`);
+if(!data || !data.results || data.results.length === 0) return;
+
+let movie = data.results[0];
+document.getElementById("hero").innerHTML = `
 <img src="${IMG}/original${movie.backdrop_path}">
 <div class="hero-overlay">
-<h1>${movie.title}</h1>
+<h2>${movie.title}</h2>
 <p>⭐ ${movie.vote_average}</p>
 </div>`;
 }
 
+/* TRENDING LOAD */
 async function loadTrending(){
-const data=await fetchData(`${API}/trending/movie/week?api_key=${KEY}`);
-const row=document.getElementById("trendingRow");
-data.results.forEach(m=>{
+let data = await fetchData(`${API}/trending/movie/week?api_key=${KEY}`);
+if(!data || !data.results) return;
+
+const row = document.getElementById("trendingRow");
+row.innerHTML = "";
+
+data.results.forEach(m => {
 if(!m.poster_path) return;
-const card=document.createElement("div");
-card.className="card";
-card.onclick=()=>openDetails(m.id);
-card.innerHTML=`<img src="${IMG}/w500${m.poster_path}">`;
+let card = document.createElement("div");
+card.className = "card";
+card.onclick = () => showDetails(m.id);
+card.innerHTML = `<img src="${IMG}/w500${m.poster_path}">`;
 row.appendChild(card);
 });
 }
 
-async function openDetails(id){
-document.getElementById("homePage").style.display="none";
-const page=document.getElementById("detailsPage");
-page.style.display="block";
-const data=await fetchData(`${API}/movie/${id}?api_key=${KEY}&append_to_response=videos`);
-let trailer="";
-if(data.videos.results.length){
-const vid=data.videos.results.find(v=>v.type==="Trailer");
-if(vid){
-trailer=`<iframe src="https://www.youtube.com/embed/${vid.key}" allowfullscreen></iframe>`;
+/* DETAILS */
+async function showDetails(id){
+document.getElementById("homePage").style.display = "none";
+let page = document.getElementById("detailsPage");
+page.style.display = "block";
+
+let data = await fetchData(`${API}/movie/${id}?api_key=${KEY}&append_to_response=videos`);
+if(!data) {
+page.innerHTML = "<p>Failed to load details</p>";
+return;
 }
+
+let trailer = "";
+if(data.videos && data.videos.results.length){
+let t = data.videos.results.find(v => v.type==="Trailer");
+if(t) trailer = `<iframe src="https://www.youtube.com/embed/${t.key}" allowfullscreen></iframe>`;
 }
-page.innerHTML=`
+
+page.innerHTML = `
 <button class="back-btn" onclick="goBack()">← Back</button>
-<h1>${data.title}</h1>
+<h2>${data.title}</h2>
 <p>⭐ ${data.vote_average}</p>
-<p style="margin-top:10px">${data.overview}</p>
-${trailer}`;
+<p>${data.overview}</p>
+${trailer}
+`;
 }
 
 function goBack(){
@@ -96,6 +140,7 @@ document.getElementById("detailsPage").style.display="none";
 document.getElementById("homePage").style.display="block";
 }
 
+/* INIT */
 loadHero();
 loadTrending();
 </script>
