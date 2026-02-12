@@ -64,11 +64,11 @@ padding:40px;text-align:center;font-size:18px;
 <div id="detailsPage"></div>
 
 <script>
-const TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0ZmIxNWU0YzkxOGIzOWJkN2E5NGUzZTFmMzM3NzJjYiIsIm5iZiI6MTc3MDkwMTExNy41MzYsInN1YiI6IjY5OGRjZTdkZjQ5NjQ5NjdhZjc4ZGIyZiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.Nbh-i1WF-_jLe6sWaNCIGO1itxqHiWoco6dNlQNhHFM"; // ← এখানে তোমার token বসাও
+const TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0ZmIxNWU0YzkxOGIzOWJkN2E5NGUzZTFmMzM3NzJjYiIsIm5iZiI6MTc3MDkwMTExNy41MzYsInN1YiI6IjY5OGRjZTdkZjQ5NjQ5NjdhZjc4ZGIyZiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.Nbh-i1WF-_jLe6sWaNCIGO1itxqHiWoco6dNlQNhHFM";
+
 const API = "https://api.themoviedb.org/3";
 const IMG = "https://image.tmdb.org/t/p";
 
-/* FETCH WITH BEARER TOKEN */
 async function fetchData(url){
 try{
 let res = await fetch(url,{
@@ -85,7 +85,6 @@ return null;
 }
 }
 
-/* HERO */
 async function loadHero(){
 let data = await fetchData(`${API}/trending/movie/week`);
 if(!data || !data.results) return;
@@ -99,7 +98,6 @@ document.getElementById("hero").innerHTML = `
 </div>`;
 }
 
-/* TRENDING */
 async function loadTrending(){
 let data = await fetchData(`${API}/trending/movie/week`);
 if(!data || !data.results) return;
@@ -117,7 +115,6 @@ row.appendChild(card);
 });
 }
 
-/* DETAILS */
 async function showDetails(id){
 document.getElementById("homePage").style.display="none";
 let page = document.getElementById("detailsPage");
@@ -156,7 +153,6 @@ document.getElementById("detailsPage").style.display="none";
 document.getElementById("homePage").style.display="block";
 }
 
-/* INIT */
 loadHero();
 loadTrending();
 </script>
