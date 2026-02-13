@@ -2,13 +2,15 @@
   const { id } = req.query;
 
   try {
-    const response = await fetch(
-      `https://api.themoviedb.org/3/movie/${id}?api_key=cc9374659de08b939499a50af4715216`
-    );
+    const [movieRes, similarRes] = await Promise.all([
+      fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=YOUR_API_KEY`),
+      fetch(`https://api.themoviedb.org/3/movie/${id}/similar?api_key=YOUR_API_KEY`)
+    ]);
 
-    const data = await response.json();
-    res.status(200).json(data);
+    const movie = await movieRes.json();
+    const similar = await similarRes.json();
 
+    res.status(200).json({ movie, similar: similar.results });
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch movie details" });
   }
