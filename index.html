@@ -28,13 +28,6 @@
       margin: 0;
     }
 
-    .search {
-      padding: 6px 10px;
-      border-radius: 4px;
-      border: none;
-      outline: none;
-    }
-
     .tabs {
       margin-top: 80px;
       padding: 0 40px;
@@ -64,6 +57,7 @@
     .movie {
       cursor: pointer;
       transition: transform 0.3s;
+      position: relative;
     }
 
     .movie img {
@@ -75,10 +69,31 @@
       transform: scale(1.08);
     }
 
-    .loader {
-      text-align: center;
-      padding: 40px;
-      display: none;
+    .rating {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      background: #e50914;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+
+    .watch-btn {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      background: black;
+      border: none;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .watch-btn:hover {
+      background: #e50914;
     }
 
   </style>
@@ -88,7 +103,6 @@
 
 <header>
   <h1>FASTSTREAM</h1>
-  <input class="search" type="text" placeholder="Search movies..." onkeyup="searchMovie(this.value)">
 </header>
 
 <div class="tabs">
@@ -97,75 +111,68 @@
   <button onclick="loadUpcoming()">Upcoming</button>
 </div>
 
-<div class="loader" id="loader">Loading...</div>
 <div class="movies" id="movies"></div>
 
 <script>
 
 const moviesDiv = document.getElementById("movies");
-const loader = document.getElementById("loader");
-
-function showLoader() {
-  loader.style.display = "block";
-  moviesDiv.innerHTML = "";
-}
-
-function hideLoader() {
-  loader.style.display = "none";
-}
 
 async function loadTrending() {
-  showLoader();
   const res = await fetch("/api/trending");
   const data = await res.json();
   displayMovies(data.results);
 }
 
 async function loadTopRated() {
-  showLoader();
   const res = await fetch("/api/toprated");
   const data = await res.json();
   displayMovies(data.results);
 }
 
 async function loadUpcoming() {
-  showLoader();
   const res = await fetch("/api/upcoming");
   const data = await res.json();
   displayMovies(data.results);
 }
 
-async function searchMovie(query) {
-  if(query.length < 3) return;
-  showLoader();
-  const res = await fetch(`/api/search?q=${query}`);
-  const data = await res.json();
-  displayMovies(data.results);
+function displayMovies(movies) {
+  moviesDiv.innerHTML = "";
+
+  movies.forEach(movie => {
+    moviesDiv.innerHTML += `
+      <div class="movie" onclick="goDetails(${movie.id})">
+
+        <span class="rating">
+          ⭐ ${movie.vote_average}
+        </span>
+
+        <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}">
+
+        <button class="watch-btn"
+          onclick='event.stopPropagation(); addToWatchlist(${JSON.stringify(movie)})'>
+          ❤️
+        </button>
+
+      </div>
+    `;
+  });
 }
 
-movies.forEach(movie => {
-  moviesDiv.innerHTML += `
-    <div class="movie" onclick="goDetails(${movie.id})" style="position:relative;">
-      <span style="
-        position:absolute;
-        top:8px;
-        left:8px;
-        background:#e50914;
-        padding:4px 8px;
-        border-radius:4px;
-        font-size:12px;
-      ">
-        ⭐ ${movie.vote_average}
-      </span>
-
-      <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}">
-    </div>
-  `;
-});
-
-
 function goDetails(id) {
-  window.location.href = `details.html?id=${id}`;
+  window.location.href = "details.html?id=" + id;
+}
+
+function addToWatchlist(movie) {
+  let list = JSON.parse(localStorage.getItem("watchlist")) || [];
+
+  // duplicate check
+  if (!list.find(m => m.id === movie.id)) {
+    list.push(movie);
+    localStorage.setItem("watchlist", JSON.stringify(list));
+    alert("Added to Watchlist ❤️");
+  } else {
+    alert("Already in Watchlist");
+  }
 }
 
 loadTrending();
