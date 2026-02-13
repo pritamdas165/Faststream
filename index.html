@@ -18,7 +18,7 @@ body{
   color:#fff;
 }
 
-/* ================= NAVBAR ================= */
+/* ========== NAVBAR ========== */
 .navbar{
   position:fixed;
   top:0;
@@ -31,6 +31,12 @@ body{
   background:rgba(20,20,20,0.65);
   backdrop-filter:blur(10px);
   z-index:100;
+  transition:0.3s ease;
+}
+
+.navbar.scrolled{
+  background:rgba(10,10,10,0.95);
+  box-shadow:0 8px 25px rgba(0,0,0,0.6);
 }
 
 .logo{
@@ -60,7 +66,7 @@ body{
   color:#e50914;
 }
 
-/* ================= HERO ================= */
+/* ========== HERO ========== */
 .hero{
   height:90vh;
   position:relative;
@@ -109,14 +115,6 @@ body{
   to{opacity:1;transform:translateY(0);}
 }
 
-.hero-badge{
-  font-size:11px;
-  letter-spacing:2px;
-  opacity:0.7;
-  margin-bottom:12px;
-  display:inline-block;
-}
-
 .hero h1{
   font-size:52px;
   margin-bottom:14px;
@@ -141,7 +139,6 @@ body{
   color:#fff;
   font-weight:600;
   border-radius:4px;
-  cursor:pointer;
 }
 
 .btn-secondary{
@@ -150,24 +147,17 @@ body{
   border:none;
   color:#fff;
   border-radius:4px;
-  cursor:pointer;
 }
 
-/* ================= SECTION ================= */
+/* ========== SECTION ========== */
 .section{
   padding:30px 40px;
 }
 
-.section h2{
-  margin-bottom:16px;
-}
-
-/* ================= MOVIE ROW ================= */
 .row{
   display:flex;
   gap:16px;
   overflow-x:auto;
-  scroll-behavior:smooth;
 }
 
 .row::-webkit-scrollbar{
@@ -178,13 +168,12 @@ body{
   min-width:160px;
   position:relative;
   cursor:pointer;
-  transition:transform 0.35s ease;
+  transition:0.35s;
 }
 
 .poster img{
   width:100%;
   border-radius:8px;
-  display:block;
 }
 
 .poster:hover{
@@ -216,15 +205,12 @@ body{
   bottom:10px;
   left:10px;
   right:10px;
-  z-index:2;
   opacity:0;
-  transform:translateY(10px);
   transition:0.35s;
 }
 
 .poster:hover .poster-info{
   opacity:1;
-  transform:translateY(0);
 }
 
 .poster-title{
@@ -237,7 +223,7 @@ body{
   color:#f5c518;
 }
 
-/* ================= MOBILE ================= */
+/* ========== MOBILE ========== */
 @media(max-width:768px){
   .hero{
     height:65vh;
@@ -255,7 +241,6 @@ body{
 
 <body>
 
-<!-- NAVBAR -->
 <div class="navbar">
   <div class="logo">FASTSTREAM</div>
   <div class="nav-links">
@@ -265,12 +250,10 @@ body{
   </div>
 </div>
 
-<!-- HERO -->
 <div class="hero">
   <div class="hero-bg" id="hero-bg"></div>
   <div class="hero-overlay"></div>
   <div class="hero-content">
-    <span class="hero-badge">FEATURED</span>
     <h1 id="hero-title"></h1>
     <p id="hero-overview"></p>
     <div class="hero-actions">
@@ -280,16 +263,18 @@ body{
   </div>
 </div>
 
-<!-- MOVIES -->
 <div class="section">
   <h2 id="section-title">Trending Movies</h2>
   <div class="row" id="movies"></div>
 </div>
 
 <script>
-let heroMovies=[];
-let heroIndex=0;
+const navbar = document.querySelector(".navbar");
+window.addEventListener("scroll",()=>{
+  navbar.classList.toggle("scrolled",window.scrollY>40);
+});
 
+let heroMovies=[],heroIndex=0;
 const moviesDiv=document.getElementById("movies");
 const sectionTitle=document.getElementById("section-title");
 
@@ -302,12 +287,11 @@ async function loadHero(){
 }
 
 function updateHero(){
-  const movie=heroMovies[heroIndex];
+  const m=heroMovies[heroIndex];
   document.getElementById("hero-bg").style.backgroundImage=
-  `url(https://image.tmdb.org/t/p/original${movie.backdrop_path})`;
-  document.getElementById("hero-title").innerText=movie.title;
-  document.getElementById("hero-overview").innerText=
-    movie.overview.substring(0,150)+"...";
+    `url(https://image.tmdb.org/t/p/original${m.backdrop_path})`;
+  document.getElementById("hero-title").innerText=m.title;
+  document.getElementById("hero-overview").innerText=m.overview.substring(0,150)+"...";
 }
 
 function nextHero(){
@@ -317,37 +301,33 @@ function nextHero(){
 
 async function loadTrending(){
   sectionTitle.innerText="Trending Movies";
-  const res=await fetch("/api/trending");
-  const data=await res.json();
-  displayMovies(data.results);
+  const r=await fetch("/api/trending");
+  displayMovies((await r.json()).results);
 }
 
 async function loadTopRated(){
   sectionTitle.innerText="Top Rated Movies";
-  const res=await fetch("/api/toprated");
-  const data=await res.json();
-  displayMovies(data.results);
+  const r=await fetch("/api/toprated");
+  displayMovies((await r.json()).results);
 }
 
 async function loadUpcoming(){
   sectionTitle.innerText="Upcoming Movies";
-  const res=await fetch("/api/upcoming");
-  const data=await res.json();
-  displayMovies(data.results);
+  const r=await fetch("/api/upcoming");
+  displayMovies((await r.json()).results);
 }
 
 function displayMovies(movies){
   moviesDiv.innerHTML="";
-  movies.forEach(movie=>{
+  movies.forEach(m=>{
     moviesDiv.innerHTML+=`
       <div class="poster">
-        <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}">
+        <img src="https://image.tmdb.org/t/p/w500${m.poster_path}">
         <div class="poster-info">
-          <div class="poster-title">${movie.title}</div>
-          <div class="poster-rating">⭐ ${movie.vote_average}</div>
+          <div class="poster-title">${m.title}</div>
+          <div class="poster-rating">⭐ ${m.vote_average}</div>
         </div>
-      </div>
-    `;
+      </div>`;
   });
 }
 
