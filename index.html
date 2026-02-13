@@ -1,1 +1,323 @@
- 
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>FastStream</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Arial, sans-serif;
+}
+
+body{
+  background:#141414;
+  color:white;
+}
+
+/* NAVBAR */
+.navbar{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  padding:15px 25px;
+  display:flex;
+  align-items:center;
+  gap:30px;
+  background:rgba(20,20,20,0.7);
+  backdrop-filter:blur(10px);
+  z-index:100;
+}
+
+.logo{
+  font-size:20px;
+  font-weight:400;
+  letter-spacing:1px;
+  background:linear-gradient(90deg,#e50914,#ff3c3c);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.nav-links{
+  display:flex;
+  gap:20px;
+}
+
+.nav-links button{
+  background:none;
+  border:none;
+  color:white;
+  font-size:13px;
+  cursor:pointer;
+}
+
+.nav-links button:hover{
+  color:#e50914;
+}
+
+/* HERO */
+.hero{
+  height:85vh;
+  position:relative;
+  display:flex;
+  align-items:center;
+  padding:60px;
+  margin-top:60px;
+  overflow:hidden;
+}
+
+.hero::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(to right,
+    rgba(0,0,0,0.85) 20%,
+    rgba(0,0,0,0.4) 50%,
+    rgba(0,0,0,0.1) 100%);
+  z-index:1;
+}
+
+.hero-bg{
+  position:absolute;
+  inset:0;
+  background-size:cover;
+  background-position:center;
+  animation:zoom 20s ease-in-out infinite alternate;
+}
+
+@keyframes zoom{
+  from{transform:scale(1);}
+  to{transform:scale(1.08);}
+}
+
+.hero-content{
+  position:relative;
+  z-index:2;
+  max-width:500px;
+}
+
+.hero h1{
+  font-size:48px;
+  margin-bottom:15px;
+}
+
+.hero p{
+  font-size:15px;
+  line-height:1.6;
+  margin-bottom:20px;
+}
+
+.hero button{
+  padding:12px 22px;
+  border:none;
+  background:#e50914;
+  color:white;
+  border-radius:4px;
+  cursor:pointer;
+}
+
+/* HERO DOTS */
+.hero-dots{
+  position:absolute;
+  bottom:25px;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  gap:8px;
+  z-index:3;
+}
+
+.hero-dots span{
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:#777;
+  cursor:pointer;
+}
+
+.hero-dots span.active{
+  background:#e50914;
+}
+
+/* SECTION */
+.section{
+  padding:30px 40px;
+}
+
+.row{
+  display:flex;
+  gap:15px;
+  overflow-x:auto;
+  scrollbar-width:none;
+}
+
+.row::-webkit-scrollbar{display:none;}
+
+.poster{
+  min-width:150px;
+  position:relative;
+  cursor:pointer;
+}
+
+.poster img{
+  width:100%;
+  border-radius:6px;
+}
+
+.rating{
+  position:absolute;
+  top:5px;
+  left:5px;
+  background:#e50914;
+  font-size:12px;
+  padding:3px 6px;
+  border-radius:3px;
+}
+
+/* MOBILE */
+@media(max-width:768px){
+  .hero{height:60vh;padding:30px;}
+  .hero h1{font-size:26px;}
+  .poster{min-width:110px;}
+}
+</style>
+</head>
+
+<body>
+
+<div class="navbar">
+  <div class="logo">FASTSTREAM</div>
+  <div class="nav-links">
+    <button onclick="loadTrending()">Trending</button>
+    <button onclick="loadTopRated()">Top Rated</button>
+    <button onclick="loadUpcoming()">Upcoming</button>
+  </div>
+</div>
+
+<div class="hero" id="hero">
+  <div class="hero-bg" id="hero-bg"></div>
+  <div class="hero-content">
+    <h1 id="hero-title"></h1>
+    <p id="hero-overview"></p>
+    <button onclick="goDetails(currentHeroId)">More Info</button>
+  </div>
+  <div class="hero-dots" id="hero-dots"></div>
+</div>
+
+<div class="section">
+  <h2 id="section-title">Trending Movies</h2>
+  <div class="row" id="movies"></div>
+</div>
+
+<script>
+let heroMovies=[],heroIndex=0,currentHeroId=null;
+let autoSlide;
+
+const moviesDiv=document.getElementById("movies");
+const dotsDiv=document.getElementById("hero-dots");
+const hero=document.getElementById("hero");
+
+async function loadHero(){
+  const res=await fetch("/api/trending");
+  const data=await res.json();
+  heroMovies=data.results.slice(0,5);
+  createDots();
+  updateHero();
+  startAuto();
+}
+
+function createDots(){
+  dotsDiv.innerHTML="";
+  heroMovies.forEach((_,i)=>{
+    const dot=document.createElement("span");
+    dot.onclick=()=>{heroIndex=i;updateHero();resetAuto();}
+    dotsDiv.appendChild(dot);
+  });
+}
+
+function updateHero(){
+  const movie=heroMovies[heroIndex];
+  currentHeroId=movie.id;
+
+  document.getElementById("hero-bg").style.backgroundImage=
+    `url(https://image.tmdb.org/t/p/original${movie.backdrop_path})`;
+
+  document.getElementById("hero-title").innerText=movie.title;
+  document.getElementById("hero-overview").innerText=
+    movie.overview.substring(0,150)+"...";
+
+  [...dotsDiv.children].forEach((d,i)=>{
+    d.classList.toggle("active",i===heroIndex);
+  });
+}
+
+function nextHero(){
+  heroIndex=(heroIndex+1)%heroMovies.length;
+  updateHero();
+}
+
+function startAuto(){
+  autoSlide=setInterval(nextHero,5000);
+}
+
+function resetAuto(){
+  clearInterval(autoSlide);
+  startAuto();
+}
+
+/* SWIPE */
+let startX=0;
+hero.addEventListener("touchstart",e=>startX=e.touches[0].clientX);
+hero.addEventListener("touchend",e=>{
+  let endX=e.changedTouches[0].clientX;
+  if(startX-endX>50){nextHero();resetAuto();}
+  if(endX-startX>50){
+    heroIndex=(heroIndex-1+heroMovies.length)%heroMovies.length;
+    updateHero();resetAuto();
+  }
+});
+
+/* MOVIES */
+async function loadTrending(){
+  const res=await fetch("/api/trending");
+  const data=await res.json();
+  displayMovies(data.results);
+}
+
+async function loadTopRated(){
+  const res=await fetch("/api/toprated");
+  const data=await res.json();
+  displayMovies(data.results);
+}
+
+async function loadUpcoming(){
+  const res=await fetch("/api/upcoming");
+  const data=await res.json();
+  displayMovies(data.results);
+}
+
+function displayMovies(list){
+  moviesDiv.innerHTML="";
+  list.forEach(m=>{
+    moviesDiv.innerHTML+=`
+      <div class="poster" onclick="goDetails(${m.id})">
+        <div class="rating">⭐ ${m.vote_average}</div>
+        <img src="https://image.tmdb.org/t/p/w500${m.poster_path}">
+      </div>`;
+  });
+}
+
+function goDetails(id){
+  location.href="details.html?id="+id;
+}
+
+loadHero();
+loadTrending();
+</script>
+
+</body>
+</html>
