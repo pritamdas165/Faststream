@@ -1,194 +1,204 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>FastStream</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <title>FastStream</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<style>
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:Arial, sans-serif;
-}
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial, sans-serif;
+    }
 
-body{
-  background:#141414;
-  color:white;
-}
+    body{
+      background:#141414;
+      color:white;
+    }
 
-/* NAVBAR */
-.navbar{
-  position:fixed;
-  top:0;
-  left:0;
-  width:100%;
-  padding:15px 25px;
-  display:flex;
-  align-items:center;
-  gap:30px;
-  background:rgba(20,20,20,0.7);
-  backdrop-filter:blur(10px);
-  z-index:100;
-}
+    /* ================= NAVBAR ================= */
+    .navbar{
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      padding:14px 20px;
+      display:flex;
+      align-items:center;
+      gap:20px;
+      background:rgba(20,20,20,0.7);
+      backdrop-filter:blur(10px);
+      z-index:100;
+    }
 
-.logo{
-  font-size:20px;
-  font-weight:400;
-  letter-spacing:1px;
-  background:linear-gradient(90deg,#e50914,#ff3c3c);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-}
+    .logo{
+      font-size:20px;
+      font-weight:400;
+      letter-spacing:1px;
+      background:linear-gradient(90deg,#e50914,#ff4d4d);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+    }
 
-.nav-links{
-  display:flex;
-  gap:20px;
-}
+    .nav-links{
+      display:flex;
+      gap:18px;
+    }
 
-.nav-links button{
-  background:none;
-  border:none;
-  color:white;
-  font-size:13px;
-  cursor:pointer;
-}
+    .nav-links button{
+      background:none;
+      border:none;
+      color:white;
+      font-size:13px;
+      cursor:pointer;
+      opacity:0.8;
+    }
 
-.nav-links button:hover{
-  color:#e50914;
-}
+    .nav-links button:hover{
+      color:#e50914;
+      opacity:1;
+    }
 
-/* HERO */
-.hero{
-  height:85vh;
-  position:relative;
-  display:flex;
-  align-items:center;
-  padding:60px;
-  margin-top:60px;
-  overflow:hidden;
-}
+    /* ================= HERO ================= */
+    .hero{
+      height:90vh;
+      position:relative;
+      margin-top:60px;
+      overflow:hidden;
+      display:flex;
+      align-items:flex-end;
+      padding:60px;
+    }
 
-.hero::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:linear-gradient(to right,
-    rgba(0,0,0,0.85) 20%,
-    rgba(0,0,0,0.4) 50%,
-    rgba(0,0,0,0.1) 100%);
-  z-index:1;
-}
+    .hero-bg{
+      position:absolute;
+      inset:0;
+      background-size:cover;
+      background-position:center;
+      animation:zoom 20s infinite alternate ease-in-out;
+    }
 
-.hero-bg{
-  position:absolute;
-  inset:0;
-  background-size:cover;
-  background-position:center;
-  animation:zoom 20s ease-in-out infinite alternate;
-}
+    @keyframes zoom{
+      from{transform:scale(1);}
+      to{transform:scale(1.08);}
+    }
 
-@keyframes zoom{
-  from{transform:scale(1);}
-  to{transform:scale(1.08);}
-}
+    .hero-overlay{
+      position:absolute;
+      inset:0;
+      background:linear-gradient(
+        to top,
+        rgba(0,0,0,0.85),
+        rgba(0,0,0,0.45),
+        rgba(0,0,0,0.1)
+      );
+    }
 
-.hero-content{
-  position:relative;
-  z-index:2;
-  max-width:500px;
-}
+    .hero-content{
+      position:relative;
+      z-index:2;
+      max-width:520px;
+      animation:fadeUp 1.2s ease forwards;
+    }
 
-.hero h1{
-  font-size:48px;
-  margin-bottom:15px;
-}
+    @keyframes fadeUp{
+      from{opacity:0;transform:translateY(30px);}
+      to{opacity:1;transform:translateY(0);}
+    }
 
-.hero p{
-  font-size:15px;
-  line-height:1.6;
-  margin-bottom:20px;
-}
+    .hero-badge{
+      font-size:11px;
+      letter-spacing:2px;
+      opacity:0.7;
+    }
 
-.hero button{
-  padding:12px 22px;
-  border:none;
-  background:#e50914;
-  color:white;
-  border-radius:4px;
-  cursor:pointer;
-}
+    .hero h1{
+      font-size:52px;
+      margin:14px 0;
+      line-height:1.1;
+    }
 
-/* HERO DOTS */
-.hero-dots{
-  position:absolute;
-  bottom:25px;
-  left:50%;
-  transform:translateX(-50%);
-  display:flex;
-  gap:8px;
-  z-index:3;
-}
+    .hero p{
+      font-size:15px;
+      line-height:1.6;
+      color:#ddd;
+      margin-bottom:22px;
+    }
 
-.hero-dots span{
-  width:10px;
-  height:10px;
-  border-radius:50%;
-  background:#777;
-  cursor:pointer;
-}
+    .hero-actions{
+      display:flex;
+      gap:12px;
+    }
 
-.hero-dots span.active{
-  background:#e50914;
-}
+    .btn-primary{
+      padding:12px 26px;
+      background:#e50914;
+      border:none;
+      color:white;
+      font-weight:600;
+      border-radius:4px;
+      cursor:pointer;
+    }
 
-/* SECTION */
-.section{
-  padding:30px 40px;
-}
+    .btn-secondary{
+      padding:12px 24px;
+      background:rgba(255,255,255,0.15);
+      border:none;
+      color:white;
+      border-radius:4px;
+      cursor:pointer;
+    }
 
-.row{
-  display:flex;
-  gap:15px;
-  overflow-x:auto;
-  scrollbar-width:none;
-}
+    /* ================= MOVIES ================= */
+    .section{
+      padding:30px 40px;
+    }
 
-.row::-webkit-scrollbar{display:none;}
+    .row{
+      display:flex;
+      gap:15px;
+      overflow-x:auto;
+    }
 
-.poster{
-  min-width:150px;
-  position:relative;
-  cursor:pointer;
-}
+    .row::-webkit-scrollbar{display:none;}
 
-.poster img{
-  width:100%;
-  border-radius:6px;
-}
+    .poster{
+      min-width:150px;
+      cursor:pointer;
+      transition:0.3s;
+      position:relative;
+    }
 
-.rating{
-  position:absolute;
-  top:5px;
-  left:5px;
-  background:#e50914;
-  font-size:12px;
-  padding:3px 6px;
-  border-radius:3px;
-}
+    .poster img{
+      width:100%;
+      border-radius:6px;
+    }
 
-/* MOBILE */
-@media(max-width:768px){
-  .hero{height:60vh;padding:30px;}
-  .hero h1{font-size:26px;}
-  .poster{min-width:110px;}
-}
-</style>
+    .poster:hover{transform:scale(1.1);}
+
+    .rating{
+      position:absolute;
+      top:5px;
+      left:5px;
+      background:#e50914;
+      padding:3px 6px;
+      font-size:12px;
+      border-radius:3px;
+    }
+
+    @media(max-width:768px){
+      .hero{height:60vh;padding:30px;}
+      .hero h1{font-size:28px;}
+      .poster{min-width:110px;}
+    }
+  </style>
 </head>
 
 <body>
 
+<!-- NAVBAR -->
 <div class="navbar">
   <div class="logo">FASTSTREAM</div>
   <div class="nav-links">
@@ -198,61 +208,48 @@ body{
   </div>
 </div>
 
-<div class="hero" id="hero">
+<!-- HERO -->
+<div class="hero">
   <div class="hero-bg" id="hero-bg"></div>
+  <div class="hero-overlay"></div>
+
   <div class="hero-content">
+    <span class="hero-badge">FEATURED</span>
     <h1 id="hero-title"></h1>
     <p id="hero-overview"></p>
-    <button onclick="goDetails(currentHeroId)">More Info</button>
+    <div class="hero-actions">
+      <button class="btn-primary">▶ Play</button>
+      <button class="btn-secondary">ⓘ Info</button>
+    </div>
   </div>
-  <div class="hero-dots" id="hero-dots"></div>
 </div>
 
+<!-- MOVIES -->
 <div class="section">
   <h2 id="section-title">Trending Movies</h2>
   <div class="row" id="movies"></div>
 </div>
 
 <script>
-let heroMovies=[],heroIndex=0,currentHeroId=null;
-let autoSlide;
-
+let heroMovies=[],heroIndex=0;
 const moviesDiv=document.getElementById("movies");
-const dotsDiv=document.getElementById("hero-dots");
-const hero=document.getElementById("hero");
+const sectionTitle=document.getElementById("section-title");
 
 async function loadHero(){
   const res=await fetch("/api/trending");
   const data=await res.json();
   heroMovies=data.results.slice(0,5);
-  createDots();
   updateHero();
-  startAuto();
-}
-
-function createDots(){
-  dotsDiv.innerHTML="";
-  heroMovies.forEach((_,i)=>{
-    const dot=document.createElement("span");
-    dot.onclick=()=>{heroIndex=i;updateHero();resetAuto();}
-    dotsDiv.appendChild(dot);
-  });
+  setInterval(nextHero,5000);
 }
 
 function updateHero(){
   const movie=heroMovies[heroIndex];
-  currentHeroId=movie.id;
-
   document.getElementById("hero-bg").style.backgroundImage=
     `url(https://image.tmdb.org/t/p/original${movie.backdrop_path})`;
-
   document.getElementById("hero-title").innerText=movie.title;
   document.getElementById("hero-overview").innerText=
     movie.overview.substring(0,150)+"...";
-
-  [...dotsDiv.children].forEach((d,i)=>{
-    d.classList.toggle("active",i===heroIndex);
-  });
 }
 
 function nextHero(){
@@ -260,59 +257,36 @@ function nextHero(){
   updateHero();
 }
 
-function startAuto(){
-  autoSlide=setInterval(nextHero,5000);
-}
-
-function resetAuto(){
-  clearInterval(autoSlide);
-  startAuto();
-}
-
-/* SWIPE */
-let startX=0;
-hero.addEventListener("touchstart",e=>startX=e.touches[0].clientX);
-hero.addEventListener("touchend",e=>{
-  let endX=e.changedTouches[0].clientX;
-  if(startX-endX>50){nextHero();resetAuto();}
-  if(endX-startX>50){
-    heroIndex=(heroIndex-1+heroMovies.length)%heroMovies.length;
-    updateHero();resetAuto();
-  }
-});
-
-/* MOVIES */
 async function loadTrending(){
+  sectionTitle.innerText="Trending Movies";
   const res=await fetch("/api/trending");
   const data=await res.json();
   displayMovies(data.results);
 }
 
 async function loadTopRated(){
+  sectionTitle.innerText="Top Rated Movies";
   const res=await fetch("/api/toprated");
   const data=await res.json();
   displayMovies(data.results);
 }
 
 async function loadUpcoming(){
+  sectionTitle.innerText="Upcoming Movies";
   const res=await fetch("/api/upcoming");
   const data=await res.json();
   displayMovies(data.results);
 }
 
-function displayMovies(list){
+function displayMovies(movies){
   moviesDiv.innerHTML="";
-  list.forEach(m=>{
+  movies.forEach(movie=>{
     moviesDiv.innerHTML+=`
-      <div class="poster" onclick="goDetails(${m.id})">
-        <div class="rating">⭐ ${m.vote_average}</div>
-        <img src="https://image.tmdb.org/t/p/w500${m.poster_path}">
+      <div class="poster">
+        <div class="rating">⭐ ${movie.vote_average}</div>
+        <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}">
       </div>`;
   });
-}
-
-function goDetails(id){
-  location.href="details.html?id="+id;
 }
 
 loadHero();
