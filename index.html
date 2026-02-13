@@ -1,199 +1,256 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>FastStream</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<title>FastStream</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    *{
-      margin:0;
-      padding:0;
-      box-sizing:border-box;
-      font-family:Arial, sans-serif;
-    }
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Arial, sans-serif;
+}
 
-    body{
-      background:#141414;
-      color:white;
-    }
+body{
+  background:#141414;
+  color:#fff;
+}
 
-    /* ================= NAVBAR ================= */
-    .navbar{
-      position:fixed;
-      top:0;
-      left:0;
-      width:100%;
-      padding:14px 20px;
-      display:flex;
-      align-items:center;
-      gap:20px;
-      background:rgba(20,20,20,0.7);
-      backdrop-filter:blur(10px);
-      z-index:100;
-    }
+/* ================= NAVBAR ================= */
+.navbar{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  padding:14px 24px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  background:rgba(20,20,20,0.65);
+  backdrop-filter:blur(10px);
+  z-index:100;
+}
 
-    .logo{
-      font-size:20px;
-      font-weight:400;
-      letter-spacing:1px;
-      background:linear-gradient(90deg,#e50914,#ff4d4d);
-      -webkit-background-clip:text;
-      -webkit-text-fill-color:transparent;
-    }
+.logo{
+  font-size:20px;
+  font-weight:500;
+  letter-spacing:1px;
+  background:linear-gradient(90deg,#e50914,#ff3c3c);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
 
-    .nav-links{
-      display:flex;
-      gap:18px;
-    }
+.nav-links{
+  display:flex;
+  gap:18px;
+}
 
-    .nav-links button{
-      background:none;
-      border:none;
-      color:white;
-      font-size:13px;
-      cursor:pointer;
-      opacity:0.8;
-    }
+.nav-links button{
+  background:none;
+  border:none;
+  color:#fff;
+  font-size:13px;
+  cursor:pointer;
+  transition:0.3s;
+}
 
-    .nav-links button:hover{
-      color:#e50914;
-      opacity:1;
-    }
+.nav-links button:hover{
+  color:#e50914;
+}
 
-    /* ================= HERO ================= */
-    .hero{
-      height:90vh;
-      position:relative;
-      margin-top:60px;
-      overflow:hidden;
-      display:flex;
-      align-items:flex-end;
-      padding:60px;
-    }
+/* ================= HERO ================= */
+.hero{
+  height:90vh;
+  position:relative;
+  display:flex;
+  align-items:flex-end;
+  padding:60px;
+  margin-top:60px;
+  overflow:hidden;
+}
 
-    .hero-bg{
-      position:absolute;
-      inset:0;
-      background-size:cover;
-      background-position:center;
-      animation:zoom 20s infinite alternate ease-in-out;
-    }
+.hero-bg{
+  position:absolute;
+  inset:0;
+  background-size:cover;
+  background-position:center;
+  animation:zoom 20s ease-in-out infinite alternate;
+}
 
-    @keyframes zoom{
-      from{transform:scale(1);}
-      to{transform:scale(1.08);}
-    }
+@keyframes zoom{
+  from{transform:scale(1);}
+  to{transform:scale(1.08);}
+}
 
-    .hero-overlay{
-      position:absolute;
-      inset:0;
-      background:linear-gradient(
-        to top,
-        rgba(0,0,0,0.85),
-        rgba(0,0,0,0.45),
-        rgba(0,0,0,0.1)
-      );
-    }
+.hero-overlay{
+  position:absolute;
+  inset:0;
+  background:linear-gradient(
+    to top,
+    rgba(0,0,0,0.9),
+    rgba(0,0,0,0.5),
+    rgba(0,0,0,0.15),
+    transparent
+  );
+  z-index:1;
+}
 
-    .hero-content{
-      position:relative;
-      z-index:2;
-      max-width:520px;
-      animation:fadeUp 1.2s ease forwards;
-    }
+.hero-content{
+  position:relative;
+  z-index:2;
+  max-width:520px;
+  animation:fadeUp 1.2s ease forwards;
+}
 
-    @keyframes fadeUp{
-      from{opacity:0;transform:translateY(30px);}
-      to{opacity:1;transform:translateY(0);}
-    }
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(30px);}
+  to{opacity:1;transform:translateY(0);}
+}
 
-    .hero-badge{
-      font-size:11px;
-      letter-spacing:2px;
-      opacity:0.7;
-    }
+.hero-badge{
+  font-size:11px;
+  letter-spacing:2px;
+  opacity:0.7;
+  margin-bottom:12px;
+  display:inline-block;
+}
 
-    .hero h1{
-      font-size:52px;
-      margin:14px 0;
-      line-height:1.1;
-    }
+.hero h1{
+  font-size:52px;
+  margin-bottom:14px;
+}
 
-    .hero p{
-      font-size:15px;
-      line-height:1.6;
-      color:#ddd;
-      margin-bottom:22px;
-    }
+.hero p{
+  font-size:15px;
+  line-height:1.6;
+  color:#ddd;
+  margin-bottom:22px;
+}
 
-    .hero-actions{
-      display:flex;
-      gap:12px;
-    }
+.hero-actions{
+  display:flex;
+  gap:12px;
+}
 
-    .btn-primary{
-      padding:12px 26px;
-      background:#e50914;
-      border:none;
-      color:white;
-      font-weight:600;
-      border-radius:4px;
-      cursor:pointer;
-    }
+.btn-primary{
+  padding:12px 26px;
+  background:#e50914;
+  border:none;
+  color:#fff;
+  font-weight:600;
+  border-radius:4px;
+  cursor:pointer;
+}
 
-    .btn-secondary{
-      padding:12px 24px;
-      background:rgba(255,255,255,0.15);
-      border:none;
-      color:white;
-      border-radius:4px;
-      cursor:pointer;
-    }
+.btn-secondary{
+  padding:12px 22px;
+  background:rgba(255,255,255,0.15);
+  border:none;
+  color:#fff;
+  border-radius:4px;
+  cursor:pointer;
+}
 
-    /* ================= MOVIES ================= */
-    .section{
-      padding:30px 40px;
-    }
+/* ================= SECTION ================= */
+.section{
+  padding:30px 40px;
+}
 
-    .row{
-      display:flex;
-      gap:15px;
-      overflow-x:auto;
-    }
+.section h2{
+  margin-bottom:16px;
+}
 
-    .row::-webkit-scrollbar{display:none;}
+/* ================= MOVIE ROW ================= */
+.row{
+  display:flex;
+  gap:16px;
+  overflow-x:auto;
+  scroll-behavior:smooth;
+}
 
-    .poster{
-      min-width:150px;
-      cursor:pointer;
-      transition:0.3s;
-      position:relative;
-    }
+.row::-webkit-scrollbar{
+  display:none;
+}
 
-    .poster img{
-      width:100%;
-      border-radius:6px;
-    }
+.poster{
+  min-width:160px;
+  position:relative;
+  cursor:pointer;
+  transition:transform 0.35s ease;
+}
 
-    .poster:hover{transform:scale(1.1);}
+.poster img{
+  width:100%;
+  border-radius:8px;
+  display:block;
+}
 
-    .rating{
-      position:absolute;
-      top:5px;
-      left:5px;
-      background:#e50914;
-      padding:3px 6px;
-      font-size:12px;
-      border-radius:3px;
-    }
+.poster:hover{
+  transform:scale(1.12);
+  z-index:5;
+}
 
-    @media(max-width:768px){
-      .hero{height:60vh;padding:30px;}
-      .hero h1{font-size:28px;}
-      .poster{min-width:110px;}
-    }
-  </style>
+.poster::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:8px;
+  background:linear-gradient(
+    to top,
+    rgba(0,0,0,0.9),
+    rgba(0,0,0,0.4),
+    transparent
+  );
+  opacity:0;
+  transition:0.35s;
+}
+
+.poster:hover::after{
+  opacity:1;
+}
+
+.poster-info{
+  position:absolute;
+  bottom:10px;
+  left:10px;
+  right:10px;
+  z-index:2;
+  opacity:0;
+  transform:translateY(10px);
+  transition:0.35s;
+}
+
+.poster:hover .poster-info{
+  opacity:1;
+  transform:translateY(0);
+}
+
+.poster-title{
+  font-size:13px;
+  font-weight:600;
+}
+
+.poster-rating{
+  font-size:12px;
+  color:#f5c518;
+}
+
+/* ================= MOBILE ================= */
+@media(max-width:768px){
+  .hero{
+    height:65vh;
+    padding:30px;
+  }
+  .hero h1{
+    font-size:28px;
+  }
+  .poster{
+    min-width:120px;
+  }
+}
+</style>
 </head>
 
 <body>
@@ -212,7 +269,6 @@
 <div class="hero">
   <div class="hero-bg" id="hero-bg"></div>
   <div class="hero-overlay"></div>
-
   <div class="hero-content">
     <span class="hero-badge">FEATURED</span>
     <h1 id="hero-title"></h1>
@@ -231,7 +287,9 @@
 </div>
 
 <script>
-let heroMovies=[],heroIndex=0;
+let heroMovies=[];
+let heroIndex=0;
+
 const moviesDiv=document.getElementById("movies");
 const sectionTitle=document.getElementById("section-title");
 
@@ -246,7 +304,7 @@ async function loadHero(){
 function updateHero(){
   const movie=heroMovies[heroIndex];
   document.getElementById("hero-bg").style.backgroundImage=
-    `url(https://image.tmdb.org/t/p/original${movie.backdrop_path})`;
+  `url(https://image.tmdb.org/t/p/original${movie.backdrop_path})`;
   document.getElementById("hero-title").innerText=movie.title;
   document.getElementById("hero-overview").innerText=
     movie.overview.substring(0,150)+"...";
@@ -283,9 +341,13 @@ function displayMovies(movies){
   movies.forEach(movie=>{
     moviesDiv.innerHTML+=`
       <div class="poster">
-        <div class="rating">⭐ ${movie.vote_average}</div>
         <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}">
-      </div>`;
+        <div class="poster-info">
+          <div class="poster-title">${movie.title}</div>
+          <div class="poster-rating">⭐ ${movie.vote_average}</div>
+        </div>
+      </div>
+    `;
   });
 }
 
