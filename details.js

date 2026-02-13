@@ -1,0 +1,37 @@
+export default function handler(req, res) {
+  res.writeHead(200, { "Content-Type": "text/html" });
+  res.end(`
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <title>Movie Details</title>
+    <style>
+      body { background:#111; color:white; font-family:Arial; padding:30px; }
+      button { padding:10px 20px; background:#e50914; color:white; border:none; cursor:pointer; }
+      img { width:300px; border-radius:10px; }
+    </style>
+  </head>
+  <body>
+    <button onclick="window.location.href='/'">⬅ Back</button>
+    <div id="content">Loading...</div>
+
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get("id");
+
+      fetch('/api/movie?id=' + id)
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById("content").innerHTML = \`
+            <h1>\${data.title}</h1>
+            <img src="https://image.tmdb.org/t/p/w500\${data.poster_path}">
+            <p>⭐ Rating: \${data.vote_average}</p>
+            <p>📅 Release: \${data.release_date}</p>
+            <p>\${data.overview}</p>
+          \`;
+        });
+    </script>
+  </body>
+  </html>
+  `);
+}
