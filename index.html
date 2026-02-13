@@ -13,7 +13,7 @@ body{background:#0f172a;color:#fff}
 .navbar{
  position:fixed;top:0;left:0;width:100%;
  padding:12px 18px;display:flex;align-items:center;
- background:rgba(15,23,42,.9);z-index:100
+ background:rgba(15,23,42,.92);z-index:100
 }
 .logo{
  font-size:20px;font-weight:700;
@@ -21,12 +21,14 @@ body{background:#0f172a;color:#fff}
  -webkit-background-clip:text;-webkit-text-fill-color:transparent
 }
 .spacer{flex:1}
+.nav-btn{background:none;border:none;color:#cbd5e1;cursor:pointer}
+.nav-btn:hover{color:#22c55e}
 
 /* HOME */
 .home{margin-top:64px;padding:18px}
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
 .card{background:#111827;border-radius:12px;overflow:hidden}
-.card img{width:100%}
+.card img{width:100%;display:block}
 .card-body{padding:10px}
 .title{font-size:14px;font-weight:700;margin-bottom:8px}
 .actions{display:flex;gap:8px}
@@ -36,6 +38,7 @@ body{background:#0f172a;color:#fff}
 }
 .watch{background:#22c55e;color:#022c22}
 .down{background:#3b82f6;color:#02152a}
+.actions button[disabled]{opacity:.6;cursor:not-allowed}
 
 /* DETAILS */
 .details{display:none;margin-top:64px}
@@ -44,8 +47,16 @@ body{background:#0f172a;color:#fff}
 .timer{
  margin-top:16px;font-size:18px;
  background:#1f2937;padding:12px;
- border-radius:10px;text-align:center
+ border-radius:10px;text-align:center;display:none
 }
+
+/* FOOTER */
+.footer{
+ margin-top:40px;padding:16px;text-align:center;
+ color:#94a3b8;font-size:13px;border-top:1px solid #1f2937
+}
+.footer a{color:#94a3b8;margin:0 8px;text-decoration:none}
+.footer a:hover{color:#22c55e}
 
 @media(min-width:768px){
  .grid{grid-template-columns:repeat(4,1fr)}
@@ -58,7 +69,7 @@ body{background:#0f172a;color:#fff}
 <div class="navbar">
  <div class="logo">FASTSTREAM</div>
  <div class="spacer"></div>
- <button onclick="goHome()">Home</button>
+ <button class="nav-btn" onclick="goHome()">Home</button>
 </div>
 
 <!-- HOME -->
@@ -73,30 +84,38 @@ body{background:#0f172a;color:#fff}
   <p id="dOverview"></p>
 
   <div class="actions">
-   <button class="watch" onclick="startFlow('watch')">▶ Watch</button>
-   <button class="down" onclick="startFlow('download')">⬇ Download</button>
+   <button class="watch" id="watchBtn" onclick="startFlow('watch')">▶ Watch</button>
+   <button class="down" id="downBtn" onclick="startFlow('download')">⬇ Download</button>
   </div>
 
-  <div class="timer" id="timerBox" style="display:none">
+  <div class="timer" id="timerBox">
    Redirecting in <span id="time">8</span> seconds...
   </div>
  </div>
+</div>
+
+<div class="footer">
+ <a href="#">About</a>
+ <a href="#">DMCA</a>
+ <a href="#">Disclaimer</a>
+ <a href="#">Privacy</a>
+ <a href="#">Contact</a>
 </div>
 
 <script>
 /* ================= CONFIG ================= */
 const DIRECT_AD_URL = "https://YOUR_DIRECT_AD_LINK";
 const POP_AD_URL    = "https://YOUR_POP_AD_LINK";
-
 const WATCH_URL    = "https://EXTERNAL_WATCH_PAGE";
 const DOWNLOAD_URL = "https://EXTERNAL_DOWNLOAD_PAGE";
-
 const TIMER_SECONDS = 8;
+const COOLDOWN_MS = 30000; // 30s anti‑loop
 /* ========================================== */
 
-let currentAction="";
+let lastActionAt = 0;
+let currentAction = "";
 
-/* LOAD MOVIES (demo) */
+/* DEMO DATA */
 const demoMovies=[
  {title:"Demo Movie 1",overview:"Sample description"},
  {title:"Demo Movie 2",overview:"Sample description"},
@@ -109,7 +128,7 @@ function loadHome(){
  demoMovies.forEach(m=>{
   grid.innerHTML+=`
    <div class="card">
-    <img src="https://via.placeholder.com/300x450?text=Movie">
+    <img loading="lazy" src="https://via.placeholder.com/300x450?text=Movie">
     <div class="card-body">
      <div class="title">${m.title}</div>
      <div class="actions">
@@ -129,18 +148,38 @@ function openDetails(m){
  dTitle.innerText=m.title;
  dOverview.innerText=m.overview;
  timerBox.style.display="none";
+ enableButtons();
 }
-
 function goHome(){
  details.style.display="none";
  home.style.display="block";
 }
 
+/* SAFETY */
+function canProceed(){
+ const now=Date.now();
+ if(now-lastActionAt<COOLDOWN_MS){
+  alert("Please wait a few seconds before trying again.");
+  return false;
+ }
+ lastActionAt=now;
+ return true;
+}
+function disableButtons(){
+ watchBtn.disabled=true;
+ downBtn.disabled=true;
+}
+function enableButtons(){
+ watchBtn.disabled=false;
+ downBtn.disabled=false;
+}
+
 /* ADS + TIMER FLOW */
 function startFlow(type){
+ if(!canProceed()) return;
  currentAction=type;
+ disableButtons();
 
- // Open ads in new tab (multi‑tap safe)
  window.open(DIRECT_AD_URL,"_blank");
  window.open(POP_AD_URL,"_blank");
 
@@ -149,8 +188,7 @@ function startFlow(type){
  timerBox.style.display="block";
 
  const interval=setInterval(()=>{
-  t--;
-  time.innerText=t;
+  t--; time.innerText=t;
   if(t<=0){
    clearInterval(interval);
    redirectUser();
@@ -159,11 +197,7 @@ function startFlow(type){
 }
 
 function redirectUser(){
- if(currentAction==="watch"){
-  window.location.href=WATCH_URL;
- }else{
-  window.location.href=DOWNLOAD_URL;
- }
+ window.location.href = (currentAction==="watch") ? WATCH_URL : DOWNLOAD_URL;
 }
 </script>
 
