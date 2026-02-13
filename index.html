@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Netflix Style Movie App</title>
+<title>Netflix Pro Movie App</title>
 <style>
 body{
   margin:0;
@@ -20,22 +20,9 @@ header{
   top:0;
   z-index:100;
 }
-header h1{
-  color:red;
-  margin:0;
-}
-input{
-  padding:8px;
-  border-radius:4px;
-  border:none;
-}
-button{
-  padding:8px 12px;
-  border:none;
-  border-radius:4px;
-  cursor:pointer;
-  margin-left:5px;
-}
+header h1{color:#e50914;margin:0;}
+input{padding:8px;border:none;border-radius:4px;}
+button{padding:8px 12px;border:none;border-radius:4px;cursor:pointer;margin-left:5px;}
 .hero{
   height:60vh;
   background-size:cover;
@@ -44,12 +31,8 @@ button{
   align-items:flex-end;
   padding:40px;
 }
-.hero h2{
-  font-size:40px;
-}
-h3{
-  margin-left:40px;
-}
+.hero h2{font-size:40px;}
+.section-title{margin-left:40px;}
 .movie-row{
   display:flex;
   overflow-x:auto;
@@ -62,36 +45,28 @@ h3{
   transition:0.3s;
   cursor:pointer;
 }
-.movie-row img:hover{
-  transform:scale(1.1);
-}
-#details{
-  padding:40px;
-  display:none;
-}
-#details img{
-  width:300px;
-  border-radius:10px;
-}
-.back-btn{
-  background:red;
-  color:white;
-}
-.fav-btn{
-  background:gold;
-}
-.trailer-btn{
-  background:#e50914;
-  color:white;
-}
+.movie-row img:hover{transform:scale(1.1);}
+#details{padding:40px;display:none;}
+#details img{width:300px;border-radius:10px;}
+.back-btn{background:red;color:white;}
 .rating-high{color:#00ff00;}
 .rating-mid{color:yellow;}
 .rating-low{color:red;}
-
-@media(max-width:600px){
-  .movie-row img{width:110px;}
-  .hero{height:40vh;}
-  .hero h2{font-size:24px;}
+.modal{
+  display:none;
+  position:fixed;
+  top:0;left:0;
+  width:100%;height:100%;
+  background:rgba(0,0,0,0.8);
+  justify-content:center;
+  align-items:center;
+}
+.modal iframe{width:80%;height:60%;}
+.modal span{
+  position:absolute;
+  top:20px;right:40px;
+  font-size:30px;
+  cursor:pointer;
 }
 </style>
 </head>
@@ -111,46 +86,54 @@ h3{
   <h2>🔥 Trending Now</h2>
 </div>
 
-<h3>Trending Movies</h3>
-<div class="movie-row" id="movies"></div>
+<h3 class="section-title">Trending</h3>
+<div class="movie-row" id="trending"></div>
+
+<h3 class="section-title">Top Rated</h3>
+<div class="movie-row" id="topRated"></div>
+
+<h3 class="section-title">Upcoming</h3>
+<div class="movie-row" id="upcoming"></div>
 
 <div id="details"></div>
 
+<div class="modal" id="trailerModal">
+  <span onclick="closeModal()">✖</span>
+  <iframe id="trailerFrame" src="" frameborder="0" allowfullscreen></iframe>
+</div>
+
 <script>
-const movieContainer=document.getElementById("movies");
-const hero=document.getElementById("hero");
-const details=document.getElementById("details");
+let favourites=JSON.parse(localStorage.getItem("favs"))||[];
 
-let favourites=[];
+async function fetchData(url){
+ const res=await fetch(url);
+ return await res.json();
+}
 
-async function getTrending(){
- const res=await fetch("/api/trending");
- const data=await res.json();
- displayMovies(data.results);
+async function loadMovies(){
+ const trending=await fetchData("/api/trending");
+ const topRated=await fetchData("/api/toprated");
+ const upcoming=await fetchData("/api/upcoming");
 
- if(data.results[0]){
-   hero.style.backgroundImage=
-   "url(https://image.tmdb.org/t/p/original"+data.results[0].backdrop_path+")";
+ displayRow(trending.results,"trending");
+ displayRow(topRated.results,"topRated");
+ displayRow(upcoming.results,"upcoming");
+
+ if(trending.results[0]){
+   document.getElementById("hero").style.backgroundImage=
+   "url(https://image.tmdb.org/t/p/original"+trending.results[0].backdrop_path+")";
  }
 }
 
-async function searchMovie(){
- const q=document.getElementById("searchInput").value;
- if(!q)return;
- const res=await fetch(`/api/search?query=${q}`);
- const data=await res.json();
- displayMovies(data.results);
-}
-
-function displayMovies(movies){
- movieContainer.innerHTML="";
- details.style.display="none";
+function displayRow(movies,id){
+ const container=document.getElementById(id);
+ container.innerHTML="";
  movies.forEach(movie=>{
    if(movie.poster_path){
      const img=document.createElement("img");
      img.src="https://image.tmdb.org/t/p/w500"+movie.poster_path;
      img.onclick=()=>showDetails(movie);
-     movieContainer.appendChild(img);
+     container.appendChild(img);
    }
  });
 }
@@ -160,42 +143,61 @@ function showDetails(movie){
  if(movie.vote_average>=7) ratingClass="rating-high";
  else if(movie.vote_average>=5) ratingClass="rating-mid";
 
+ const details=document.getElementById("details");
  details.style.display="block";
  details.innerHTML=`
-   <button class="back-btn" onclick="goBack()">⬅ Back</button>
+   <button class="back-btn" onclick="hideDetails()">⬅ Back</button>
    <h2>${movie.title}</h2>
    <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}">
    <p><strong>Release:</strong> ${movie.release_date}</p>
    <p class="${ratingClass}"><strong>Rating:</strong> ${movie.vote_average}</p>
    <p>${movie.overview}</p>
-   <button class="fav-btn" onclick='addFavourite(${JSON.stringify(movie)})'>❤️ Add to Favourite</button>
-   <button class="trailer-btn" onclick="searchTrailer('${movie.title}')">🎬 Watch Trailer</button>
+   <button onclick='addFavourite(${JSON.stringify(movie)})'>❤️ Add Favourite</button>
+   <button onclick="openTrailer('${movie.title}')">🎬 Trailer</button>
  `;
  window.scrollTo(0,document.body.scrollHeight);
 }
 
-function goBack(){
- details.style.display="none";
+function hideDetails(){
+ document.getElementById("details").style.display="none";
 }
 
 function addFavourite(movie){
- favourites.push(movie);
- alert("Added to favourites ❤️");
+ if(!favourites.find(m=>m.id===movie.id)){
+   favourites.push(movie);
+   localStorage.setItem("favs",JSON.stringify(favourites));
+   alert("Added to Favourite ❤️");
+ }
 }
 
 function showFavourites(){
  if(favourites.length===0){
-   alert("No favourites added yet");
+   alert("No favourites yet");
    return;
  }
- displayMovies(favourites);
+ displayRow(favourites,"trending");
 }
 
-function searchTrailer(title){
- window.open("https://www.youtube.com/results?search_query="+title+" trailer");
+function openTrailer(title){
+ const modal=document.getElementById("trailerModal");
+ const frame=document.getElementById("trailerFrame");
+ frame.src="https://www.youtube.com/embed?listType=search&list="+title+" trailer";
+ modal.style.display="flex";
 }
 
-getTrending();
+function closeModal(){
+ document.getElementById("trailerModal").style.display="none";
+ document.getElementById("trailerFrame").src="";
+}
+
+async function searchMovie(){
+ const q=document.getElementById("searchInput").value;
+ if(!q)return;
+ const data=await fetchData(`/api/search?query=${q}`);
+ displayRow(data.results,"trending");
+}
+
+loadMovies();
 </script>
 
 </body>
