@@ -143,18 +143,26 @@ async function searchMovie(query) {
   displayMovies(data.results);
 }
 
-function displayMovies(movies) {
-  hideLoader();
-  moviesDiv.innerHTML = "";
+movies.forEach(movie => {
+  moviesDiv.innerHTML += `
+    <div class="movie" onclick="goDetails(${movie.id})" style="position:relative;">
+      <span style="
+        position:absolute;
+        top:8px;
+        left:8px;
+        background:#e50914;
+        padding:4px 8px;
+        border-radius:4px;
+        font-size:12px;
+      ">
+        ⭐ ${movie.vote_average}
+      </span>
 
-  movies.forEach(movie => {
-    moviesDiv.innerHTML += `
-      <div class="movie" onclick="goDetails(${movie.id})">
-        <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}">
-      </div>
-    `;
-  });
-}
+      <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}">
+    </div>
+  `;
+});
+
 
 function goDetails(id) {
   window.location.href = `details.html?id=${id}`;
