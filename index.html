@@ -22,22 +22,30 @@
   position:fixed;
   top:0;
   width:100%;
-  padding:15px 20px;
+  padding:15px 40px;
   display:flex;
-  justify-content:center;  /* left align */
+  justify-content:flex-start;
   align-items:center;
-  background:#111;
+  gap:40px;
+
+  background: rgba(20,20,20,0.6);  
+  /* semi transparent */
+  backdrop-filter: blur(10px);      
+ /* glass blur effect */
+  -webkit-backdrop-filter: blur(10px);
+
+  border-bottom: 1px solid rgba(255,255,255,0.05);
   z-index:100;
-  gap:40px; /* logo আর menu এর মাঝে gap */
 }
 
+    /* logo আর menu এর মাঝে gap */
 
     .logo{
   font-size:20px;
   font-weight:600;
   letter-spacing:2px;
 
-  background: linear-gradient(90deg, #e50914, #ff3c3c);
+  background: linear-gradient(90deg,   #e50914, #ff3c3c);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 
