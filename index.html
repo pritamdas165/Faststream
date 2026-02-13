@@ -3,56 +3,73 @@
 <head>
   <title>MovieFlix</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <style>
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background-color: #111;
+      background: #111;
       color: white;
     }
 
     header {
-      padding: 20px;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      padding: 20px 40px;
       font-size: 28px;
       font-weight: bold;
       color: #e50914;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+      z-index: 10;
     }
 
     .hero {
-      height: 60vh;
+      height: 80vh;
       background-size: cover;
       background-position: center;
       display: flex;
       align-items: flex-end;
-      padding: 40px;
+      padding: 60px;
+      box-shadow: inset 0 -200px 150px -50px rgba(0,0,0,0.9);
+    }
+
+    .hero-content {
+      max-width: 600px;
     }
 
     .hero h1 {
-      font-size: 40px;
-      margin: 0;
-      background: rgba(0,0,0,0.6);
-      padding: 10px 20px;
-      border-radius: 5px;
+      font-size: 50px;
+      margin: 0 0 15px 0;
+    }
+
+    .hero p {
+      font-size: 18px;
+      line-height: 1.4;
     }
 
     .section {
-      padding: 20px;
+      padding: 20px 40px;
     }
 
     .section h2 {
-      margin-bottom: 10px;
+      margin-bottom: 15px;
     }
 
     .movies {
       display: flex;
-      overflow-x: auto;
       gap: 15px;
+      overflow-x: auto;
+    }
+
+    .movies::-webkit-scrollbar {
+      display: none;
     }
 
     .movie {
-      min-width: 150px;
-      cursor: pointer;
+      min-width: 160px;
       transition: transform 0.3s;
+      cursor: pointer;
     }
 
     .movie img {
@@ -63,11 +80,6 @@
     .movie:hover {
       transform: scale(1.1);
     }
-
-    /* Scrollbar hide */
-    .movies::-webkit-scrollbar {
-      display: none;
-    }
   </style>
 </head>
 
@@ -76,27 +88,39 @@
 <header>MovieFlix</header>
 
 <div class="hero" id="hero">
-  <h1>🔥 Trending Movies</h1>
+  <div class="hero-content">
+    <h1 id="heroTitle">Loading...</h1>
+    <p id="heroDesc"></p>
+  </div>
 </div>
 
 <div class="section">
-  <h2>Trending This Week</h2>
+  <h2>🔥 Trending This Week</h2>
   <div class="movies" id="movieList"></div>
 </div>
 
 <script>
-  const API = "/api/trending";
-
   async function loadMovies() {
-    const res = await fetch(API);
+    const res = await fetch("/api/trending");
     const data = await res.json();
     const movies = data.results;
 
-    // Hero background set
+    const hero = movies[0];
+
+    // Hero Section
     document.getElementById("hero").style.backgroundImage =
       "url(https://image.tmdb.org/t/p/original" +
-      movies[0].backdrop_path + ")";
+      hero.backdrop_path + ")";
 
+    document.getElementById("heroTitle").innerText = hero.title;
+    document.getElementById("heroDesc").innerText =
+      hero.overview.substring(0, 150) + "...";
+
+    document.getElementById("hero").onclick = () => {
+      window.location.href = `/details?id=${hero.id}`;
+    };
+
+    // Movie Row
     const list = document.getElementById("movieList");
     list.innerHTML = "";
 
@@ -110,7 +134,7 @@
         `<img src="https://image.tmdb.org/t/p/w500${movie.poster_path}">`;
 
       div.onclick = () => {
-        window.location.href = `details.html?id=${movie.id}`;
+        window.location.href = `/details?id=${movie.id}`;
       };
 
       list.appendChild(div);
