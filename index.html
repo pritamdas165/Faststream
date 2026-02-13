@@ -1,221 +1,191 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
+<meta charset="UTF-8" />
 <title>FastStream</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
-body{background:#141414;color:#fff}
+body{background:#0f172a;color:#fff}
 
-/* NAVBAR */
+/* ===== NAVBAR ===== */
 .navbar{
  position:fixed;top:0;left:0;width:100%;
- padding:14px 24px;display:flex;justify-content:space-between;
- background:rgba(20,20,20,.65);backdrop-filter:blur(10px);
- transition:.3s;z-index:100
+ padding:12px 18px;display:flex;gap:12px;align-items:center;
+ background:rgba(15,23,42,.8);backdrop-filter:blur(10px);
+ z-index:100
 }
-.navbar.scrolled{background:#0a0a0a;box-shadow:0 8px 25px rgba(0,0,0,.6)}
 .logo{
- font-size:20px;font-weight:600;
- background:linear-gradient(90deg,#e50914,#ff3c3c);
+ font-size:20px;font-weight:700;
+ background:linear-gradient(90deg,#22c55e,#3b82f6);
  -webkit-background-clip:text;-webkit-text-fill-color:transparent
 }
+.search{
+ flex:1;max-width:420px
+}
+.search input{
+ width:100%;padding:10px 14px;border-radius:999px;border:none;
+ background:#111827;color:#fff;outline:none
+}
 .nav-links button{
- background:none;border:none;color:#fff;
- margin-left:16px;font-size:13px;cursor:pointer
+ background:none;border:none;color:#cbd5e1;margin-left:10px;cursor:pointer
 }
-.nav-links button:hover{color:#e50914}
+.nav-links button:hover{color:#22c55e}
 
-/* HERO */
+/* ===== HERO ===== */
 .hero{
- height:90vh;position:relative;margin-top:60px;
- display:flex;align-items:flex-end;padding:60px;overflow:hidden
+ height:70vh;margin-top:64px;position:relative;overflow:hidden;
+ display:flex;align-items:flex-end;padding:32px
 }
-.hero-bg{
- position:absolute;inset:0;
- background-size:cover;background-position:center;
- transition:.6s ease
-}
+.hero-bg{position:absolute;inset:0;background-size:cover;background-position:center}
 .hero-overlay{
  position:absolute;inset:0;
- background:linear-gradient(to top,rgba(0,0,0,.9),transparent);
- z-index:1
+ background:linear-gradient(to top,rgba(0,0,0,.85),transparent)
 }
 .hero-content{position:relative;z-index:2;max-width:520px}
-.hero h1{font-size:48px;margin-bottom:12px}
-.hero p{font-size:15px;color:#ddd;margin-bottom:20px}
+.hero h1{font-size:36px;margin-bottom:10px}
+.hero p{font-size:14px;color:#e5e7eb;margin-bottom:16px}
 .hero-actions button{
- padding:12px 22px;border:none;border-radius:4px;
- margin-right:10px;font-weight:600;cursor:pointer
+ padding:10px 16px;border:none;border-radius:8px;
+ margin-right:8px;font-weight:700;cursor:pointer
 }
-.btn-primary{background:#e50914;color:#fff}
-.btn-secondary{background:rgba(255,255,255,.15);color:#fff}
+.play{background:#22c55e;color:#022c22}
+.info{background:#1f2937;color:#e5e7eb}
 
-/* HERO DOTS */
-.hero-dots{
- position:absolute;bottom:25px;left:50%;
- transform:translateX(-50%);
- display:flex;gap:8px;z-index:5
+/* ===== SECTION ===== */
+.section{padding:22px}
+.section h2{margin-bottom:12px;color:#e5e7eb}
+
+/* ===== GRID ===== */
+.grid{
+ display:grid;grid-template-columns:repeat(6,1fr);gap:14px
 }
-.hero-dots span{
- width:9px;height:9px;border-radius:50%;
- background:rgba(255,255,255,.4);
- cursor:pointer;transition:.3s
+.card{
+ background:#111827;border-radius:12px;overflow:hidden;position:relative
 }
-.hero-dots span.active{background:#e50914;transform:scale(1.3)}
-
-/* MOVIES */
-.section{padding:30px 40px}
-.row{display:flex;gap:16px;overflow-x:auto}
-.row::-webkit-scrollbar{display:none}
-
-.poster{
- min-width:160px;position:relative;
- cursor:pointer;transition:.3s
+.card img{width:100%;display:block}
+.badge{
+ position:absolute;top:8px;left:8px;
+ background:#22c55e;color:#022c22;font-size:11px;
+ padding:4px 8px;border-radius:999px;font-weight:700
 }
-.poster img{width:100%;border-radius:8px}
-.poster:hover{transform:scale(1.12);z-index:5}
-
-/* Poster overlay */
-.poster::after{
- content:"";position:absolute;inset:0;
- border-radius:8px;
- background:linear-gradient(to top,rgba(0,0,0,.9),transparent);
- opacity:0;transition:.3s
+.card-body{padding:10px}
+.title{font-size:13px;font-weight:700;margin-bottom:8px;line-height:1.3}
+.actions{display:flex;gap:8px}
+.actions button{
+ flex:1;padding:8px;border:none;border-radius:8px;
+ font-weight:700;cursor:pointer
 }
-.poster:hover::after{opacity:1}
+.watch{background:#22c55e;color:#022c22}
+.down{background:#3b82f6;color:#02152a}
 
-/* Poster actions */
-.poster-actions{
- position:absolute;bottom:10px;left:0;right:0;
- display:flex;justify-content:center;gap:10px;
- opacity:0;transition:.3s;z-index:2
-}
-.poster:hover .poster-actions{opacity:1}
-
-.poster-actions button{
- padding:6px 12px;font-size:12px;
- border:none;border-radius:4px;
- cursor:pointer;font-weight:600
-}
-.play-btn{background:#e50914;color:#fff}
-.info-btn{background:rgba(255,255,255,.2);color:#fff}
-
+/* ===== RESPONSIVE ===== */
+@media(max-width:1200px){.grid{grid-template-columns:repeat(5,1fr)}}
+@media(max-width:992px){.grid{grid-template-columns:repeat(4,1fr)}}
 @media(max-width:768px){
- .hero{height:65vh;padding:30px}
- .hero h1{font-size:28px}
- .poster{min-width:120px}
+ .hero{height:55vh}
+ .grid{grid-template-columns:repeat(2,1fr)}
 }
 </style>
 </head>
 
 <body>
 
+<!-- NAVBAR -->
 <div class="navbar">
  <div class="logo">FASTSTREAM</div>
+ <div class="search">
+  <input id="search" placeholder="Search movies..." />
+ </div>
  <div class="nav-links">
   <button onclick="loadTrending()">Trending</button>
-  <button onclick="loadTopRated()">Top Rated</button>
+  <button onclick="loadTopRated()">Top</button>
   <button onclick="loadUpcoming()">Upcoming</button>
  </div>
 </div>
 
-<div class="hero" id="hero">
- <div class="hero-bg" id="hero-bg"></div>
+<!-- HERO -->
+<div class="hero">
+ <div class="hero-bg" id="heroBg"></div>
  <div class="hero-overlay"></div>
  <div class="hero-content">
-  <h1 id="hero-title"></h1>
-  <p id="hero-overview"></p>
+  <h1 id="heroTitle"></h1>
+  <p id="heroDesc"></p>
   <div class="hero-actions">
-   <button class="btn-primary">▶ Play</button>
-   <button class="btn-secondary">ⓘ Info</button>
+   <button class="play">▶ Watch</button>
+   <button class="info">ⓘ Info</button>
   </div>
  </div>
- <div class="hero-dots" id="hero-dots"></div>
 </div>
 
+<!-- MOVIES -->
 <div class="section">
- <h2 id="section-title">Trending Movies</h2>
- <div class="row" id="movies"></div>
+ <h2 id="secTitle">Trending</h2>
+ <div class="grid" id="grid"></div>
 </div>
 
 <script>
-/* NAVBAR SCROLL */
-const navbar=document.querySelector(".navbar");
-window.addEventListener("scroll",()=>navbar.classList.toggle("scrolled",scrollY>40));
-
-let heroMovies=[],heroIndex=0,autoSlide;
-const heroBg=document.getElementById("hero-bg");
-const heroTitle=document.getElementById("hero-title");
-const heroOverview=document.getElementById("hero-overview");
-const heroDots=document.getElementById("hero-dots");
+let allMovies=[];
 
 /* HERO */
-async function loadHero(){
+async function hero(){
  const r=await fetch("/api/trending");
  const d=await r.json();
- heroMovies=d.results.slice(0,5);
- renderDots();updateHero();
- autoSlide=setInterval(nextHero,5000);
-}
-function updateHero(){
- const m=heroMovies[heroIndex];
- heroBg.style.backgroundImage=`url(https://image.tmdb.org/t/p/original${m.backdrop_path})`;
+ const m=d.results[0];
+ document.getElementById("heroBg").style.backgroundImage=
+ `url(https://image.tmdb.org/t/p/original${m.backdrop_path})`;
  heroTitle.innerText=m.title;
- heroOverview.innerText=m.overview.substring(0,140)+"...";
- document.querySelectorAll(".hero-dots span")
- .forEach((dot,i)=>dot.classList.toggle("active",i===heroIndex));
-}
-function nextHero(){heroIndex=(heroIndex+1)%heroMovies.length;updateHero();}
-function renderDots(){
- heroDots.innerHTML="";
- heroMovies.forEach((_,i)=>{
-  const dot=document.createElement("span");
-  dot.onclick=()=>{heroIndex=i;updateHero();resetAuto()};
-  heroDots.appendChild(dot);
- });
-}
-function resetAuto(){
- clearInterval(autoSlide);
- autoSlide=setInterval(nextHero,5000);
+ heroDesc.innerText=m.overview.slice(0,140)+"...";
 }
 
-/* MOVIES */
-const moviesDiv=document.getElementById("movies");
-const sectionTitle=document.getElementById("section-title");
-
+/* LOADERS */
 async function loadTrending(){
- sectionTitle.innerText="Trending Movies";
+ secTitle.innerText="Trending";
  const r=await fetch("/api/trending");
- displayMovies((await r.json()).results);
+ render((await r.json()).results);
 }
 async function loadTopRated(){
- sectionTitle.innerText="Top Rated Movies";
+ secTitle.innerText="Top Rated";
  const r=await fetch("/api/toprated");
- displayMovies((await r.json()).results);
+ render((await r.json()).results);
 }
 async function loadUpcoming(){
- sectionTitle.innerText="Upcoming Movies";
+ secTitle.innerText="Upcoming";
  const r=await fetch("/api/upcoming");
- displayMovies((await r.json()).results);
+ render((await r.json()).results);
 }
-function displayMovies(movies){
- moviesDiv.innerHTML="";
+
+/* RENDER */
+function render(movies){
+ allMovies=movies;
+ draw(movies);
+}
+function draw(movies){
+ grid.innerHTML="";
  movies.forEach(m=>{
-  moviesDiv.innerHTML+=`
-   <div class="poster">
+  grid.innerHTML+=`
+   <div class="card">
+    <span class="badge">HD</span>
     <img src="https://image.tmdb.org/t/p/w500${m.poster_path}">
-    <div class="poster-actions">
-      <button class="play-btn">▶ Play</button>
-      <button class="info-btn">ⓘ Info</button>
+    <div class="card-body">
+     <div class="title">${m.title}</div>
+     <div class="actions">
+      <button class="watch">Watch</button>
+      <button class="down">Download</button>
+     </div>
     </div>
    </div>`;
  });
 }
 
-loadHero();
+/* SEARCH */
+search.addEventListener("input",e=>{
+ const q=e.target.value.toLowerCase();
+ draw(allMovies.filter(m=>m.title.toLowerCase().includes(q)));
+});
+
+hero();
 loadTrending();
 </script>
 
