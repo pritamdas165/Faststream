@@ -1,86 +1,144 @@
  <!DOCTYPE html>
 <html>
 <head>
-  <title>Movie App</title>
+  <title>Netflix Style Movie App</title>
   <style>
     body {
-      background: black;
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #141414;
       color: white;
-      font-family: Arial;
-      text-align: center;
     }
 
-    input {
-      padding: 10px;
-      width: 250px;
-      margin-top: 20px;
-      border-radius: 5px;
-      border: none;
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 40px;
+      background: #000;
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
 
-    button {
-      padding: 10px;
-      border-radius: 5px;
+    header h1 {
+      color: red;
+      margin: 0;
+    }
+
+    .search-box input {
+      padding: 8px;
+      border-radius: 4px;
       border: none;
-      cursor: pointer;
+      width: 220px;
+    }
+
+    .search-box button {
+      padding: 8px 12px;
       background: red;
+      border: none;
       color: white;
-      margin: 5px;
-    }
-
-    #movies {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-      gap: 15px;
-      margin: 20px;
-    }
-
-    img {
-      width: 100%;
-      border-radius: 10px;
+      border-radius: 4px;
       cursor: pointer;
-      transition: 0.3s;
     }
 
-    img:hover {
-      transform: scale(1.05);
+    .hero {
+      height: 60vh;
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: flex-end;
+      padding: 40px;
+      background-color: #000;
+    }
+
+    .hero h2 {
+      font-size: 40px;
+      margin: 0;
+    }
+
+    h3 {
+      margin-left: 40px;
+    }
+
+    .movie-row {
+      display: flex;
+      overflow-x: auto;
+      padding: 20px 40px;
+      gap: 15px;
+    }
+
+    .movie-row img {
+      width: 150px;
+      border-radius: 6px;
+      transition: transform 0.3s;
+      cursor: pointer;
+    }
+
+    .movie-row img:hover {
+      transform: scale(1.1);
+    }
+
+    .movie-row::-webkit-scrollbar {
+      display: none;
     }
 
     #details {
-      margin: 30px;
+      padding: 40px;
+      display: none;
     }
 
     #details img {
       width: 300px;
-      margin-top: 10px;
+      border-radius: 10px;
     }
 
-    .hidden {
-      display: none;
+    .back-btn {
+      background: red;
+      border: none;
+      padding: 8px 15px;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-bottom: 20px;
     }
   </style>
 </head>
 <body>
 
-  <h1>🔥 Movie App</h1>
+<header>
+  <h1>NETFLIX</h1>
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="Search movies...">
+    <button onclick="searchMovie()">Search</button>
+  </div>
+</header>
 
-  <input type="text" id="searchInput" placeholder="Search movie...">
-  <button onclick="searchMovie()">Search</button>
+<div class="hero" id="hero">
+  <h2>🔥 Trending Now</h2>
+</div>
 
-  <h2 id="movieTitle">🔥 Movies</h2>
-  <div id="movies"></div>
+<h3>Trending Movies</h3>
+<div class="movie-row" id="movies"></div>
 
-  <div id="details" class="hidden"></div>
+<div id="details"></div>
 
 <script>
   const movieContainer = document.getElementById("movies");
+  const hero = document.getElementById("hero");
   const detailsContainer = document.getElementById("details");
-  const movieTitle = document.getElementById("movieTitle");
 
   async function getTrending() {
     const res = await fetch("/api/trending");
     const data = await res.json();
     displayMovies(data.results);
+
+    // Set first movie as hero background
+    if (data.results.length > 0) {
+      hero.style.backgroundImage =
+        "url(https://image.tmdb.org/t/p/original" +
+        data.results[0].backdrop_path + ")";
+    }
   }
 
   async function searchMovie() {
@@ -94,9 +152,7 @@
 
   function displayMovies(movies) {
     movieContainer.innerHTML = "";
-    detailsContainer.classList.add("hidden");
-    movieContainer.classList.remove("hidden");
-    movieTitle.innerText = "🔥 Movies";
+    detailsContainer.style.display = "none";
 
     movies.forEach(movie => {
       if (movie.poster_path) {
@@ -109,24 +165,20 @@
   }
 
   function showDetails(movie) {
-    movieContainer.classList.add("hidden");
-    detailsContainer.classList.remove("hidden");
-    movieTitle.innerText = "🎬 Movie Details";
-
+    detailsContainer.style.display = "block";
     detailsContainer.innerHTML = `
-      <button onclick="goBack()">⬅ Back</button>
+      <button class="back-btn" onclick="goBack()">⬅ Back</button>
       <h2>${movie.title}</h2>
       <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}">
       <p><strong>Release:</strong> ${movie.release_date}</p>
       <p><strong>Rating:</strong> ${movie.vote_average}</p>
       <p>${movie.overview}</p>
     `;
+    window.scrollTo(0, document.body.scrollHeight);
   }
 
   function goBack() {
-    detailsContainer.classList.add("hidden");
-    movieContainer.classList.remove("hidden");
-    movieTitle.innerText = "🔥 Movies";
+    detailsContainer.style.display = "none";
   }
 
   getTrending();
