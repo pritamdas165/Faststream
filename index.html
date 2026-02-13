@@ -1,116 +1,109 @@
  <!DOCTYPE html>
 <html>
 <head>
-  <title>Netflix Style Movie App</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: #141414;
-      color: white;
-    }
+<meta charset="UTF-8">
+<title>Netflix Style Movie App</title>
+<style>
+body{
+  margin:0;
+  background:#141414;
+  font-family:Arial;
+  color:white;
+}
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:15px 40px;
+  background:black;
+  position:sticky;
+  top:0;
+  z-index:100;
+}
+header h1{
+  color:red;
+  margin:0;
+}
+input{
+  padding:8px;
+  border-radius:4px;
+  border:none;
+}
+button{
+  padding:8px 12px;
+  border:none;
+  border-radius:4px;
+  cursor:pointer;
+  margin-left:5px;
+}
+.hero{
+  height:60vh;
+  background-size:cover;
+  background-position:center;
+  display:flex;
+  align-items:flex-end;
+  padding:40px;
+}
+.hero h2{
+  font-size:40px;
+}
+h3{
+  margin-left:40px;
+}
+.movie-row{
+  display:flex;
+  overflow-x:auto;
+  padding:20px 40px;
+  gap:15px;
+}
+.movie-row img{
+  width:150px;
+  border-radius:6px;
+  transition:0.3s;
+  cursor:pointer;
+}
+.movie-row img:hover{
+  transform:scale(1.1);
+}
+#details{
+  padding:40px;
+  display:none;
+}
+#details img{
+  width:300px;
+  border-radius:10px;
+}
+.back-btn{
+  background:red;
+  color:white;
+}
+.fav-btn{
+  background:gold;
+}
+.trailer-btn{
+  background:#e50914;
+  color:white;
+}
+.rating-high{color:#00ff00;}
+.rating-mid{color:yellow;}
+.rating-low{color:red;}
 
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 15px 40px;
-      background: #000;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    header h1 {
-      color: red;
-      margin: 0;
-    }
-
-    .search-box input {
-      padding: 8px;
-      border-radius: 4px;
-      border: none;
-      width: 220px;
-    }
-
-    .search-box button {
-      padding: 8px 12px;
-      background: red;
-      border: none;
-      color: white;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    .hero {
-      height: 60vh;
-      background-size: cover;
-      background-position: center;
-      display: flex;
-      align-items: flex-end;
-      padding: 40px;
-      background-color: #000;
-    }
-
-    .hero h2 {
-      font-size: 40px;
-      margin: 0;
-    }
-
-    h3 {
-      margin-left: 40px;
-    }
-
-    .movie-row {
-      display: flex;
-      overflow-x: auto;
-      padding: 20px 40px;
-      gap: 15px;
-    }
-
-    .movie-row img {
-      width: 150px;
-      border-radius: 6px;
-      transition: transform 0.3s;
-      cursor: pointer;
-    }
-
-    .movie-row img:hover {
-      transform: scale(1.1);
-    }
-
-    .movie-row::-webkit-scrollbar {
-      display: none;
-    }
-
-    #details {
-      padding: 40px;
-      display: none;
-    }
-
-    #details img {
-      width: 300px;
-      border-radius: 10px;
-    }
-
-    .back-btn {
-      background: red;
-      border: none;
-      padding: 8px 15px;
-      color: white;
-      border-radius: 5px;
-      cursor: pointer;
-      margin-bottom: 20px;
-    }
-  </style>
+@media(max-width:600px){
+  .movie-row img{width:110px;}
+  .hero{height:40vh;}
+  .hero h2{font-size:24px;}
+}
+</style>
 </head>
+
 <body>
 
 <header>
   <h1>NETFLIX</h1>
-  <div class="search-box">
-    <input type="text" id="searchInput" placeholder="Search movies...">
+  <div>
+    <input type="text" id="searchInput" placeholder="Search movie...">
     <button onclick="searchMovie()">Search</button>
+    <button onclick="showFavourites()">❤️ Favourites</button>
   </div>
 </header>
 
@@ -124,64 +117,85 @@
 <div id="details"></div>
 
 <script>
-  const movieContainer = document.getElementById("movies");
-  const hero = document.getElementById("hero");
-  const detailsContainer = document.getElementById("details");
+const movieContainer=document.getElementById("movies");
+const hero=document.getElementById("hero");
+const details=document.getElementById("details");
 
-  async function getTrending() {
-    const res = await fetch("/api/trending");
-    const data = await res.json();
-    displayMovies(data.results);
+let favourites=[];
 
-    // Set first movie as hero background
-    if (data.results.length > 0) {
-      hero.style.backgroundImage =
-        "url(https://image.tmdb.org/t/p/original" +
-        data.results[0].backdrop_path + ")";
-    }
-  }
+async function getTrending(){
+ const res=await fetch("/api/trending");
+ const data=await res.json();
+ displayMovies(data.results);
 
-  async function searchMovie() {
-    const query = document.getElementById("searchInput").value;
-    if (!query) return;
+ if(data.results[0]){
+   hero.style.backgroundImage=
+   "url(https://image.tmdb.org/t/p/original"+data.results[0].backdrop_path+")";
+ }
+}
 
-    const res = await fetch(`/api/search?query=${query}`);
-    const data = await res.json();
-    displayMovies(data.results);
-  }
+async function searchMovie(){
+ const q=document.getElementById("searchInput").value;
+ if(!q)return;
+ const res=await fetch(`/api/search?query=${q}`);
+ const data=await res.json();
+ displayMovies(data.results);
+}
 
-  function displayMovies(movies) {
-    movieContainer.innerHTML = "";
-    detailsContainer.style.display = "none";
+function displayMovies(movies){
+ movieContainer.innerHTML="";
+ details.style.display="none";
+ movies.forEach(movie=>{
+   if(movie.poster_path){
+     const img=document.createElement("img");
+     img.src="https://image.tmdb.org/t/p/w500"+movie.poster_path;
+     img.onclick=()=>showDetails(movie);
+     movieContainer.appendChild(img);
+   }
+ });
+}
 
-    movies.forEach(movie => {
-      if (movie.poster_path) {
-        const img = document.createElement("img");
-        img.src = "https://image.tmdb.org/t/p/w500" + movie.poster_path;
-        img.onclick = () => showDetails(movie);
-        movieContainer.appendChild(img);
-      }
-    });
-  }
+function showDetails(movie){
+ let ratingClass="rating-low";
+ if(movie.vote_average>=7) ratingClass="rating-high";
+ else if(movie.vote_average>=5) ratingClass="rating-mid";
 
-  function showDetails(movie) {
-    detailsContainer.style.display = "block";
-    detailsContainer.innerHTML = `
-      <button class="back-btn" onclick="goBack()">⬅ Back</button>
-      <h2>${movie.title}</h2>
-      <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}">
-      <p><strong>Release:</strong> ${movie.release_date}</p>
-      <p><strong>Rating:</strong> ${movie.vote_average}</p>
-      <p>${movie.overview}</p>
-    `;
-    window.scrollTo(0, document.body.scrollHeight);
-  }
+ details.style.display="block";
+ details.innerHTML=`
+   <button class="back-btn" onclick="goBack()">⬅ Back</button>
+   <h2>${movie.title}</h2>
+   <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}">
+   <p><strong>Release:</strong> ${movie.release_date}</p>
+   <p class="${ratingClass}"><strong>Rating:</strong> ${movie.vote_average}</p>
+   <p>${movie.overview}</p>
+   <button class="fav-btn" onclick='addFavourite(${JSON.stringify(movie)})'>❤️ Add to Favourite</button>
+   <button class="trailer-btn" onclick="searchTrailer('${movie.title}')">🎬 Watch Trailer</button>
+ `;
+ window.scrollTo(0,document.body.scrollHeight);
+}
 
-  function goBack() {
-    detailsContainer.style.display = "none";
-  }
+function goBack(){
+ details.style.display="none";
+}
 
-  getTrending();
+function addFavourite(movie){
+ favourites.push(movie);
+ alert("Added to favourites ❤️");
+}
+
+function showFavourites(){
+ if(favourites.length===0){
+   alert("No favourites added yet");
+   return;
+ }
+ displayMovies(favourites);
+}
+
+function searchTrailer(title){
+ window.open("https://www.youtube.com/results?search_query="+title+" trailer");
+}
+
+getTrending();
 </script>
 
 </body>
