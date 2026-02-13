@@ -7,7 +7,7 @@
   <style>
     body {
       margin: 0;
-      font-family: 'Arial', sans-serif;
+      font-family: Arial, sans-serif;
       background: #141414;
       color: white;
     }
@@ -15,57 +15,47 @@
     header {
       position: fixed;
       width: 100%;
-      padding: 20px 40px;
-      background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
-      z-index: 10;
-      font-size: 24px;
-      font-weight: bold;
-      color: #e50914;
-    }
-
-    .hero {
-      height: 80vh;
+      padding: 15px 40px;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent);
       display: flex;
+      justify-content: space-between;
       align-items: center;
-      padding: 60px;
-      background-size: cover;
-      background-position: center;
-      position: relative;
+      z-index: 10;
     }
 
-    .hero::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(to top, #141414, transparent);
+    header h1 {
+      color: #e50914;
+      margin: 0;
     }
 
-    .hero-content {
-      position: relative;
-      z-index: 2;
-      max-width: 600px;
+    .search {
+      padding: 6px 10px;
+      border-radius: 4px;
+      border: none;
+      outline: none;
     }
 
-    .hero h1 {
-      font-size: 48px;
-      margin-bottom: 20px;
+    .tabs {
+      margin-top: 80px;
+      padding: 0 40px;
     }
 
-    .hero button {
-      padding: 10px 20px;
-      background: #e50914;
+    .tabs button {
+      margin-right: 10px;
+      padding: 8px 15px;
+      background: #333;
       border: none;
       color: white;
-      font-size: 16px;
       cursor: pointer;
-      border-radius: 5px;
+      border-radius: 4px;
     }
 
-    .section {
-      padding: 40px;
+    .tabs button:hover {
+      background: #e50914;
     }
 
     .movies {
+      padding: 40px;
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
       gap: 20px;
@@ -85,43 +75,79 @@
       transform: scale(1.08);
     }
 
+    .loader {
+      text-align: center;
+      padding: 40px;
+      display: none;
+    }
+
   </style>
 </head>
 
 <body>
 
-<header>FASTSTREAM</header>
+<header>
+  <h1>FASTSTREAM</h1>
+  <input class="search" type="text" placeholder="Search movies..." onkeyup="searchMovie(this.value)">
+</header>
 
-<div class="hero" id="hero">
-  <div class="hero-content" id="hero-content">
-    Loading...
-  </div>
+<div class="tabs">
+  <button onclick="loadTrending()">Trending</button>
+  <button onclick="loadTopRated()">Top Rated</button>
+  <button onclick="loadUpcoming()">Upcoming</button>
 </div>
 
-<div class="section">
-  <h2>Trending Now</h2>
-  <div class="movies" id="movies"></div>
-</div>
+<div class="loader" id="loader">Loading...</div>
+<div class="movies" id="movies"></div>
 
 <script>
-async function loadMovies() {
+
+const moviesDiv = document.getElementById("movies");
+const loader = document.getElementById("loader");
+
+function showLoader() {
+  loader.style.display = "block";
+  moviesDiv.innerHTML = "";
+}
+
+function hideLoader() {
+  loader.style.display = "none";
+}
+
+async function loadTrending() {
+  showLoader();
   const res = await fetch("/api/trending");
   const data = await res.json();
+  displayMovies(data.results);
+}
 
-  const heroMovie = data.results[0];
+async function loadTopRated() {
+  showLoader();
+  const res = await fetch("/api/toprated");
+  const data = await res.json();
+  displayMovies(data.results);
+}
 
-  document.getElementById("hero").style.backgroundImage =
-    `url(https://image.tmdb.org/t/p/original${heroMovie.backdrop_path})`;
+async function loadUpcoming() {
+  showLoader();
+  const res = await fetch("/api/upcoming");
+  const data = await res.json();
+  displayMovies(data.results);
+}
 
-  document.getElementById("hero-content").innerHTML = `
-    <h1>${heroMovie.title}</h1>
-    <p>${heroMovie.overview.slice(0,150)}...</p>
-    <button onclick="goDetails(${heroMovie.id})">Watch Now</button>
-  `;
+async function searchMovie(query) {
+  if(query.length < 3) return;
+  showLoader();
+  const res = await fetch(`/api/search?q=${query}`);
+  const data = await res.json();
+  displayMovies(data.results);
+}
 
-  const moviesDiv = document.getElementById("movies");
+function displayMovies(movies) {
+  hideLoader();
+  moviesDiv.innerHTML = "";
 
-  data.results.forEach(movie => {
+  movies.forEach(movie => {
     moviesDiv.innerHTML += `
       <div class="movie" onclick="goDetails(${movie.id})">
         <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}">
@@ -134,7 +160,8 @@ function goDetails(id) {
   window.location.href = `details.html?id=${id}`;
 }
 
-loadMovies();
+loadTrending();
+
 </script>
 
 </body>
