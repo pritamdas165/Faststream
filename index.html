@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Netflix Pro Movie App</title>
+
 <style>
 body{
   margin:0;
@@ -10,6 +11,7 @@ body{
   font-family:Arial;
   color:white;
 }
+
 header{
   display:flex;
   justify-content:space-between;
@@ -20,53 +22,142 @@ header{
   top:0;
   z-index:100;
 }
-header h1{color:#e50914;margin:0;}
-input{padding:8px;border:none;border-radius:4px;}
-button{padding:8px 12px;border:none;border-radius:4px;cursor:pointer;margin-left:5px;}
+
+header h1{
+  color:#e50914;
+  margin:0;
+}
+
+input{
+  padding:8px;
+  border:none;
+  border-radius:4px;
+}
+
+button{
+  padding:8px 14px;
+  border:none;
+  border-radius:4px;
+  cursor:pointer;
+  margin-left:5px;
+}
+
 .hero{
-  height:60vh;
+  position:relative;
+  height:75vh;
   background-size:cover;
   background-position:center;
   display:flex;
   align-items:flex-end;
-  padding:40px;
+  padding:60px;
 }
-.hero h2{font-size:40px;}
-.section-title{margin-left:40px;}
+
+.hero::before{
+  content:"";
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:linear-gradient(to top,#141414 10%,transparent 60%);
+}
+
+.hero-content{
+  position:relative;
+  max-width:600px;
+}
+
+.hero-content h2{
+  font-size:50px;
+  margin-bottom:15px;
+}
+
+.hero-content p{
+  font-size:16px;
+  line-height:1.5;
+  margin-bottom:20px;
+}
+
+.play-btn{
+  background:white;
+  color:black;
+}
+
+.info-btn{
+  background:rgba(109,109,110,0.7);
+  color:white;
+}
+
+.section-title{
+  margin-left:40px;
+}
+
 .movie-row{
   display:flex;
   overflow-x:auto;
   padding:20px 40px;
   gap:15px;
 }
+
 .movie-row img{
   width:150px;
   border-radius:6px;
   transition:0.3s;
   cursor:pointer;
 }
-.movie-row img:hover{transform:scale(1.1);}
-#details{padding:40px;display:none;}
-#details img{width:300px;border-radius:10px;}
-.back-btn{background:red;color:white;}
+
+.movie-row img:hover{
+  transform:scale(1.1);
+}
+
+#details{
+  padding:40px;
+  display:none;
+}
+
+#details img{
+  width:300px;
+  border-radius:10px;
+}
+
+.back-btn{
+  background:red;
+  color:white;
+}
+
 .rating-high{color:#00ff00;}
 .rating-mid{color:yellow;}
 .rating-low{color:red;}
+
 .modal{
   display:none;
   position:fixed;
-  top:0;left:0;
-  width:100%;height:100%;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
   background:rgba(0,0,0,0.8);
   justify-content:center;
   align-items:center;
 }
-.modal iframe{width:80%;height:60%;}
+
+.modal iframe{
+  width:80%;
+  height:60%;
+}
+
 .modal span{
   position:absolute;
-  top:20px;right:40px;
+  top:20px;
+  right:40px;
   font-size:30px;
   cursor:pointer;
+}
+
+@media(max-width:600px){
+  .hero{height:50vh;padding:30px;}
+  .hero-content h2{font-size:28px;}
+  .movie-row img{width:110px;}
 }
 </style>
 </head>
@@ -78,12 +169,12 @@ button{padding:8px 12px;border:none;border-radius:4px;cursor:pointer;margin-left
   <div>
     <input type="text" id="searchInput" placeholder="Search movie...">
     <button onclick="searchMovie()">Search</button>
-    <button onclick="showFavourites()">❤️ Favourites</button>
+    <button onclick="showFavourites()">❤️</button>
   </div>
 </header>
 
 <div class="hero" id="hero">
-  <h2>🔥 Trending Now</h2>
+  <div class="hero-content" id="heroContent"></div>
 </div>
 
 <h3 class="section-title">Trending</h3>
@@ -103,98 +194,107 @@ button{padding:8px 12px;border:none;border-radius:4px;cursor:pointer;margin-left
 </div>
 
 <script>
-let favourites=JSON.parse(localStorage.getItem("favs"))||[];
+let favourites = JSON.parse(localStorage.getItem("favs")) || [];
 
 async function fetchData(url){
- const res=await fetch(url);
- return await res.json();
+  const res = await fetch(url);
+  return await res.json();
 }
 
 async function loadMovies(){
- const trending=await fetchData("/api/trending");
- const topRated=await fetchData("/api/toprated");
- const upcoming=await fetchData("/api/upcoming");
+  const trending = await fetchData("/api/trending");
+  const topRated = await fetchData("/api/toprated");
+  const upcoming = await fetchData("/api/upcoming");
 
- displayRow(trending.results,"trending");
- displayRow(topRated.results,"topRated");
- displayRow(upcoming.results,"upcoming");
+  displayRow(trending.results,"trending");
+  displayRow(topRated.results,"topRated");
+  displayRow(upcoming.results,"upcoming");
 
- if(trending.results[0]){
-   document.getElementById("hero").style.backgroundImage=
-   "url(https://image.tmdb.org/t/p/original"+trending.results[0].backdrop_path+")";
- }
+  if(trending.results[0]){
+    const heroMovie = trending.results[0];
+
+    document.getElementById("hero").style.backgroundImage =
+      "url(https://image.tmdb.org/t/p/original"+heroMovie.backdrop_path+")";
+
+    document.getElementById("heroContent").innerHTML = `
+      <h2>${heroMovie.title}</h2>
+      <p>${heroMovie.overview.substring(0,150)}...</p>
+      <button class="play-btn" onclick="openTrailer('${heroMovie.title}')">▶ Play</button>
+      <button class="info-btn" onclick='showDetails(${JSON.stringify(heroMovie)})'>More Info</button>
+    `;
+  }
 }
 
 function displayRow(movies,id){
- const container=document.getElementById(id);
- container.innerHTML="";
- movies.forEach(movie=>{
-   if(movie.poster_path){
-     const img=document.createElement("img");
-     img.src="https://image.tmdb.org/t/p/w500"+movie.poster_path;
-     img.onclick=()=>showDetails(movie);
-     container.appendChild(img);
-   }
- });
+  const container=document.getElementById(id);
+  container.innerHTML="";
+  movies.forEach(movie=>{
+    if(movie.poster_path){
+      const img=document.createElement("img");
+      img.src="https://image.tmdb.org/t/p/w500"+movie.poster_path;
+      img.onclick=()=>showDetails(movie);
+      container.appendChild(img);
+    }
+  });
 }
 
 function showDetails(movie){
- let ratingClass="rating-low";
- if(movie.vote_average>=7) ratingClass="rating-high";
- else if(movie.vote_average>=5) ratingClass="rating-mid";
+  let ratingClass="rating-low";
+  if(movie.vote_average>=7) ratingClass="rating-high";
+  else if(movie.vote_average>=5) ratingClass="rating-mid";
 
- const details=document.getElementById("details");
- details.style.display="block";
- details.innerHTML=`
-   <button class="back-btn" onclick="hideDetails()">⬅ Back</button>
-   <h2>${movie.title}</h2>
-   <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}">
-   <p><strong>Release:</strong> ${movie.release_date}</p>
-   <p class="${ratingClass}"><strong>Rating:</strong> ${movie.vote_average}</p>
-   <p>${movie.overview}</p>
-   <button onclick='addFavourite(${JSON.stringify(movie)})'>❤️ Add Favourite</button>
-   <button onclick="openTrailer('${movie.title}')">🎬 Trailer</button>
- `;
- window.scrollTo(0,document.body.scrollHeight);
+  const details=document.getElementById("details");
+  details.style.display="block";
+  details.innerHTML=`
+    <button class="back-btn" onclick="hideDetails()">⬅ Back</button>
+    <h2>${movie.title}</h2>
+    <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}">
+    <p><strong>Release:</strong> ${movie.release_date}</p>
+    <p class="${ratingClass}"><strong>Rating:</strong> ${movie.vote_average}</p>
+    <p>${movie.overview}</p>
+    <button onclick='addFavourite(${JSON.stringify(movie)})'>❤️ Add Favourite</button>
+    <button onclick="openTrailer('${movie.title}')">🎬 Trailer</button>
+  `;
+  window.scrollTo(0,document.body.scrollHeight);
 }
 
 function hideDetails(){
- document.getElementById("details").style.display="none";
+  document.getElementById("details").style.display="none";
 }
 
 function addFavourite(movie){
- if(!favourites.find(m=>m.id===movie.id)){
-   favourites.push(movie);
-   localStorage.setItem("favs",JSON.stringify(favourites));
-   alert("Added to Favourite ❤️");
- }
+  if(!favourites.find(m=>m.id===movie.id)){
+    favourites.push(movie);
+    localStorage.setItem("favs",JSON.stringify(favourites));
+    alert("Added to Favourite ❤️");
+  }
 }
 
 function showFavourites(){
- if(favourites.length===0){
-   alert("No favourites yet");
-   return;
- }
- displayRow(favourites,"trending");
+  if(favourites.length===0){
+    alert("No favourites yet");
+    return;
+  }
+  displayRow(favourites,"trending");
 }
 
 function openTrailer(title){
- const modal=document.getElementById("trailerModal");
- const frame=document.getElementById("trailerFrame");
- frame.src="https://www.youtube.com/embed?listType=search&list="+title+" trailer";
- modal.style.display="flex";
+  const modal=document.getElementById("trailerModal");
+  const frame=document.getElementById("trailerFrame");
+  frame.src="https://www.youtube.com/embed?listType=search&list="+title+" trailer";
+  modal.style.display="flex";
 }
 
 function closeModal(){
- document.getElementById("trailerModal").style.display="none";
- document.getElementById("trailerFrame").src="";
+  document.getElementById("trailerModal").style.display="none";
+  document.getElementById("trailerFrame").src="";
 }
 
 async function searchMovie(){
- const q=document.getElementById("searchInput").value;
- if(!q)return;
- const data=await fetchData(`/api/search?query=${q}`);
- displayRow(data.results,"trending");
+  const q=document.getElementById("searchInput").value;
+  if(!q)return;
+  const data=await fetchData(`/api/search?query=${q}`);
+  displayRow(data.results,"trending");
 }
 
 loadMovies();
