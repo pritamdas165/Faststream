@@ -225,20 +225,28 @@ function toggleLike(i){
  render(movies);
 }
 
+let adRunning = false;
+
 function runAds(url){
- window.open(POP_AD,"_blank");
- adBox.style.display="flex";
- let t=AD_DELAY;
- adTimer.innerText="Wait "+t+"s";
- let timer=setInterval(()=>{
-  t--;
-  adTimer.innerText="Wait "+t+"s";
-  if(t<=0){
-   clearInterval(timer);
-   adBox.style.display="none";
-   window.location.href=url;
-  }
- },1000);
+  if(adRunning) return;
+  adRunning = true;
+
+  window.open(POP_AD,"_blank");
+  adBox.style.display="flex";
+
+  let t = AD_DELAY;
+  adTimer.innerText = "Wait " + t + "s";
+
+  let timer = setInterval(()=>{
+    t--;
+    adTimer.innerText = "Wait " + t + "s";
+    if(t <= 0){
+      clearInterval(timer);
+      adBox.style.display = "none";
+      adRunning = false;
+      window.location.href = url;
+    }
+  },1000);
 }
 
 function scrollGrid(dir){
