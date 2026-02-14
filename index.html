@@ -2,206 +2,202 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>MovieFlix App</title>
+<title>MovieFlix</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
 body{background:#000;color:#fff;padding-bottom:70px}
 
 /* HEADER */
-header{padding:15px;background:#111;position:sticky;top:0;z-index:10}
-.logo{color:#e50914;font-size:22px;font-weight:bold}
+header{
+  padding:14px;
+  background:#111;
+  position:sticky;
+  top:0;
+  z-index:10;
+}
+.logo{
+  color:#e50914;
+  font-size:22px;
+  font-weight:bold;
+}
 
 /* HERO */
 .hero{
   height:200px;
-  background:linear-gradient(to top,rgba(0,0,0,.9),rgba(0,0,0,.2)),
-  url("https://upload.wikimedia.org/wikipedia/en/4/4f/Dhoom_3_Film_Poster.jpg") center/cover;
-  display:flex;align-items:flex-end;padding:15px
+  background:
+    linear-gradient(to top,rgba(0,0,0,.9),rgba(0,0,0,.2)),
+    url("https://images.unsplash.com/photo-1524985069026-dd778a71c7b4?q=80&w=1920")
+    center/cover;
+  display:flex;
+  align-items:flex-end;
+  padding:15px;
 }
+.hero h1{font-size:20px}
 
 /* SECTION */
 .section{padding:15px}
-.section h2{margin-bottom:10px}
+.section h2{margin-bottom:10px;font-size:18px}
 
 /* GRID */
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-
-/* CARD */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
 .card{
-  background:#111;border-radius:6px;overflow:hidden;position:relative;
-  transition:.3s
+  background:#111;
+  border-radius:6px;
+  overflow:hidden;
+  transition:.3s;
 }
 .card:hover{transform:scale(1.05)}
-.card img{width:100%;height:160px;object-fit:cover}
-.card .info{padding:6px}
-.card strong{font-size:12px}
-
-/* PLAY OVERLAY */
-.play{
-  position:absolute;inset:0;
-  display:flex;align-items:center;justify-content:center;
-  background:rgba(0,0,0,.4);
-  opacity:0;transition:.3s;
-  font-size:40px;color:#fff
+.card img{
+  width:100%;
+  height:160px;
+  object-fit:cover;
 }
-.card:hover .play{opacity:1}
-
-/* BUTTONS */
+.info{padding:6px}
+.info strong{
+  font-size:12px;
+  display:block;
+  margin-bottom:4px;
+}
 .card button{
-  width:100%;margin-top:4px;padding:5px;
-  font-size:11px;border:none;border-radius:4px
+  width:100%;
+  margin-top:4px;
+  padding:6px;
+  font-size:11px;
+  border:none;
+  border-radius:4px;
 }
 .watch{background:#e50914;color:#fff}
 .download{background:#333;color:#fff}
 
-/* MODAL */
-#modal{
-  display:none;position:fixed;inset:0;
-  background:rgba(0,0,0,.8);z-index:999;
-  align-items:center;justify-content:center
-}
-.modal-box{
-  background:#111;width:90%;max-width:300px;
-  border-radius:6px;overflow:hidden
-}
-.modal-box img{width:100%;height:200px;object-fit:cover}
-.modal-box .content{padding:10px}
-.modal-box h3{margin-bottom:8px}
-.modal-box button{width:100%;margin-top:6px;padding:8px;border:none}
-.close{background:#333;color:#fff}
-
-/* AD */
-#adBox{
-  display:none;position:fixed;inset:0;
-  background:rgba(0,0,0,.9);
-  z-index:1000;
-  display:flex;flex-direction:column;
-  align-items:center;justify-content:center
-}
-#adTimer{color:#e50914;margin-top:10px}
-
 /* BOTTOM NAV */
 .bottom-nav{
-  position:fixed;bottom:0;width:100%;
-  background:#111;display:flex;
-  justify-content:space-around;padding:8px 0
+  position:fixed;
+  bottom:0;
+  left:0;
+  width:100%;
+  background:#111;
+  display:flex;
+  justify-content:space-around;
+  padding:8px 0;
+  border-top:1px solid #222;
 }
 .bottom-nav button{
-  background:none;border:none;
-  color:#aaa;font-size:12px
+  background:none;
+  border:none;
+  color:#aaa;
+  font-size:12px;
 }
-.bottom-nav .active{color:#e50914}
+.bottom-nav button.active{color:#e50914}
 </style>
 </head>
 
 <body>
 
-<header><div class="logo">MovieFlix</div></header>
+<header>
+  <div class="logo">MovieFlix</div>
+</header>
 
-<div class="hero"><h2>Featured Movie</h2></div>
+<div class="hero">
+  <h1>Featured Movie</h1>
+</div>
 
 <div class="section">
-<h2 id="sectionTitle">All Movies</h2>
-<div class="grid" id="movieGrid"></div>
+  <h2 id="sectionTitle">All Movies</h2>
+  <div class="grid" id="movieGrid"></div>
 </div>
 
-<!-- MODAL -->
-<div id="modal">
-  <div class="modal-box">
-    <img id="mPoster">
-    <div class="content">
-      <h3 id="mTitle"></h3>
-      <button class="watch" id="mWatch">▶ Watch</button>
-      <button class="download" id="mDownload">⬇ Download</button>
-      <button class="close" onclick="closeModal()">Close</button>
-    </div>
-  </div>
-</div>
-
-<!-- AD -->
-<div id="adBox">
-  <div>Advertisement</div>
-  <div id="adTimer">Wait...</div>
-</div>
-
-<!-- NAV -->
 <div class="bottom-nav">
-<button class="active" onclick="filterCat('all',this)">Home</button>
-<button onclick="filterCat('bollywood',this)">Bollywood</button>
-<button onclick="filterCat('hollywood',this)">Hollywood</button>
-<button onclick="filterCat('south',this)">South</button>
+  <button class="active" onclick="filterCategory('all',this)">Home</button>
+  <button onclick="filterCategory('bollywood',this)">Bollywood</button>
+  <button onclick="filterCategory('hollywood',this)">Hollywood</button>
+  <button onclick="filterCategory('south',this)">South</button>
 </div>
 
 <script>
-const AD_TIME=5;
-let finalURL="";
+/* ===============================
+   CONFIG
+================================ */
+const AD_URL = "https://YOUR_AD_LINK_HERE";
 
-let movies = JSON.parse(localStorage.getItem("movies")) || [
- {
-  title:"Dhoom 3",
-  poster:"https://upload.wikimedia.org/wikipedia/en/4/4f/Dhoom_3_Film_Poster.jpg",
-  watch:"https://youtube.com",
-  download:"#",
-  category:"bollywood"
- },
- {
-  title:"Love Me Love Me",
-  poster:"https://www.mymovies.it/film/2026/love-me-love-me/poster/0/",
-  watch:"https://youtu.be/B7prWpweShU",
-  download:"#",
-  category:"hollywood"
- }
+/* ===============================
+   MOVIE DATA (LOCAL)
+================================ */
+let movies = [
+{
+ title:"Dhoom 3",
+ poster:"https://upload.wikimedia.org/wikipedia/en/4/4f/Dhoom_3_Film_Poster.jpg",
+ watch:"https://youtube.com",
+ download:"https://example.com",
+ category:"bollywood"
+},
+{
+ title:"Love Me Love Me",
+ poster:"https://www.mymovies.it/film/2026/love-me-love-me/poster/0/",
+ watch:"https://youtu.be/B7prWpweShU",
+ download:"https://hubcloud.foo/drive/ybfq1tegjnbt1s1",
+ category:"hollywood"
+}
 ];
 
-function render(list){
- const g=document.getElementById("movieGrid");
- g.innerHTML="";
- list.forEach(m=>{
-  g.innerHTML+=`
-  <div class="card" onclick="openModal('${m.title}')">
-   <img src="${m.poster}">
-   <div class="play">▶</div>
-   <div class="info"><strong>${m.title}</strong></div>
-  </div>`;
- });
+/* ===============================
+   RENDER MOVIES
+================================ */
+function renderMovies(list){
+  const box=document.getElementById("movieGrid");
+  box.innerHTML="";
+  list.forEach(m=>{
+    box.innerHTML+=`
+    <div class="card">
+      <img src="${m.poster}">
+      <div class="info">
+        <strong>${m.title}</strong>
+        <button class="watch" onclick="runAds('${m.watch}')">▶ Watch</button>
+        <button class="download" onclick="runAds('${m.download}')">⬇ Download</button>
+      </div>
+    </div>`;
+  });
 }
 
-function openModal(title){
- const m=movies.find(x=>x.title===title);
- mPoster.src=m.poster;
- mTitle.innerText=m.title;
- mWatch.onclick=()=>runAd(m.watch);
- mDownload.onclick=()=>runAd(m.download);
- modal.style.display="flex";
-}
-function closeModal(){modal.style.display="none"}
+/* ===============================
+   CATEGORY FILTER
+================================ */
+function filterCategory(cat,btn){
+  document.querySelectorAll(".bottom-nav button")
+    .forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
 
-function runAd(url){
- finalURL=url;
- adBox.style.display="flex";
- let t=AD_TIME;
- adTimer.innerText="Wait "+t+" sec";
- let i=setInterval(()=>{
-  t--; adTimer.innerText="Wait "+t+" sec";
-  if(t<=0){
-   clearInterval(i);
-   adBox.style.display="none";
-   window.open(finalURL,"_blank");
+  document.getElementById("sectionTitle").innerText =
+    cat==="all" ? "All Movies" : cat.toUpperCase();
+
+  if(cat==="all"){
+    renderMovies(movies);
+  }else{
+    renderMovies(movies.filter(m=>m.category===cat));
   }
- },1000);
 }
 
-function filterCat(cat,btn){
- document.querySelectorAll(".bottom-nav button")
- .forEach(b=>b.classList.remove("active"));
- btn.classList.add("active");
- sectionTitle.innerText=cat==="all"?"All Movies":cat.toUpperCase();
- render(cat==="all"?movies:movies.filter(m=>m.category===cat));
+/* ===============================
+   CLEAN ADS LOGIC
+   (ONLY ON BUTTON CLICK)
+================================ */
+function runAds(finalURL){
+  // Ad opens in new tab
+  window.open(AD_URL,"_blank");
+
+  // Original link
+  setTimeout(()=>{
+    window.location.href = finalURL;
+  },300);
 }
 
-render(movies);
+/* INIT */
+renderMovies(movies);
 </script>
 
 </body>
