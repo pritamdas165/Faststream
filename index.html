@@ -139,7 +139,7 @@ iframe{width:100%;height:200px;margin-top:10px}
   <button>Profile</button>
 </div>
 <script>
- /* ===== ELEMENTS ===== */
+/* ===== ELEMENTS ===== */
 const movieGrid = document.getElementById("movieGrid");
 const modal = document.getElementById("modal");
 const modalContent = document.getElementById("modalContent");
@@ -147,83 +147,70 @@ const search = document.getElementById("search");
 const adBox = document.getElementById("adBox");
 const adTimer = document.getElementById("adTimer");
 
-/* =========================
-   SAFE ADS SYSTEM
-========================= */
-const POP_AD = "https://example.com"; // popup ad
+/* ===== ADS CONFIG ===== */
+const POP_AD = "https://example.com"; // popup only
 const AD_DELAY = 5;
 let adRunning = false;
 
-function runAds(url){
- window.open(POP_AD,"_blank");
- adBox.style.display="flex";
- let t=AD_DELAY;
- adTimer.innerText="Wait "+t+"s";
- let timer=setInterval(()=>{
-  t--;
-  adTimer.innerText="Wait "+t+"s";
-  if(t<=0){
-   clearInterval(timer);
-   adBox.style.display="none";
-   window.location.href=url;
+/* ===== MOVIES ===== */
+let movies = [
+  {
+    title:"Dhoom 3",
+    poster:"https://upload.wikimedia.org/wikipedia/en/4/4f/Dhoom_3_Film_Poster.jpg",
+    trailer:"https://www.youtube.com/embed/yeF_b8EQcK0?autoplay=1",
+    watch:"https://youtube.com",
+    download:"#"
+  },
+  {
+    title:"Love Me Love Me",
+    poster:"https://www.mymovies.it/film/2026/love-me-love-me/poster/0/",
+    trailer:"https://www.youtube.com/embed/B7prWpweShU?autoplay=1",
+    watch:"#",
+    download:"#"
   }
- },1000);
-}
-
-
-let movies=[
-{
- title:"Dhoom 3",
- poster:"https://upload.wikimedia.org/wikipedia/en/4/4f/Dhoom_3_Film_Poster.jpg",
- trailer:"https://www.youtube.com/embed/yeF_b8EQcK0?autoplay=1",
- watch:"https://youtube.com",
- download:"#"
-},
-{
- title:"Love Me Love Me",
- poster:"https://www.mymovies.it/film/2026/love-me-love-me/poster/0/",
- trailer:"https://www.youtube.com/embed/B7prWpweShU?autoplay=1",
- watch:"#",
- download:"#"
-}
 ];
 
-let likes=JSON.parse(localStorage.getItem("likes"))||[];
+/* ===== LIKES ===== */
+let likes = JSON.parse(localStorage.getItem("likes")) || [];
 
+/* ===== RENDER ===== */
 function render(list){
- movieGrid.innerHTML="";
- list.forEach((m,i)=>{
-  movieGrid.innerHTML+=`
-  <div class="card">
-    <div class="like ${likes.includes(i)?"active":""}" onclick="toggleLike(${i})">♥</div>
-    <img src="${m.poster}" onclick="openModal(${i})">
-    <div class="info">
-      <b>${m.title}</b>
-      <button class="watch" onclick="runAds('${m.watch}')">Watch</button>
-      <button class="download" onclick="runAds('${m.download}')">Download</button>
-    </div>
-  </div>`;
- });
+  movieGrid.innerHTML = "";
+  list.forEach((m,i)=>{
+    movieGrid.innerHTML += `
+      <div class="card">
+        <div class="like ${likes.includes(i)?"active":""}" onclick="toggleLike(${i})">♥</div>
+        <img src="${m.poster}" onclick="openModal(${i})">
+        <div class="info">
+          <b>${m.title}</b>
+          <button class="watch" onclick="runAds('${m.watch}')">Watch</button>
+          <button class="download" onclick="runAds('${m.download}')">Download</button>
+        </div>
+      </div>`;
+  });
 }
 
+/* ===== MODAL ===== */
 function openModal(i){
   modal.style.display="flex";
-  modalContent.innerHTML=`
+  modalContent.innerHTML = `
     <h3>${movies[i].title}</h3>
     <iframe src="${movies[i].trailer}" allow="autoplay; fullscreen"></iframe>
   `;
 }
-
-function closeModal(){modal.style.display="none";modalContent.innerHTML=""}
-
-function toggleLike(i){
- likes.includes(i)?likes=likes.filter(x=>x!==i):likes.push(i);
- localStorage.setItem("likes",JSON.stringify(likes));
- render(movies);
+function closeModal(){
+  modal.style.display="none";
+  modalContent.innerHTML="";
 }
 
-let adRunning = false;
+/* ===== LIKE ===== */
+function toggleLike(i){
+  likes.includes(i) ? likes = likes.filter(x=>x!==i) : likes.push(i);
+  localStorage.setItem("likes",JSON.stringify(likes));
+  render(movies);
+}
 
+/* ===== ADS (ONLY ON CLICK) ===== */
 function runAds(url){
   if(adRunning) return;
   adRunning = true;
@@ -239,22 +226,25 @@ function runAds(url){
     adTimer.innerText = "Wait " + t + "s";
     if(t <= 0){
       clearInterval(timer);
-      adBox.style.display = "none";
+      adBox.style.display="none";
       adRunning = false;
       window.location.href = url;
     }
   },1000);
 }
 
+/* ===== SCROLL ===== */
 function scrollGrid(dir){
- movieGrid.scrollBy({left:dir*200,behavior:"smooth"});
+  movieGrid.scrollBy({left:dir*200,behavior:"smooth"});
 }
 
-search.oninput=()=>{
- let q=search.value.toLowerCase();
- render(movies.filter(m=>m.title.toLowerCase().includes(q)));
-}
+/* ===== SEARCH ===== */
+search.oninput = ()=>{
+  let q = search.value.toLowerCase();
+  render(movies.filter(m=>m.title.toLowerCase().includes(q)));
+};
 
+/* INIT */
 render(movies);
 </script>
 
