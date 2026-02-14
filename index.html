@@ -6,293 +6,224 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-/* ===============================
-   GLOBAL STYLE (Netflix‑like)
-================================ */
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family: Arial, Helvetica, sans-serif;
+:root{
+  --bg:#000;
+  --card:#111;
+  --red:#e50914;
+  --text:#fff;
+  --muted:#aaa;
 }
-body{
-  background:#0f0f0f;
-  color:#fff;
-  padding-bottom:70px; /* bottom nav space */
-}
-a{ text-decoration:none; color:inherit; }
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+body{background:var(--bg);color:var(--text);padding-bottom:70px}
 
-/* ===============================
-   HEADER
-================================ */
+/* HEADER */
 header{
-  padding:12px 15px;
-  background:#111;
-  font-size:22px;
-  font-weight:bold;
-  color:#e50914;
+  position:sticky;top:0;z-index:10;
+  background:#111;padding:12px 15px;
+  display:flex;justify-content:space-between;align-items:center
+}
+.logo{color:var(--red);font-size:22px;font-weight:bold}
+.search{
+  width:55%;padding:6px 10px;
+  border-radius:20px;border:none;
+  background:#222;color:#fff
 }
 
-/* ===============================
-   HERO SLIDER (SMALL – MOBILE SAFE)
-================================ */
-.hero{
-  position:relative;
-  height:180px;
-  overflow:hidden;
-}
-.hero img{
-  width:100%;
-  height:180px;
-  object-fit:cover;
-}
-.hero .dots{
-  position:absolute;
-  bottom:8px;
-  width:100%;
-  text-align:center;
-}
-.hero .dots span{
-  display:inline-block;
-  width:8px;
-  height:8px;
-  background:#777;
-  border-radius:50%;
-  margin:0 3px;
-}
-.hero .dots .active{ background:#fff; }
+/* HERO */
+.hero{height:200px;overflow:hidden;position:relative}
+.slides{display:flex;height:100%;transition:.6s}
+.slide{min-width:100%;position:relative}
+.slide img{width:100%;height:100%;object-fit:cover;filter:brightness(.7)}
+.caption{position:absolute;bottom:15px;left:15px}
+.dots{position:absolute;bottom:10px;right:15px;display:flex;gap:6px}
+.dots span{width:8px;height:8px;border-radius:50%;background:#666}
+.dots .active{background:var(--red)}
 
-/* ===============================
-   CATEGORY MENU
-================================ */
-.categories{
-  display:flex;
-  overflow-x:auto;
-  gap:10px;
-  padding:12px;
+/* GRID */
+.section{padding:15px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.card{background:var(--card);border-radius:6px;overflow:hidden;position:relative}
+.card img{width:100%;height:160px;object-fit:cover}
+.card .play{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:40px;color:#fff;
+  background:rgba(0,0,0,.4);
+  opacity:0;transition:.3s
 }
-.categories button{
-  background:#222;
-  border:none;
-  padding:7px 14px;
-  border-radius:20px;
-  color:#fff;
-  cursor:pointer;
-  white-space:nowrap;
-}
-.categories button.active{
-  background:#e50914;
-}
+.card:hover .play{opacity:1}
+.info{padding:6px;font-size:12px;text-align:center}
 
-/* ===============================
-   MOVIE GRID
-================================ */
-.grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:10px;
-  padding:12px;
-}
-.card{
-  background:#181818;
-  border-radius:6px;
-  overflow:hidden;
-}
-.card img{
-  width:100%;
-  height:160px;
-  object-fit:cover;
-}
-.card .info{
-  padding:6px;
-}
-.card button{
-  width:100%;
-  margin-top:4px;
-  padding:6px;
-  border:none;
-  border-radius:4px;
-  background:#e50914;
-  color:#fff;
-  cursor:pointer;
-  font-size:13px;
-}
+/* LIKE */
+.like{color:#888;font-size:16px;cursor:pointer}
+.like.active{color:var(--red)}
 
-/* ===============================
-   AD OVERLAY
-================================ */
-#adBox{
-  display:none;
-  position:fixed;
-  inset:0;
+/* MODAL */
+.modal{
+  position:fixed;inset:0;
   background:rgba(0,0,0,.9);
-  z-index:999;
-  align-items:center;
-  justify-content:center;
-  flex-direction:column;
+  display:none;align-items:center;justify-content:center;z-index:99
 }
-#adTimer{
-  color:#e50914;
-  margin-top:10px;
+.modal-box{
+  width:95%;max-width:420px;
+  background:#111;border-radius:8px;padding:10px
+}
+.modal video,.modal iframe{width:100%;height:220px}
+.close{color:#aaa;text-align:right;font-size:14px;cursor:pointer}
+
+/* ADMIN */
+#admin{position:fixed;inset:0;background:#000;display:none;padding:20px;z-index:100}
+#admin input,#admin select{width:100%;padding:8px;margin:6px 0}
+#admin button{width:100%;padding:10px;background:var(--red);border:none;color:#fff}
+
+/* AD */
+#ad{
+  position:fixed;inset:0;background:#000;
+  display:none;align-items:center;justify-content:center;flex-direction:column;z-index:200
 }
 
-/* ===============================
-   BOTTOM NAV (APP‑LIKE)
-================================ */
-.bottom-nav{
-  position:fixed;
-  bottom:0;
-  left:0;
-  right:0;
-  background:#111;
-  display:flex;
-  justify-content:space-around;
-  padding:10px 0;
+/* BOTTOM NAV */
+nav{
+  position:fixed;bottom:0;left:0;width:100%;
+  background:#111;display:flex;justify-content:space-around;padding:10px 0
 }
-.bottom-nav div{
-  font-size:12px;
-  text-align:center;
-  color:#aaa;
-}
-.bottom-nav .active{
-  color:#fff;
-}
+nav button{background:none;border:none;color:#aaa}
+nav button.active{color:var(--red)}
 </style>
 </head>
 
 <body>
 
-<header>MovieFlix</header>
+<header>
+  <div class="logo">MovieFlix</div>
+  <input class="search" placeholder="Search…" oninput="searchMovie(this.value)">
+</header>
 
-<!-- HERO SLIDER -->
+<!-- HERO -->
 <div class="hero">
-  <img id="heroImg" src="">
-  <div class="dots" id="heroDots"></div>
+  <div class="slides" id="slides"></div>
+  <div class="dots" id="dots"></div>
 </div>
 
-<!-- CATEGORY MENU -->
-<div class="categories" id="catMenu"></div>
-
-<!-- MOVIE GRID -->
-<div class="grid" id="movieGrid"></div>
-
-<!-- AD BOX -->
-<div id="adBox">
-  <div>Advertisement</div>
-  <div id="adTimer">Wait 5 sec...</div>
+<div class="section">
+  <div class="grid" id="grid"></div>
 </div>
 
-<!-- BOTTOM NAV -->
-<div class="bottom-nav">
-  <div class="active">Home</div>
-  <div>Search</div>
-  <div>Downloads</div>
-  <div>Profile</div>
+<!-- MODAL -->
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <div class="close" onclick="closeModal()">✕ Close</div>
+    <div id="player"></div>
+  </div>
 </div>
+
+<!-- ADMIN -->
+<div id="admin">
+  <input type="password" id="pass" placeholder="Admin password">
+  <button onclick="login()">Login</button>
+  <div id="adminPanel" style="display:none">
+    <input id="title" placeholder="Movie title">
+    <input id="poster" placeholder="Poster URL">
+    <input id="video" placeholder="Video URL (YouTube / mp4)">
+    <select id="cat">
+      <option>Action</option><option>Drama</option><option>Romance</option>
+    </select>
+    <button onclick="addMovie()">Add Movie</button>
+  </div>
+</div>
+
+<!-- AD -->
+<div id="ad">
+  <h2>Advertisement</h2>
+  <p id="timer"></p>
+</div>
+
+<nav>
+  <button class="active">Home</button>
+  <button onclick="openAdmin()">Admin</button>
+</nav>
 
 <script>
-/* ===============================
-   CONFIG
-================================ */
-const AD_TIME = 5;
-let adShown = false;
+/* DATA */
+let movies = JSON.parse(localStorage.getItem("movies")||"[]");
+let likes = JSON.parse(localStorage.getItem("likes")||"{}");
 
-/* ===============================
-   HERO DATA
-================================ */
-const heroBanners = [
-  "https://upload.wikimedia.org/wikipedia/en/4/4f/Dhoom_3_Film_Poster.jpg",
-  "https://www.mymovies.it/film/2026/love-me-love-me/poster/0/"
+/* HERO */
+const heroImgs=[
+ "https://images.unsplash.com/photo-1524985069026-dd778a71c7b4",
+ "https://images.unsplash.com/photo-1517602302552-471fe67acf66"
 ];
-let heroIndex = 0;
-
-/* ===============================
-   MOVIE DATA SECTION
-   👉 এখানে নতুন movie add করবে
-================================ */
-const movies = [
-  {
-    title:"Dhoom 3",
-    poster:"https://upload.wikimedia.org/wikipedia/en/4/4f/Dhoom_3_Film_Poster.jpg",
-    link:"https://example.com",
-    category:"Bollywood"
-  },
-  {
-    title:"Love Me Love Me",
-    poster:"https://www.mymovies.it/film/2026/love-me-love-me/poster/0/",
-    link:"https://youtu.be/B7prWpweShU",
-    category:"Hollywood"
-  }
-];
-
-/* ===============================
-   HERO SLIDER LOGIC
-================================ */
-function renderHero(){
-  document.getElementById("heroImg").src = heroBanners[heroIndex];
-  const dots = heroBanners.map((_,i)=>
-    `<span class="${i===heroIndex?'active':''}"></span>`
-  ).join("");
-  document.getElementById("heroDots").innerHTML = dots;
-}
+let h=0;
+heroImgs.forEach((img,i)=>{
+ slides.innerHTML+=`<div class="slide"><img src="${img}"><div class="caption">Featured</div></div>`;
+ dots.innerHTML+=`<span class="${i==0?'active':''}"></span>`;
+});
 setInterval(()=>{
-  heroIndex = (heroIndex+1)%heroBanners.length;
-  renderHero();
+ h=(h+1)%heroImgs.length;
+ slides.style.transform=`translateX(-${h*100}%)`;
+ document.querySelectorAll(".dots span").forEach(d=>d.classList.remove("active"));
+ dots.children[h].classList.add("active");
 },3000);
-renderHero();
 
-/* ===============================
-   CATEGORY MENU
-================================ */
-function renderCategories(){
-  const cats = ["All",...new Set(movies.map(m=>m.category))];
-  document.getElementById("catMenu").innerHTML =
-    cats.map(c=>`<button onclick="filterCat('${c}')">${c}</button>`).join("");
+/* RENDER */
+function render(list){
+ grid.innerHTML="";
+ list.forEach((m,i)=>{
+  grid.innerHTML+=`
+  <div class="card">
+    <img src="${m.poster}">
+    <div class="play" onclick="play('${m.video}')">▶</div>
+    <div class="info">
+      ${m.title}<br>
+      <span class="like ${likes[i]?'active':''}" onclick="like(${i})">❤</span>
+    </div>
+  </div>`;
+ });
 }
-renderCategories();
+render(movies);
 
-/* ===============================
-   MOVIE RENDER
-================================ */
-function filterCat(cat){
-  document.querySelectorAll(".categories button").forEach(b=>{
-    b.classList.toggle("active",b.innerText===cat);
-  });
-  const list = cat==="All"?movies:movies.filter(m=>m.category===cat);
-  document.getElementById("movieGrid").innerHTML =
-    list.map(m=>`
-      <div class="card">
-        <img src="${m.poster}">
-        <div class="info">
-          <div>${m.title}</div>
-          <button onclick="openMovie('${m.link}')">Watch</button>
-        </div>
-      </div>
-    `).join("");
+/* SEARCH */
+function searchMovie(q){
+ render(movies.filter(m=>m.title.toLowerCase().includes(q.toLowerCase())));
 }
-filterCat("All");
 
-/* ===============================
-   AD + REDIRECT (ONLY ONCE)
-================================ */
-function openMovie(url){
-  if(adShown){
-    window.open(url,"_blank");
-    return;
-  }
-  adShown = true;
-  document.getElementById("adBox").style.display="flex";
-  let t = AD_TIME;
-  const timer = setInterval(()=>{
-    document.getElementById("adTimer").innerText = "Wait "+t+" sec...";
-    t--;
-    if(t<0){
-      clearInterval(timer);
-      document.getElementById("adBox").style.display="none";
-      window.open(url,"_blank");
-    }
-  },1000);
+/* PLAY */
+function play(url){
+ modal.style.display="flex";
+ player.innerHTML = url.includes("youtube")
+ ? `<iframe src="${url.replace("watch?v=","embed/")}" allowfullscreen></iframe>`
+ : `<video src="${url}" controls autoplay></video>`;
 }
+
+/* LIKE */
+function like(i){
+ likes[i]=!likes[i];
+ localStorage.setItem("likes",JSON.stringify(likes));
+ render(movies);
+}
+
+/* ADMIN */
+function openAdmin(){admin.style.display="block"}
+function login(){
+ if(pass.value==="admin123") adminPanel.style.display="block";
+ else alert("Wrong password");
+}
+function addMovie(){
+ movies.push({title:title.value,poster:poster.value,video:video.value,cat:cat.value});
+ localStorage.setItem("movies",JSON.stringify(movies));
+ render(movies); alert("Added");
+}
+
+/* AD ONCE */
+if(!localStorage.ad){
+ ad.style.display="flex";
+ let t=5;timer.innerText=t;
+ let x=setInterval(()=>{
+  t--;timer.innerText=t;
+  if(t==0){clearInterval(x);ad.style.display="none";localStorage.ad=1}
+ },1000);
+}
+function closeModal(){modal.style.display="none";player.innerHTML=""}
 </script>
 
 </body>
