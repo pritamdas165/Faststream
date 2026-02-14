@@ -11,7 +11,7 @@
   --card:#141414;
   --red:#e50914;
   --text:#fff;
-  --muted:#aaa;
+  --muted:#999;
 }
 *{box-sizing:border-box;margin:0;padding:0;font-family:Arial,Helvetica,sans-serif}
 body{background:var(--bg);color:var(--text);padding-bottom:70px}
@@ -24,139 +24,109 @@ header{
   color:var(--red);
 }
 
-/* Hero Slider */
-#hero{
-  position:relative;
-  overflow:hidden;
-  height:160px;
+/* Search */
+#searchBox{
+  width:94%;
+  margin:10px auto;
+  display:block;
+  padding:8px 12px;
+  border-radius:20px;
+  border:none;
+  background:#222;
+  color:#fff;
 }
-@media(min-width:600px){
-  #hero{height:220px;}
-}
+
+/* Hero */
+#hero{position:relative;height:160px;overflow:hidden}
 .hero-slide{
-  position:absolute;
-  inset:0;
+  position:absolute;inset:0;
   background-size:cover;
   background-position:center;
-  opacity:0;
-  transition:opacity .8s;
+  opacity:0;transition:.8s
 }
 .hero-slide.active{opacity:1}
 .hero-dots{
-  position:absolute;
-  bottom:8px;
-  width:100%;
-  text-align:center;
+  position:absolute;bottom:8px;width:100%;text-align:center
 }
 .hero-dots span{
-  display:inline-block;
-  width:8px;height:8px;
-  border-radius:50%;
-  background:#555;
-  margin:0 3px;
+  display:inline-block;width:8px;height:8px;
+  border-radius:50%;background:#555;margin:0 3px
 }
 .hero-dots .active{background:var(--red)}
 
 /* Categories */
 #categories{
-  display:flex;
-  overflow-x:auto;
-  padding:10px;
-  gap:10px;
+  display:flex;gap:10px;overflow-x:auto;padding:10px
 }
 #categories button{
-  background:#222;
-  color:#fff;
-  border:none;
-  padding:6px 14px;
-  border-radius:20px;
-  white-space:nowrap;
+  background:#222;color:#fff;border:none;
+  padding:6px 14px;border-radius:20px
 }
 #categories button.active{background:var(--red)}
 
-/* Movie Grid */
+/* Movies */
 #movies{
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(110px,1fr));
-  gap:10px;
-  padding:10px;
+  gap:10px;padding:10px
 }
 .movie{
   background:var(--card);
-  border-radius:6px;
-  overflow:hidden;
-  transition:transform .3s;
+  border-radius:6px;overflow:hidden;
+  position:relative;cursor:pointer
 }
-.movie:hover{transform:scale(1.08)}
-.movie img{
-  width:100%;
-  height:160px;
-  object-fit:cover;
+.movie img{width:100%;height:160px;object-fit:cover}
+.movie p{font-size:13px;padding:6px;text-align:center}
+.play{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:40px;color:#fff;
+  background:rgba(0,0,0,.5);
+  opacity:0;transition:.3s
 }
-.movie p{
-  padding:6px;
-  font-size:13px;
-  text-align:center;
-}
+.movie:hover .play{opacity:1}
 
-/* Bottom Nav */
+/* Bottom nav */
 nav{
-  position:fixed;
-  bottom:0;left:0;right:0;
-  background:#111;
-  display:flex;
-  justify-content:space-around;
-  padding:10px 0;
+  position:fixed;bottom:0;left:0;right:0;
+  background:#111;display:flex;
+  justify-content:space-around;padding:10px
 }
 nav button{
-  background:none;
-  border:none;
-  color:#aaa;
-  font-size:14px;
+  background:none;border:none;
+  color:#aaa;font-size:14px
 }
 nav button.active{color:var(--red)}
 
-/* Admin Panel */
-#admin{
-  position:fixed;
-  inset:0;
-  background:#000;
-  display:none;
-  padding:20px;
-  overflow:auto;
+/* Modal */
+#modal{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.9);
+  display:none;align-items:center;
+  justify-content:center;z-index:999
 }
-#admin h2{margin-bottom:10px}
-#admin input,#admin select{
-  width:100%;
-  padding:8px;
-  margin:6px 0;
+#modalContent{
+  background:#111;padding:15px;
+  width:90%;max-width:300px
 }
-#admin button{
-  width:100%;
-  padding:10px;
-  background:var(--red);
-  border:none;
-  color:#fff;
-  margin-top:8px;
+#modalContent img{width:100%;border-radius:6px}
+#modalContent button{
+  width:100%;margin-top:10px;
+  padding:8px;background:var(--red);
+  border:none;color:#fff
 }
 
-/* Ad */
-#ad{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.95);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  flex-direction:column;
-  z-index:999;
+/* Admin */
+#admin{
+  position:fixed;inset:0;
+  background:#000;display:none;
+  padding:20px;overflow:auto
 }
-#ad button{
-  margin-top:20px;
-  padding:8px 20px;
+#admin input{width:100%;padding:8px;margin:6px 0}
+#admin button{
+  width:100%;padding:10px;
   background:var(--red);
-  border:none;
-  color:#fff;
+  border:none;color:#fff;margin-top:6px
 }
 </style>
 </head>
@@ -165,156 +135,141 @@ nav button.active{color:var(--red)}
 
 <header>FastStream</header>
 
-<!-- Hero -->
+<input id="searchBox" placeholder="Search movies..." oninput="renderMovies()">
+
 <div id="hero">
   <div class="hero-dots" id="heroDots"></div>
 </div>
 
-<!-- Categories -->
 <div id="categories"></div>
-
-<!-- Movies -->
 <div id="movies"></div>
 
-<!-- Bottom Nav -->
 <nav>
   <button class="active" onclick="setNav(this)">Home</button>
   <button onclick="setNav(this);openAdmin()">Admin</button>
 </nav>
 
+<!-- Modal -->
+<div id="modal" onclick="closeModal()">
+  <div id="modalContent" onclick="event.stopPropagation()">
+    <img id="modalImg">
+    <h3 id="modalTitle"></h3>
+    <button onclick="alert('Demo Play')">▶ Play</button>
+  </div>
+</div>
+
 <!-- Admin -->
 <div id="admin">
-  <h2>Admin Panel</h2>
-  <input type="password" id="adminPass" placeholder="Password">
-  <button id="loginBtn" onclick="login()">Login</button>
+  <input type="password" id="adminPass" placeholder="Admin password">
+  <button onclick="login()">Login</button>
 
   <div id="adminForm" style="display:none">
-    <input id="mTitle" placeholder="Movie Title">
-    <input id="mPoster" placeholder="Poster Image URL">
-    <select id="mCat">
-      <option>Action</option>
-      <option>Drama</option>
-      <option>Comedy</option>
-      <option>Romance</option>
-    </select>
+    <input id="mTitle" placeholder="Movie title">
+    <input id="mPoster" placeholder="Poster URL">
+    <input id="mCat" placeholder="Category">
     <button onclick="addMovie()">Add Movie</button>
+
+    <input id="newPass" placeholder="New admin password">
+    <button onclick="changePass()">Change Password</button>
     <button onclick="closeAdmin()">Close</button>
   </div>
 </div>
 
-<!-- Ad -->
-<div id="ad">
-  <h2>Advertisement</h2>
-  <button onclick="closeAd()">Close</button>
-</div>
-
 <script>
-/* Hero */
 const heroImages=[
-  "https://picsum.photos/800/400?1",
-  "https://picsum.photos/800/400?2",
-  "https://picsum.photos/800/400?3"
+ "https://picsum.photos/800/400?1",
+ "https://picsum.photos/800/400?2"
 ];
 let heroIndex=0;
 
-/* Movies */
 let movies=JSON.parse(localStorage.getItem("movies")||"[]");
+let adminPassword=localStorage.getItem("adminPass")||"admin123";
 
 /* Init */
-initHero();
-renderCategories();
-renderMovies();
-showAdOnce();
+initHero();renderCategories();renderMovies();
 
 /* Hero */
 function initHero(){
-  const hero=document.getElementById("hero");
-  const dots=document.getElementById("heroDots");
-  heroImages.forEach((img,i)=>{
-    const d=document.createElement("div");
-    d.className="hero-slide"+(i==0?" active":"");
-    d.style.backgroundImage=`url(${img})`;
-    hero.appendChild(d);
+ heroImages.forEach((img,i)=>{
+  const d=document.createElement("div");
+  d.className="hero-slide"+(i==0?" active":"");
+  d.style.backgroundImage=`url(${img})`;
+  hero.appendChild(d);
 
-    const s=document.createElement("span");
-    if(i==0)s.classList.add("active");
-    dots.appendChild(s);
-  });
-  setInterval(()=>{
-    const slides=document.querySelectorAll(".hero-slide");
-    const dotsS=document.querySelectorAll(".hero-dots span");
-    slides[heroIndex].classList.remove("active");
-    dotsS[heroIndex].classList.remove("active");
-    heroIndex=(heroIndex+1)%slides.length;
-    slides[heroIndex].classList.add("active");
-    dotsS[heroIndex].classList.add("active");
-  },3000);
+  const s=document.createElement("span");
+  if(i==0)s.classList.add("active");
+  heroDots.appendChild(s);
+ });
+ setInterval(()=>{
+  const s=document.querySelectorAll(".hero-slide");
+  const d=document.querySelectorAll(".hero-dots span");
+  s[heroIndex].classList.remove("active");
+  d[heroIndex].classList.remove("active");
+  heroIndex=(heroIndex+1)%s.length;
+  s[heroIndex].classList.add("active");
+  d[heroIndex].classList.add("active");
+ },3000);
 }
 
 /* Categories */
 function renderCategories(){
-  const cats=["All","Action","Drama","Comedy","Romance"];
-  const c=document.getElementById("categories");
-  c.innerHTML="";
-  cats.forEach((cat,i)=>{
-    const b=document.createElement("button");
-    b.innerText=cat;
-    if(i==0)b.classList.add("active");
-    b.onclick=()=>filterCat(cat,b);
-    c.appendChild(b);
-  });
-}
-function filterCat(cat,btn){
-  document.querySelectorAll("#categories button").forEach(b=>b.classList.remove("active"));
-  btn.classList.add("active");
-  renderMovies(cat);
+ ["All","Action","Drama","Comedy","Romance"].forEach(c=>{
+  const b=document.createElement("button");
+  b.innerText=c;b.onclick=()=>renderMovies(c);
+  categories.appendChild(b);
+ });
 }
 
 /* Movies */
 function renderMovies(cat="All"){
-  const m=document.getElementById("movies");
-  m.innerHTML="";
-  movies.filter(x=>cat=="All"||x.cat==cat).forEach(x=>{
-    const d=document.createElement("div");
-    d.className="movie";
-    d.innerHTML=`<img src="${x.poster}"><p>${x.title}</p>`;
-    m.appendChild(d);
-  });
+ const q=searchBox.value.toLowerCase();
+ moviesDiv.innerHTML="";
+ movies
+ .filter(x=>(cat=="All"||x.cat==cat)&&x.title.toLowerCase().includes(q))
+ .forEach(x=>{
+  const d=document.createElement("div");
+  d.className="movie";
+  d.innerHTML=`<img src="${x.poster}">
+  <div class="play">▶</div><p>${x.title}</p>`;
+  d.onclick=()=>openModal(x);
+  moviesDiv.appendChild(d);
+ });
 }
+
+/* Modal */
+function openModal(x){
+ modal.style.display="flex";
+ modalImg.src=x.poster;
+ modalTitle.innerText=x.title;
+}
+function closeModal(){modal.style.display="none"}
 
 /* Admin */
 function openAdmin(){admin.style.display="block"}
 function closeAdmin(){admin.style.display="none"}
 function login(){
-  if(adminPass.value==="admin123"){
-    adminPass.style.display="none";
-    loginBtn.style.display="none";
-    adminForm.style.display="block";
-  }else alert("Wrong password");
+ if(adminPass.value===adminPassword){
+  adminForm.style.display="block";
+ }else alert("Wrong password");
 }
 function addMovie(){
-  if(!mTitle.value||!mPoster.value)return alert("Fill all fields");
-  movies.push({title:mTitle.value,poster:mPoster.value,cat:mCat.value});
-  localStorage.setItem("movies",JSON.stringify(movies));
-  mTitle.value="";mPoster.value="";
-  renderMovies();
-  alert("Movie added");
+ movies.push({title:mTitle.value,poster:mPoster.value,cat:mCat.value});
+ localStorage.setItem("movies",JSON.stringify(movies));
+ renderMovies();alert("Movie added");
+}
+function changePass(){
+ adminPassword=newPass.value;
+ localStorage.setItem("adminPass",adminPassword);
+ alert("Password changed");
 }
 
 /* Nav */
 function setNav(btn){
-  document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
-  btn.classList.add("active");
+ document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
+ btn.classList.add("active");
 }
 
-/* Ad once */
-function showAdOnce(){
-  if(!localStorage.getItem("adShown")){
-    ad.style.display="flex";
-    localStorage.setItem("adShown","1");
-  }
-}
-function closeAd(){ad.style.display="none"}
+const moviesDiv=document.getElementById("movies");
 </script>
 
 </body>
