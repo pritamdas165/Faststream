@@ -28,7 +28,10 @@ header{
 #hero{
   position:relative;
   overflow:hidden;
-  height:180px;
+  height:160px;
+}
+@media(min-width:600px){
+  #hero{height:220px;}
 }
 .hero-slide{
   position:absolute;
@@ -84,7 +87,7 @@ header{
   overflow:hidden;
   transition:transform .3s;
 }
-.movie:hover{transform:scale(1.05)}
+.movie:hover{transform:scale(1.08)}
 .movie img{
   width:100%;
   height:160px;
@@ -118,10 +121,9 @@ nav button.active{color:var(--red)}
   position:fixed;
   inset:0;
   background:#000;
-  color:#fff;
   display:none;
-  overflow:auto;
   padding:20px;
+  overflow:auto;
 }
 #admin h2{margin-bottom:10px}
 #admin input,#admin select{
@@ -143,7 +145,6 @@ nav button.active{color:var(--red)}
   position:fixed;
   inset:0;
   background:rgba(0,0,0,.95);
-  color:#fff;
   display:none;
   align-items:center;
   justify-content:center;
@@ -165,8 +166,9 @@ nav button.active{color:var(--red)}
 <header>FastStream</header>
 
 <!-- Hero -->
-<div id="hero"></div>
-<div class="hero-dots" id="heroDots"></div>
+<div id="hero">
+  <div class="hero-dots" id="heroDots"></div>
+</div>
 
 <!-- Categories -->
 <div id="categories"></div>
@@ -176,15 +178,15 @@ nav button.active{color:var(--red)}
 
 <!-- Bottom Nav -->
 <nav>
-  <button class="active" onclick="showHome()">Home</button>
-  <button onclick="openAdmin()">Admin</button>
+  <button class="active" onclick="setNav(this)">Home</button>
+  <button onclick="setNav(this);openAdmin()">Admin</button>
 </nav>
 
 <!-- Admin -->
 <div id="admin">
   <h2>Admin Panel</h2>
-  <input type="password" id="adminPass" placeholder="Enter password">
-  <button onclick="login()">Login</button>
+  <input type="password" id="adminPass" placeholder="Password">
+  <button id="loginBtn" onclick="login()">Login</button>
 
   <div id="adminForm" style="display:none">
     <input id="mTitle" placeholder="Movie Title">
@@ -207,7 +209,7 @@ nav button.active{color:var(--red)}
 </div>
 
 <script>
-/* Demo hero */
+/* Hero */
 const heroImages=[
   "https://picsum.photos/800/400?1",
   "https://picsum.photos/800/400?2",
@@ -228,8 +230,6 @@ showAdOnce();
 function initHero(){
   const hero=document.getElementById("hero");
   const dots=document.getElementById("heroDots");
-  hero.innerHTML="";
-  dots.innerHTML="";
   heroImages.forEach((img,i)=>{
     const d=document.createElement("div");
     d.className="hero-slide"+(i==0?" active":"");
@@ -237,7 +237,7 @@ function initHero(){
     hero.appendChild(d);
 
     const s=document.createElement("span");
-    s.className=i==0?"active":"";
+    if(i==0)s.classList.add("active");
     dots.appendChild(s);
   });
   setInterval(()=>{
@@ -256,15 +256,14 @@ function renderCategories(){
   const cats=["All","Action","Drama","Comedy","Romance"];
   const c=document.getElementById("categories");
   c.innerHTML="";
-  cats.forEach(cat=>{
+  cats.forEach((cat,i)=>{
     const b=document.createElement("button");
     b.innerText=cat;
-    if(cat=="All")b.classList.add("active");
+    if(i==0)b.classList.add("active");
     b.onclick=()=>filterCat(cat,b);
     c.appendChild(b);
   });
 }
-
 function filterCat(cat,btn){
   document.querySelectorAll("#categories button").forEach(b=>b.classList.remove("active"));
   btn.classList.add("active");
@@ -284,40 +283,38 @@ function renderMovies(cat="All"){
 }
 
 /* Admin */
-function openAdmin(){
-  document.getElementById("admin").style.display="block";
-}
-function closeAdmin(){
-  document.getElementById("admin").style.display="none";
-}
+function openAdmin(){admin.style.display="block"}
+function closeAdmin(){admin.style.display="none"}
 function login(){
-  if(document.getElementById("adminPass").value==="admin123"){
-    document.getElementById("adminForm").style.display="block";
+  if(adminPass.value==="admin123"){
+    adminPass.style.display="none";
+    loginBtn.style.display="none";
+    adminForm.style.display="block";
   }else alert("Wrong password");
 }
 function addMovie(){
-  movies.push({
-    title:mTitle.value,
-    poster:mPoster.value,
-    cat:mCat.value
-  });
+  if(!mTitle.value||!mPoster.value)return alert("Fill all fields");
+  movies.push({title:mTitle.value,poster:mPoster.value,cat:mCat.value});
   localStorage.setItem("movies",JSON.stringify(movies));
+  mTitle.value="";mPoster.value="";
   renderMovies();
   alert("Movie added");
+}
+
+/* Nav */
+function setNav(btn){
+  document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
 }
 
 /* Ad once */
 function showAdOnce(){
   if(!localStorage.getItem("adShown")){
-    document.getElementById("ad").style.display="flex";
+    ad.style.display="flex";
     localStorage.setItem("adShown","1");
   }
 }
-function closeAd(){
-  document.getElementById("ad").style.display="none";
-}
-
-function showHome(){}
+function closeAd(){ad.style.display="none"}
 </script>
 
 </body>
