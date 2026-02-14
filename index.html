@@ -2,202 +2,182 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>FastStream</title>
+<title>Movie Site</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
-body{background:#0f172a;color:#fff}
-
-/* NAVBAR */
-.navbar{
- position:fixed;top:0;left:0;width:100%;
- padding:12px 18px;display:flex;align-items:center;
- background:rgba(15,23,42,.95);z-index:100
+body{
+  margin:0;
+  font-family: Poppins, Arial, sans-serif;
+  background:#0f172a;
+  color:#fff;
 }
+
+/* HEADER */
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:12px 16px;
+  background:#020617;
+  position:sticky;
+  top:0;
+  z-index:999;
+}
+
 .logo{
- font-size:20px;font-weight:800;
- background:linear-gradient(90deg,#22c55e,#3b82f6);
- -webkit-background-clip:text;-webkit-text-fill-color:transparent
-}
-.spacer{flex:1}
-.nav-btn{background:none;border:none;color:#cbd5e1;cursor:pointer}
-.nav-btn:hover{color:#22c55e}
-
-/* HOME */
-.home{margin-top:64px;padding:18px}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
-.card{background:#111827;border-radius:12px;overflow:hidden}
-.card img{width:100%;display:block}
-.card-body{padding:10px}
-.title{font-size:14px;font-weight:700;margin-bottom:8px}
-.actions{display:flex;gap:8px}
-.actions button{
- flex:1;padding:10px;border:none;border-radius:8px;
- font-weight:800;cursor:pointer
-}
-.watch{background:#22c55e;color:#022c22}
-.down{background:#3b82f6;color:#02152a}
-.actions button[disabled]{opacity:.6;cursor:not-allowed}
-
-/* DETAILS */
-.details{display:none;margin-top:64px}
-.details-box{padding:18px;max-width:900px;margin:auto}
-.timer{
- margin-top:16px;font-size:18px;
- background:#1f2937;padding:12px;
- border-radius:10px;text-align:center;display:none
+  font-size:20px;
+  font-weight:600;
 }
 
-/* FOOTER */
-.footer{
- margin-top:40px;padding:16px;text-align:center;
- color:#94a3b8;font-size:13px;border-top:1px solid #1f2937
+nav a{
+  color:#fff;
+  margin-left:15px;
+  text-decoration:none;
+  font-size:15px;
 }
-.footer a{color:#94a3b8;margin:0 8px;text-decoration:none}
-.footer a:hover{color:#22c55e}
 
-@media(min-width:768px){
- .grid{grid-template-columns:repeat(4,1fr)}
+nav a:hover{
+  color:#22c55e;
+}
+
+/* SEARCH */
+.search-box{
+  width:100%;
+  padding:10px;
+  border:none;
+  border-radius:6px;
+  margin:15px;
+}
+
+/* HOME SECTION */
+#home{
+  padding:15px;
+}
+
+/* CATEGORY */
+.categories{
+  display:flex;
+  gap:10px;
+  overflow-x:auto;
+  margin-bottom:15px;
+}
+
+.cat{
+  background:#111827;
+  padding:8px 14px;
+  border-radius:20px;
+  white-space:nowrap;
+  font-size:14px;
+}
+
+/* MOVIE GRID */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:15px;
+}
+
+.card{
+  background:#111827;
+  border-radius:10px;
+  overflow:hidden;
+}
+
+.card img{
+  width:100%;
+  height:220px;
+  object-fit:cover;
+  display:block;
+}
+
+.card .info{
+  padding:10px;
+}
+
+.title{
+  font-size:14px;
+  font-weight:600;
+}
+
+.btns{
+  display:flex;
+  gap:8px;
+  margin-top:8px;
+}
+
+.watch{
+  flex:1;
+  background:#22c55e;
+  color:#000;
+  border:none;
+  padding:6px;
+  border-radius:6px;
+  font-size:13px;
+}
+
+.download{
+  flex:1;
+  background:#3b82f6;
+  color:#fff;
+  border:none;
+  padding:6px;
+  border-radius:6px;
+  font-size:13px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- NAVBAR -->
-<div class="navbar">
- <div class="logo">FASTSTREAM</div>
- <div class="spacer"></div>
- <button class="nav-btn" onclick="goHome()">Home</button>
-</div>
+<header>
+  <div class="logo">MyMovies</div>
+  <nav>
+    <a href="#home">Home</a>
+  </nav>
+</header>
 
-<!-- HOME -->
-<div class="home" id="home">
- <div class="grid" id="grid"></div>
-</div>
+<input class="search-box" placeholder="Search movies...">
 
-<!-- DETAILS -->
-<div class="details" id="details">
- <div class="details-box">
-  <h1 id="dTitle"></h1>
-  <p id="dOverview"></p>
-
-  <div class="actions">
-   <button class="watch" id="watchBtn" onclick="startFlow('watch')">▶ Watch</button>
-   <button class="down" id="downBtn" onclick="startFlow('download')">⬇ Download</button>
+<section id="home">
+  
+  <div class="categories">
+    <div class="cat">Bollywood</div>
+    <div class="cat">Hollywood</div>
+    <div class="cat">South</div>
+    <div class="cat">Web Series</div>
+    <div class="cat">Dual Audio</div>
   </div>
 
-  <div class="timer" id="timerBox">
-   Redirecting in <span id="time">8</span> seconds...
-  </div>
- </div>
-</div>
+  <div class="grid">
 
-<div class="footer">
- <a href="#">About</a>
- <a href="#">DMCA</a>
- <a href="#">Disclaimer</a>
- <a href="#">Privacy</a>
- <a href="#">Contact</a>
-</div>
-
-<script>
-/* ===== CONFIG (EDIT ONLY THESE) ===== */
-const DIRECT_AD_URL = "https://YOUR_DIRECT_AD_LINK";
-const POP_AD_URL    = "https://YOUR_POP_AD_LINK";
-const WATCH_URL    = "https://EXTERNAL_WATCH_PAGE";
-const DOWNLOAD_URL = "https://EXTERNAL_DOWNLOAD_PAGE";
-const TIMER_SECONDS = 8;
-const COOLDOWN_MS = 30000;
-/* =================================== */
-
-let lastActionAt = 0;
-let currentAction = "";
-
-/* DEMO MOVIES */
-const movies = [
- {title:"Movie One",overview:"Short description"},
- {title:"Movie Two",overview:"Short description"},
- {title:"Movie Three",overview:"Short description"},
- {title:"Movie Four",overview:"Short description"}
-];
-
-function loadHome(){
- grid.innerHTML="";
- movies.forEach(m=>{
-  grid.innerHTML += `
-   <div class="card">
-    <img loading="lazy"
-     src="https://dummyimage.com/300x450/111827/ffffff&text=Movie+Poster">
-    <div class="card-body">
-     <div class="title">${m.title}</div>
-     <div class="actions">
-      <button class="watch" onclick='openDetails(${JSON.stringify(m)})'>Watch</button>
-      <button class="down" onclick='openDetails(${JSON.stringify(m)})'>Download</button>
-     </div>
+    <!-- MOVIE 1 -->
+    <div class="card">
+      <img src="https://i.imgur.com/8Km9tLL.jpg">
+      <div class="info">
+        <div class="title">Sample Movie 1 (2024)</div>
+        <div class="btns">
+          <button class="watch">Watch</button>
+          <button class="download">Download</button>
+        </div>
+      </div>
     </div>
-   </div>`;
- });
-}
-loadHome();
 
-/* DETAILS */
-function openDetails(m){
- home.style.display="none";
- details.style.display="block";
- dTitle.innerText=m.title;
- dOverview.innerText=m.overview;
- timerBox.style.display="none";
- watchBtn.disabled=false;
- downBtn.disabled=false;
- window.scrollTo(0,0);
-}
+    <!-- MOVIE 2 -->
+    <div class="card">
+      <img src="https://i.imgur.com/4Z7k6Kx.jpg">
+      <div class="info">
+        <div class="title">Sample Movie 2 (2023)</div>
+        <div class="btns">
+          <button class="watch">Watch</button>
+          <button class="download">Download</button>
+        </div>
+      </div>
+    </div>
 
-function goHome(){
- details.style.display="none";
- home.style.display="block";
- timerBox.style.display="none";
- watchBtn.disabled=false;
- downBtn.disabled=false;
- window.scrollTo(0,0);
-}
+  </div>
 
-/* SAFETY */
-function canProceed(){
- const now=Date.now();
- if(now-lastActionAt<COOLDOWN_MS){
-  alert("Please wait before clicking again.");
-  return false;
- }
- lastActionAt=now;
- return true;
-}
-
-/* ADS FLOW */
-function startFlow(type){
- if(!canProceed()) return;
- currentAction=type;
- watchBtn.disabled=true;
- downBtn.disabled=true;
-
- window.open(DIRECT_AD_URL,"_blank");
- window.open(POP_AD_URL,"_blank");
-
- let t=TIMER_SECONDS;
- time.innerText=t;
- timerBox.style.display="block";
-
- const interval=setInterval(()=>{
-  t--; time.innerText=t;
-  if(t<=0){
-   clearInterval(interval);
-   window.location.href =
-    (currentAction==="watch") ? WATCH_URL : DOWNLOAD_URL;
-  }
- },1000);
-}
-</script>
+</section>
 
 </body>
 </html>
