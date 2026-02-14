@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>MovieFlix – Netflix Style</title>
+<title>MovieFlix</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 /* =================================================
-   🌑 GLOBAL RESET & NETFLIX THEME
+   🔥 GLOBAL RESET
 ================================================= */
 *{
   margin:0;
@@ -16,138 +16,116 @@
   font-family: Arial, Helvetica, sans-serif;
 }
 body{
-  background:#141414;
+  background:#0f0f0f;
   color:#fff;
 }
 
 /* =================================================
-   🔴 HEADER (NETFLIX STYLE)
+   🔴 HEADER (Netflix style)
 ================================================= */
 header{
+  position:fixed;
+  top:0;
+  width:100%;
+  background:rgba(0,0,0,.9);
   display:flex;
   align-items:center;
-  padding:15px 30px;
-  background:rgba(0,0,0,0.8);
-  position:sticky;
-  top:0;
+  padding:12px 16px;
   z-index:100;
 }
 .logo{
-  font-size:26px;
-  font-weight:bold;
   color:#e50914;
+  font-size:22px;
+  font-weight:bold;
 }
 
-/* CATEGORY MENU */
+/* Category menu */
 nav{
-  margin-left:40px;
+  display:flex;
+  gap:14px;
+  margin-left:20px;
+  overflow-x:auto;
 }
 nav button{
   background:none;
   border:none;
-  color:#fff;
-  margin-right:20px;
+  color:#ccc;
   font-size:14px;
   cursor:pointer;
-  opacity:.7;
-  transition:.3s;
+  white-space:nowrap;
 }
-nav button:hover,
-nav button.active{
-  opacity:1;
-  color:#e50914;
+nav button.active,
+nav button:hover{
+  color:#fff;
 }
 
 /* =================================================
-   🎥 HERO / BANNER
+   🎬 HERO BANNER
 ================================================= */
 .hero{
-  height:70vh;
+  height:65vh;
   background:
-    linear-gradient(to top,#141414,transparent),
-    url("https://wallpaperaccess.com/full/2703652.jpg") center/cover;
+    linear-gradient(to top,#0f0f0f,transparent),
+    url("https://wallpapercave.com/wp/wp4056410.jpg") center/cover;
   display:flex;
   align-items:flex-end;
-  padding:40px;
+  padding:20px;
+  margin-top:55px;
 }
 .hero h1{
-  font-size:48px;
-  margin-bottom:10px;
-}
-.hero p{
-  max-width:500px;
-  color:#ccc;
+  font-size:32px;
 }
 
 /* =================================================
-   🎞️ MOVIE ROW (NETFLIX STYLE)
+   🎞️ MOVIE SECTION
 ================================================= */
 .section{
-  padding:20px 30px;
+  padding:15px;
 }
 .section h2{
-  margin-bottom:15px;
+  margin-bottom:10px;
+  font-size:18px;
 }
 
-/* Horizontal scroll row */
+/* Movie horizontal row */
 .row{
   display:flex;
-  gap:12px;
+  gap:10px;
   overflow-x:auto;
-  scroll-behavior:smooth;
-}
-.row::-webkit-scrollbar{
-  display:none;
+  padding-bottom:10px;
 }
 
 /* Movie card */
 .card{
-  min-width:180px;
+  min-width:140px;
+  background:#181818;
+  border-radius:6px;
+  overflow:hidden;
   transition:.3s;
-  cursor:pointer;
+}
+.card:hover{
+  transform:scale(1.08);
 }
 .card img{
   width:100%;
-  border-radius:4px;
+  height:200px;
+  object-fit:cover;
 }
-.card:hover{
-  transform:scale(1.15);
-  z-index:10;
-}
-
-/* Buttons */
 .card .info{
-  display:none;
-}
-.card:hover .info{
-  display:block;
-}
-.card button{
-  width:100%;
-  margin-top:5px;
   padding:6px;
-  border:none;
-  cursor:pointer;
-  border-radius:3px;
-}
-.watch{
-  background:#e50914;
-  color:#fff;
-}
-.download{
-  background:#333;
-  color:#fff;
+  font-size:13px;
 }
 
 /* =================================================
-   🎬 ANIMATION (FILTER FADE)
+   📱 MOBILE OPTIMISE
 ================================================= */
-.fade{
-  animation:fade .4s ease;
-}
-@keyframes fade{
-  from{opacity:0}
-  to{opacity:1}
+@media(min-width:768px){
+  .row{
+    flex-wrap:wrap;
+  }
+  .card{
+    min-width:160px;
+  }
 }
 </style>
 </head>
@@ -157,54 +135,45 @@ nav button.active{
 <!-- ================= HEADER ================= -->
 <header>
   <div class="logo">MovieFlix</div>
-  <nav>
-    <button class="active" onclick="filterMovies('all',this)">Home</button>
-    <button onclick="filterMovies('bollywood',this)">Bollywood</button>
-    <button onclick="filterMovies('hollywood',this)">Hollywood</button>
-    <button onclick="filterMovies('south',this)">South</button>
-    <button onclick="filterMovies('web',this)">Web Series</button>
+  <nav id="categoryMenu">
+    <button class="active" onclick="filterMovies('all')">All</button>
+    <button onclick="filterMovies('bollywood')">Bollywood</button>
+    <button onclick="filterMovies('hollywood')">Hollywood</button>
+    <button onclick="filterMovies('south')">South</button>
+    <button onclick="filterMovies('bengali')">Bengali</button>
   </nav>
 </header>
 
 <!-- ================= HERO ================= -->
 <div class="hero">
-  <div>
-    <h1>Unlimited Movies</h1>
-    <p>Watch & download latest movies in premium Netflix‑style experience.</p>
-  </div>
+  <h1>Unlimited Movies</h1>
 </div>
 
-<!-- ================= MOVIE SECTION ================= -->
+<!-- ================= MOVIE LIST ================= -->
 <div class="section">
-  <h2 id="sectionTitle">Popular on MovieFlix</h2>
-  <div class="row fade" id="movieRow"></div>
+  <h2 id="sectionTitle">All Movies</h2>
+  <div class="row" id="movieRow"></div>
 </div>
 
 <script>
 /* =================================================
-   🎬 MOVIES DATA
-   👉 নতুন movie add করতে শুধু object copy করো
+   🎬 MOVIE DATA
+   👉 নতুন movie add করতে শুধু object add করো
 ================================================= */
 const movies = [
   {
     title:"Dhoom 3",
     poster:"https://upload.wikimedia.org/wikipedia/en/4/4f/Dhoom_3_Film_Poster.jpg",
-    watch:"https://example.com/watch",
-    download:"https://example.com/download",
     category:"bollywood"
   },
   {
     title:"Love Me Love Me",
     poster:"https://www.mymovies.it/film/2026/love-me-love-me/poster/0/",
-    watch:"https://youtu.be/B7prWpweShU",
-    download:"https://hubcloud.foo/drive/ybfq1tegjnbt1s1",
     category:"hollywood"
   },
   {
-    title:"KGF Chapter 2",
-    poster:"https://upload.wikimedia.org/wikipedia/en/d/d0/KGF_Chapter_2_poster.jpg",
-    watch:"#",
-    download:"#",
+    title:"KGF",
+    poster:"https://upload.wikimedia.org/wikipedia/en/5/5e/KGF_Chapter_1_poster.jpg",
     category:"south"
   }
 ];
@@ -213,41 +182,39 @@ const movies = [
    🖥️ RENDER MOVIES
 ================================================= */
 function render(list){
-  const row = document.getElementById("movieRow");
-  row.innerHTML="";
+  const box = document.getElementById("movieRow");
+  box.innerHTML = "";
   list.forEach(m=>{
-    row.innerHTML+=`
+    box.innerHTML += `
       <div class="card">
         <img src="${m.poster}">
-        <div class="info">
-          <button class="watch" onclick="window.open('${m.watch}')">Watch</button>
-          <button class="download" onclick="window.open('${m.download}')">Download</button>
-        </div>
+        <div class="info">${m.title}</div>
       </div>
     `;
   });
 }
 
 /* =================================================
-   🎯 CATEGORY FILTER (NETFLIX STYLE)
+   🎯 CATEGORY FILTER
 ================================================= */
-function filterMovies(cat,btn){
+function filterMovies(cat){
   document.querySelectorAll("nav button")
     .forEach(b=>b.classList.remove("active"));
-  btn.classList.add("active");
+  event.target.classList.add("active");
 
-  let filtered = cat==="all"
-    ? movies
-    : movies.filter(m=>m.category===cat);
+  document.getElementById("sectionTitle").innerText =
+    cat==="all" ? "All Movies" : cat.toUpperCase();
 
-  document.getElementById("movieRow").classList.remove("fade");
-  void document.getElementById("movieRow").offsetWidth;
-  document.getElementById("movieRow").classList.add("fade");
-
-  render(filtered);
+  if(cat==="all"){
+    render(movies);
+  }else{
+    render(movies.filter(m=>m.category===cat));
+  }
 }
 
-/* INIT */
+/* =================================================
+   🚀 INIT
+================================================= */
 render(movies);
 </script>
 
