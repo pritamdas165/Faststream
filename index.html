@@ -1,194 +1,424 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<title>MovieFlix v4</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nova Stream</title>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
-body{background:#000;color:#fff;padding-bottom:70px}
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:#0b0b0f;
+  color:white;
+  overflow-x:hidden;
+}
 
 /* HEADER */
 header{
-  position:sticky;top:0;z-index:10;
-  background:#111;padding:12px 15px;
-  display:flex;justify-content:space-between;align-items:center
+  padding:15px;
+  font-size:22px;
+  font-weight:bold;
+  position:absolute;
+  width:100%;
+  z-index:10;
+  background:linear-gradient(to bottom,#000,transparent);
 }
-.logo{color:#e50914;font-size:22px;font-weight:bold}
-#search{padding:6px;border-radius:4px;border:none;width:120px}
+
+/* HERO */
+.hero{
+  position:relative;
+  height:65vh;
+  overflow:hidden;
+}
+
+.hero-slider{
+  display:flex;
+  height:100%;
+  transition:transform 0.6s ease;
+}
+
+.hero-slide{
+  min-width:100%;
+  position:relative;
+}
+
+.hero-slide img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.hero-slide::after{
+  content:"";
+  position:absolute;
+  bottom:0;
+  width:100%;
+  height:60%;
+  background:linear-gradient(to top,rgba(0,0,0,0.9),transparent);
+}
+
+.hero-content{
+  position:absolute;
+  bottom:40px;
+  left:20px;
+}
+
+.hero-content h1{
+  margin:0;
+  font-size:26px;
+}
+
+.hero-content button{
+  margin-top:10px;
+  padding:8px 15px;
+  border:none;
+  border-radius:20px;
+  background:red;
+  color:white;
+  cursor:pointer;
+}
+
+.rating-badge{
+  position:absolute;
+  top:20px;
+  right:20px;
+  backdrop-filter:blur(10px);
+  background:rgba(255,255,255,0.1);
+  padding:6px 12px;
+  border-radius:20px;
+  font-size:13px;
+}
+
+/* CATEGORY */
+.tabs{
+  display:flex;
+  overflow-x:auto;
+  gap:10px;
+  padding:15px;
+}
+
+.tabs button{
+  backdrop-filter:blur(10px);
+  background:rgba(255,255,255,0.05);
+  border:none;
+  padding:8px 15px;
+  border-radius:20px;
+  color:white;
+  cursor:pointer;
+}
+
+.tabs button.active{
+  background:red;
+}
+
+/* SECTION */
+.section-title{
+  padding:0 15px;
+  font-size:18px;
+  margin-top:10px;
+}
+
+.trending-row{
+  display:flex;
+  overflow-x:auto;
+  gap:12px;
+  padding:15px;
+}
+
+.trend-card{
+  min-width:140px;
+  border-radius:15px;
+  overflow:hidden;
+  background:rgba(255,255,255,0.05);
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.trend-card:hover{
+  transform:scale(1.05);
+}
+
+.trend-card img{
+  width:100%;
+  height:200px;
+  object-fit:cover;
+}
 
 /* GRID */
-.section{padding:15px}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-
-/* CARD */
-.card{background:#111;border-radius:6px;overflow:hidden;position:relative}
-.card img{width:100%;height:160px;object-fit:cover}
-.card .info{padding:6px;font-size:12px}
-.like{
-  position:absolute;top:6px;right:6px;
-  background:rgba(0,0,0,.6);padding:4px 6px;
-  border-radius:50%;cursor:pointer
-}
-.like.active{color:red}
-
-/* BUTTONS */
-button{border:none;border-radius:4px;padding:6px;font-size:11px;cursor:pointer}
-.watch{background:#e50914;color:#fff;width:100%;margin-top:4px}
-.download{background:#333;color:#fff;width:100%;margin-top:4px}
-
-/* MODAL */
-#modal{
-  display:none;position:fixed;inset:0;
-  background:rgba(0,0,0,.9);z-index:999;
-  justify-content:center;align-items:center
-}
-#modalContent{
-  background:#111;padding:15px;border-radius:6px;width:90%
+.movie-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+  padding:12px;
+  padding-bottom:80px;
 }
 
-/* AD BOX */
-#adBox{
-  display:none;position:fixed;inset:0;
-  background:rgba(0,0,0,.95);
-  z-index:1000;display:flex;
-  flex-direction:column;justify-content:center;align-items:center
+.movie{
+  position:relative;
+  border-radius:15px;
+  overflow:hidden;
+  cursor:pointer;
 }
-#adTimer{color:#e50914;margin-top:10px}
 
-/* BOTTOM NAV */
-.bottom-nav{
-  position:fixed;bottom:0;width:100%;
-  background:#111;display:flex;
-  justify-content:space-around;padding:8px 0
+.movie img{
+  width:100%;
+  height:220px;
+  object-fit:cover;
 }
-.bottom-nav button{background:none;color:#aaa}
-.bottom-nav .active{color:#e50914}
 
-/* SKELETON */
-.skeleton{
-  height:160px;background:#222;
-  animation:pulse 1.2s infinite
+.overlay{
+  position:absolute;
+  bottom:0;
+  width:100%;
+  background:linear-gradient(to top,rgba(0,0,0,0.9),transparent);
+  padding:8px;
 }
-@keyframes pulse{
-  0%{opacity:.5}50%{opacity:1}100%{opacity:.5}
+
+.overlay h4{
+  margin:0;
+  font-size:13px;
+}
+
+/* DETAILS PAGE */
+#detailsPage{
+  display:none;
+  padding:20px;
+}
+
+.back-btn{
+  margin-bottom:15px;
+  padding:8px 15px;
+  border:none;
+  border-radius:20px;
+  background:red;
+  color:white;
+  cursor:pointer;
+}
+
+.details-poster{
+  width:100%;
+  max-height:400px;
+  object-fit:cover;
+  border-radius:15px;
+  margin-bottom:15px;
+}
+
+.details-info{
+  backdrop-filter:blur(10px);
+  background:rgba(255,255,255,0.05);
+  padding:15px;
+  border-radius:15px;
+}
+
+/* Screenshot Gallery */
+.screenshot-row{
+  display:flex;
+  overflow-x:auto;
+  gap:10px;
+  margin-top:15px;
+}
+
+.screenshot-row img{
+  height:150px;
+  border-radius:10px;
+  object-fit:cover;
 }
 </style>
 </head>
 
 <body>
 
-<header>
-  <div class="logo">MovieFlix</div>
-  <input id="search" placeholder="Search">
-</header>
+<div id="mainPage">
 
-<div class="section">
-  <div class="grid" id="movieGrid"></div>
+<header>Nova Stream</header>
+
+<div class="hero">
+  <div class="hero-slider" id="heroSlider"></div>
+  <div class="hero-content">
+    <h1 id="heroTitle"></h1>
+    <button onclick="playTrailer(currentHeroTitle)">▶ Watch Trailer</button>
+  </div>
+  <div class="rating-badge" id="ratingBadge"></div>
 </div>
 
-<!-- MODAL -->
-<div id="modal" onclick="closeModal()">
-  <div id="modalContent" onclick="event.stopPropagation()"></div>
+<div class="tabs">
+  <button class="active" onclick="loadCategory('avengers',this)">Home</button>
+  <button onclick="loadCategory('action',this)">Action</button>
+  <button onclick="loadCategory('horror',this)">Horror</button>
+  <button onclick="loadCategory('comedy',this)">Comedy</button>
 </div>
 
-<!-- AD -->
-<div id="adBox">
-  <div>Advertisement</div>
-  <div id="adTimer">Wait 5s</div>
+<h2 class="section-title">🔥 Trending Now</h2>
+<div class="trending-row" id="trendingRow"></div>
+
+<h2 class="section-title">🆕 Latest Releases</h2>
+<div class="trending-row" id="latestRow"></div>
+
+<div id="movieSection" class="movie-grid"></div>
+
 </div>
 
-<div class="bottom-nav">
-  <button class="active">Home</button>
-  <button>Profile</button>
+<!-- DETAILS PAGE -->
+<div id="detailsPage">
+  <button class="back-btn" onclick="goBack()">⬅ Back</button>
+  <img id="detailPoster" class="details-poster">
+  <div class="details-info">
+    <h2 id="detailTitle"></h2>
+    <p id="detailMeta"></p>
+    <p id="detailPlot"></p>
+    <button onclick="playTrailer(currentHeroTitle)">▶ Watch Trailer</button>
+
+    <h3>📸 Screenshots</h3>
+    <div class="screenshot-row" id="screenshotRow"></div>
+  </div>
 </div>
 
 <script>
-/* ---------------- CONFIG ---------------- */
-const POP_AD="https://example.com";
-const DIRECT_AD="https://example.com";
-const AD_DELAY=5;
+const API_KEY="66cb706";
+let heroMovies=[];
+let heroIndex=0;
+let sliderInterval;
+let currentHeroTitle="";
 
-/* ---------------- DATA ---------------- */
-let movies=JSON.parse(localStorage.getItem("movies"))||[
-{
- title:"Dhoom 3",
- poster:"https://upload.wikimedia.org/wikipedia/en/4/4f/Dhoom_3_Film_Poster.jpg",
- watch:"https://youtube.com",
- download:"https://example.com"
-},
-{
- title:"Love Me Love Me",
- poster:"https://www.mymovies.it/film/2026/love-me-love-me/poster/0/",
- watch:"https://youtu.be/B7prWpweShU",
- download:"https://example.com"
-}
-];
+async function loadCategory(cat,btn){
+  document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("active"));
+  if(btn) btn.classList.add("active");
 
-let likes=JSON.parse(localStorage.getItem("likes"))||[];
+  const res=await fetch(`https://www.omdbapi.com/?apikey=${API_KEY}&s=${cat}`);
+  const data=await res.json();
 
-/* ---------------- RENDER ---------------- */
-function render(list){
- const g=document.getElementById("movieGrid");
- g.innerHTML="";
- list.forEach((m,i)=>{
-  g.innerHTML+=`
-  <div class="card">
-    <div class="like ${likes.includes(i)?"active":""}" onclick="toggleLike(${i})">♥</div>
-    <img src="${m.poster}" onclick="openModal(${i})">
-    <div class="info">
-      <b>${m.title}</b>
-      <button class="watch" onclick="runAds('${m.watch}')">Watch</button>
-      <button class="download" onclick="runAds('${m.download}')">Download</button>
-    </div>
-  </div>`;
- });
- localStorage.setItem("movies",JSON.stringify(movies));
-}
-
-/* ---------------- MODAL ---------------- */
-function openModal(i){
- modal.style.display="flex";
- modalContent.innerHTML=`
- <h3>${movies[i].title}</h3>
- <img src="${movies[i].poster}" style="width:100%;margin-top:10px">
- `;
-}
-function closeModal(){modal.style.display="none"}
-
-/* ---------------- LIKE ---------------- */
-function toggleLike(i){
- likes.includes(i)?likes=likes.filter(x=>x!==i):likes.push(i);
- localStorage.setItem("likes",JSON.stringify(likes));
- render(movies);
-}
-
-/* ---------------- ADS (ONLY CLICK) ---------------- */
-function runAds(finalURL){
- window.open(POP_AD,"_blank");
- adBox.style.display="flex";
- let t=AD_DELAY;
- adTimer.innerText="Wait "+t+"s";
- let timer=setInterval(()=>{
-  t--;
-  adTimer.innerText="Wait "+t+"s";
-  if(t<=0){
-   clearInterval(timer);
-   adBox.style.display="none";
-   window.location.href=finalURL;
+  if(data.Response==="True"){
+    heroMovies=data.Search.slice(0,5);
+    createSlider();
+    startSlider();
+    displayTrending(data.Search.slice(0,10));
+    displayLatest();
+    displayMovies(data.Search);
   }
- },1000);
 }
 
-/* ---------------- SEARCH ---------------- */
-search.oninput=()=>{
- let q=search.value.toLowerCase();
- render(movies.filter(m=>m.title.toLowerCase().includes(q)));
-};
+async function createSlider(){
+  const slider=document.getElementById("heroSlider");
+  slider.innerHTML="";
+  for(let movie of heroMovies){
+    const res=await fetch(`https://www.omdbapi.com/?apikey=${API_KEY}&i=${movie.imdbID}`);
+    const full=await res.json();
+    movie.imdbRating=full.imdbRating;
+    const slide=document.createElement("div");
+    slide.className="hero-slide";
+    slide.innerHTML=`<img src="${full.Poster}">`;
+    slider.appendChild(slide);
+  }
+  updateHero();
+}
 
-/* INIT */
-render(movies);
+function updateHero(){
+  document.getElementById("heroSlider").style.transform=
+    `translateX(-${heroIndex*100}%)`;
+  document.getElementById("heroTitle").innerText=
+    heroMovies[heroIndex].Title;
+  document.getElementById("ratingBadge").innerText=
+    "⭐ "+heroMovies[heroIndex].imdbRating;
+  currentHeroTitle=heroMovies[heroIndex].Title;
+}
+
+function startSlider(){
+  clearInterval(sliderInterval);
+  sliderInterval=setInterval(()=>{
+    heroIndex=(heroIndex+1)%heroMovies.length;
+    updateHero();
+  },4000);
+}
+
+function displayTrending(movies){
+  const row=document.getElementById("trendingRow");
+  row.innerHTML="";
+  movies.forEach(movie=>{
+    if(movie.Poster==="N/A") return;
+    const card=document.createElement("div");
+    card.className="trend-card";
+    card.innerHTML=`<img src="${movie.Poster}">`;
+    card.onclick=()=>openDetails(movie.imdbID);
+    row.appendChild(card);
+  });
+}
+
+async function displayLatest(){
+  const year=new Date().getFullYear();
+  const res=await fetch(`https://www.omdbapi.com/?apikey=${API_KEY}&s=movie&y=${year}`);
+  const data=await res.json();
+  const row=document.getElementById("latestRow");
+  row.innerHTML="";
+  if(data.Response==="True"){
+    data.Search.slice(0,10).forEach(movie=>{
+      if(movie.Poster==="N/A") return;
+      const card=document.createElement("div");
+      card.className="trend-card";
+      card.innerHTML=`<img src="${movie.Poster}">`;
+      card.onclick=()=>openDetails(movie.imdbID);
+      row.appendChild(card);
+    });
+  }
+}
+
+function displayMovies(movies){
+  const section=document.getElementById("movieSection");
+  section.innerHTML="";
+  movies.forEach(movie=>{
+    if(movie.Poster==="N/A") return;
+    const div=document.createElement("div");
+    div.className="movie";
+    div.innerHTML=`
+      <img src="${movie.Poster}">
+      <div class="overlay">
+        <h4>${movie.Title}</h4>
+      </div>
+    `;
+    div.onclick=()=>openDetails(movie.imdbID);
+    section.appendChild(div);
+  });
+}
+
+async function openDetails(id){
+  const res=await fetch(`https://www.omdbapi.com/?apikey=${API_KEY}&i=${id}`);
+  const data=await res.json();
+
+  document.getElementById("mainPage").style.display="none";
+  document.getElementById("detailsPage").style.display="block";
+
+  document.getElementById("detailPoster").src=data.Poster;
+  document.getElementById("detailTitle").innerText=data.Title;
+  document.getElementById("detailMeta").innerText=
+    "⭐ "+data.imdbRating+" | "+data.Year+" | "+data.Genre;
+  document.getElementById("detailPlot").innerText=data.Plot;
+
+  currentHeroTitle=data.Title;
+
+  loadScreenshots(data.Title);
+}
+
+function loadScreenshots(title){
+  const row=document.getElementById("screenshotRow");
+  row.innerHTML="";
+  for(let i=1;i<=5;i++){
+    const img=document.createElement("img");
+    img.src=`https://source.unsplash.com/400x300/?movie,${title},scene&sig=${i}`;
+    row.appendChild(img);
+  }
+}
+
+function goBack(){
+  document.getElementById("detailsPage").style.display="none";
+  document.getElementById("mainPage").style.display="block";
+}
+
+function playTrailer(title){
+  const query=encodeURIComponent(title+" official trailer");
+  window.open("https://www.youtube.com/results?search_query="+query,"_blank");
+}
+
+loadCategory("avengers");
 </script>
 
 </body>
