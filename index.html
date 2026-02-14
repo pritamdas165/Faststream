@@ -148,31 +148,22 @@ const POP_AD = "https://example.com"; // popup ad
 const AD_DELAY = 5;
 let adRunning = false;
 
-function runAds(finalURL){
-  if(adRunning) return;   // safety guard
-  adRunning = true;
-
-  // popup ad (user click based)
-  window.open(POP_AD, "_blank");
-
-  // show overlay ad
-  adBox.style.display = "flex";
-
-  let t = AD_DELAY;
-  adTimer.innerText = "Wait " + t + "s";
-
-  const timer = setInterval(()=>{
-    t--;
-    adTimer.innerText = "Wait " + t + "s";
-
-    if(t <= 0){
-      clearInterval(timer);
-      adBox.style.display = "none";
-      adRunning = false;
-      window.location.href = finalURL;
-    }
-  },1000);
+function runAds(url){
+ window.open(POP_AD,"_blank");
+ adBox.style.display="flex";
+ let t=AD_DELAY;
+ adTimer.innerText="Wait "+t+"s";
+ let timer=setInterval(()=>{
+  t--;
+  adTimer.innerText="Wait "+t+"s";
+  if(t<=0){
+   clearInterval(timer);
+   adBox.style.display="none";
+   window.location.href=url;
+  }
+ },1000);
 }
+
 
 let movies=[
 {
