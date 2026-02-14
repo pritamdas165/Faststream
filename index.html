@@ -2,198 +2,221 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>MovieFlix | Netflix Style</title>
+<title>MovieFlix</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-/* ================== GLOBAL ================== */
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
-body{background:#0b0b0b;color:#fff}
+/* =================================================
+   🔥 GLOBAL RESET
+================================================= */
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family: Arial, Helvetica, sans-serif;
+}
+body{
+  background:#0f0f0f;
+  color:#fff;
+}
 
-/* ================== HEADER ================== */
+/* =================================================
+   🔴 HEADER (Netflix style)
+================================================= */
 header{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:15px 30px;background:#000;position:sticky;top:0;z-index:99
+  position:fixed;
+  top:0;
+  width:100%;
+  background:rgba(0,0,0,.9);
+  display:flex;
+  align-items:center;
+  padding:12px 16px;
+  z-index:100;
 }
-.logo{font-size:26px;font-weight:bold;color:#e50914}
-nav a{
-  margin-left:18px;color:#fff;text-decoration:none;font-size:14px;
-  cursor:pointer;opacity:.8
+.logo{
+  color:#e50914;
+  font-size:22px;
+  font-weight:bold;
 }
-nav a.active,nav a:hover{opacity:1;color:#e50914}
 
-/* ================== HERO ================== */
+/* Category menu */
+nav{
+  display:flex;
+  gap:14px;
+  margin-left:20px;
+  overflow-x:auto;
+}
+nav button{
+  background:none;
+  border:none;
+  color:#ccc;
+  font-size:14px;
+  cursor:pointer;
+  white-space:nowrap;
+}
+nav button.active,
+nav button:hover{
+  color:#fff;
+}
+
+/* =================================================
+   🎬 HERO BANNER
+================================================= */
 .hero{
-  height:60vh;
+  height:65vh;
   background:
-    linear-gradient(to top,rgba(0,0,0,.9),rgba(0,0,0,.3)),
-    url('https://images.unsplash.com/photo-1524985069026-dd778a71c7b4') center/cover;
-  display:flex;align-items:flex-end;padding:40px
+    linear-gradient(to top,#0f0f0f,transparent),
+    url("https://wallpapercave.com/wp/wp4056410.jpg") center/cover;
+  display:flex;
+  align-items:flex-end;
+  padding:20px;
+  margin-top:55px;
 }
-.hero h1{font-size:40px;margin-bottom:10px}
-.hero p{max-width:500px;color:#ddd}
-
-/* ================== SECTION ================== */
-.section{padding:25px}
-.section h2{margin-bottom:15px}
-
-/* ================== GRID ================== */
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
-  gap:15px
+.hero h1{
+  font-size:32px;
 }
 
-/* ================== CARD ================== */
+/* =================================================
+   🎞️ MOVIE SECTION
+================================================= */
+.section{
+  padding:15px;
+}
+.section h2{
+  margin-bottom:10px;
+  font-size:18px;
+}
+
+/* Movie horizontal row */
+.row{
+  display:flex;
+  gap:10px;
+  overflow-x:auto;
+  padding-bottom:10px;
+}
+
+/* Movie card */
 .card{
-  position:relative;overflow:hidden;border-radius:6px;
-  cursor:pointer;transition:.3s;background:#111
+  min-width:140px;
+  background:#181818;
+  border-radius:6px;
+  overflow:hidden;
+  transition:.3s;
 }
-.card img{width:100%;height:260px;object-fit:cover}
-.card:hover{transform:scale(1.15);z-index:2}
-.card .overlay{
-  position:absolute;inset:0;
-  background:linear-gradient(to top,#000,transparent);
-  display:flex;flex-direction:column;justify-content:flex-end;
-  padding:10px;opacity:0;transition:.3s
+.card:hover{
+  transform:scale(1.08);
 }
-.card:hover .overlay{opacity:1}
-.card button{
-  margin-top:6px;padding:6px;border:none;border-radius:4px;
-  background:#e50914;color:#fff;cursor:pointer
+.card img{
+  width:100%;
+  height:200px;
+  object-fit:cover;
 }
-
-/* ================== SEARCH ================== */
-.search-box{margin:20px;padding:0 20px}
-.search-box input{
-  width:100%;padding:10px;border-radius:6px;border:none
+.card .info{
+  padding:6px;
+  font-size:13px;
 }
 
-/* ================== AD OVERLAY ================== */
-#adBox{
-  display:none;position:fixed;inset:0;
-  background:rgba(0,0,0,.9);z-index:999;
-  align-items:center;justify-content:center;flex-direction:column
+/* =================================================
+   📱 MOBILE OPTIMISE
+================================================= */
+@media(min-width:768px){
+  .row{
+    flex-wrap:wrap;
+  }
+  .card{
+    min-width:160px;
+  }
 }
-#adTimer{color:#e50914;font-size:20px}
 </style>
 </head>
 
 <body>
 
-<!-- HEADER -->
+<!-- ================= HEADER ================= -->
 <header>
   <div class="logo">MovieFlix</div>
-  <nav>
-    <a class="active" onclick="filterCategory('all')">Home</a>
-    <a onclick="filterCategory('bollywood')">Bollywood</a>
-    <a onclick="filterCategory('hollywood')">Hollywood</a>
-    <a onclick="filterCategory('south')">South</a>
-    <a onclick="filterCategory('web')">Web Series</a>
+  <nav id="categoryMenu">
+    <button class="active" onclick="filterMovies('all')">All</button>
+    <button onclick="filterMovies('bollywood')">Bollywood</button>
+    <button onclick="filterMovies('hollywood')">Hollywood</button>
+    <button onclick="filterMovies('south')">South</button>
+    <button onclick="filterMovies('bengali')">Bengali</button>
   </nav>
 </header>
 
-<!-- HERO -->
+<!-- ================= HERO ================= -->
 <div class="hero">
-  <div>
-    <h1>Unlimited Movies</h1>
-    <p>Watch & Download in premium Netflix‑style experience.</p>
-  </div>
+  <h1>Unlimited Movies</h1>
 </div>
 
-<!-- SEARCH -->
-<div class="search-box">
-  <input type="text" id="search" placeholder="Search movie..." onkeyup="renderMovies()">
-</div>
-
-<!-- MOVIES -->
+<!-- ================= MOVIE LIST ================= -->
 <div class="section">
   <h2 id="sectionTitle">All Movies</h2>
-  <div class="grid" id="movieGrid"></div>
-</div>
-
-<!-- AD -->
-<div id="adBox">
-  <div id="adTimer">Wait 5 sec...</div>
+  <div class="row" id="movieRow"></div>
 </div>
 
 <script>
-/* ================= CONFIG ================= */
-const AD_TIMER = 5;
-
-/* ================= MOVIES DATA ================= */
-let movies = [
-  {
-    title:"Love Me Love Me",
-    poster:"https://www.mymovies.it/film/2026/love-me-love-me/poster/0/",
-    watch:"https://youtu.be/B7prWpweShU",
-    download:"https://hubcloud.foo/drive/ybfq1tegjnbt1s1",
-    category:"hollywood"
-  },
+/* =================================================
+   🎬 MOVIE DATA
+   👉 নতুন movie add করতে শুধু object add করো
+================================================= */
+const movies = [
   {
     title:"Dhoom 3",
     poster:"https://upload.wikimedia.org/wikipedia/en/4/4f/Dhoom_3_Film_Poster.jpg",
-    watch:"#",
-    download:"#",
     category:"bollywood"
+  },
+  {
+    title:"Love Me Love Me",
+    poster:"https://www.mymovies.it/film/2026/love-me-love-me/poster/0/",
+    category:"hollywood"
+  },
+  {
+    title:"KGF",
+    poster:"https://upload.wikimedia.org/wikipedia/en/5/5e/KGF_Chapter_1_poster.jpg",
+    category:"south"
   }
 ];
 
-let currentCategory = "all";
-
-/* ================= RENDER ================= */
-function renderMovies(){
-  let q = document.getElementById("search").value.toLowerCase();
-  let grid = document.getElementById("movieGrid");
-  grid.innerHTML = "";
-
-  movies
-    .filter(m =>
-      (currentCategory==="all" || m.category===currentCategory) &&
-      m.title.toLowerCase().includes(q)
-    )
-    .forEach(m=>{
-      grid.innerHTML += `
+/* =================================================
+   🖥️ RENDER MOVIES
+================================================= */
+function render(list){
+  const box = document.getElementById("movieRow");
+  box.innerHTML = "";
+  list.forEach(m=>{
+    box.innerHTML += `
       <div class="card">
         <img src="${m.poster}">
-        <div class="overlay">
-          <strong>${m.title}</strong>
-          <button onclick="runAds('${m.watch}')">Watch</button>
-          <button onclick="runAds('${m.download}')">Download</button>
-        </div>
-      </div>`;
-    });
+        <div class="info">${m.title}</div>
+      </div>
+    `;
+  });
 }
 
-/* ================= CATEGORY FILTER ================= */
-function filterCategory(cat){
-  currentCategory = cat;
+/* =================================================
+   🎯 CATEGORY FILTER
+================================================= */
+function filterMovies(cat){
+  document.querySelectorAll("nav button")
+    .forEach(b=>b.classList.remove("active"));
+  event.target.classList.add("active");
+
   document.getElementById("sectionTitle").innerText =
     cat==="all" ? "All Movies" : cat.toUpperCase();
-  document.querySelectorAll("nav a").forEach(a=>a.classList.remove("active"));
-  event.target.classList.add("active");
-  renderMovies();
+
+  if(cat==="all"){
+    render(movies);
+  }else{
+    render(movies.filter(m=>m.category===cat));
+  }
 }
 
-/* ================= ADS ================= */
-function runAds(url){
-  let box=document.getElementById("adBox");
-  let timer=document.getElementById("adTimer");
-  box.style.display="flex";
-  let t=AD_TIMER;
-  timer.innerText="Wait "+t+" sec...";
-  let i=setInterval(()=>{
-    t--; timer.innerText="Wait "+t+" sec...";
-    if(t<=0){
-      clearInterval(i);
-      box.style.display="none";
-      window.location.href=url;
-    }
-  },1000);
-}
-
-/* INIT */
-renderMovies();
+/* =================================================
+   🚀 INIT
+================================================= */
+render(movies);
 </script>
+
 </body>
 </html>
