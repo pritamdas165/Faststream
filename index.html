@@ -140,8 +140,39 @@ iframe{width:100%;height:200px;margin-top:10px}
 </div>
 
 <script>
-const POP_AD="https://example.com";
-const AD_DELAY=5;
+
+/* =========================
+   SAFE ADS SYSTEM
+========================= */
+const POP_AD = "https://example.com"; // popup ad
+const AD_DELAY = 5;
+let adRunning = false;
+
+function runAds(finalURL){
+  if(adRunning) return;   // safety guard
+  adRunning = true;
+
+  // popup ad (user click based)
+  window.open(POP_AD, "_blank");
+
+  // show overlay ad
+  adBox.style.display = "flex";
+
+  let t = AD_DELAY;
+  adTimer.innerText = "Wait " + t + "s";
+
+  const timer = setInterval(()=>{
+    t--;
+    adTimer.innerText = "Wait " + t + "s";
+
+    if(t <= 0){
+      clearInterval(timer);
+      adBox.style.display = "none";
+      adRunning = false;
+      window.location.href = finalURL;
+    }
+  },1000);
+}
 
 let movies=[
 {
@@ -179,12 +210,13 @@ function render(list){
 }
 
 function openModal(i){
- modal.style.display="flex";
- modalContent.innerHTML=`
- <h3>${movies[i].title}</h3>
- <iframe src="${movies[i].trailer}" allow="autoplay"></iframe>
- `;
+  modal.style.display="flex";
+  modalContent.innerHTML=`
+    <h3>${movies[i].title}</h3>
+    <iframe src="${movies[i].trailer}" allow="autoplay; fullscreen"></iframe>
+  `;
 }
+
 function closeModal(){modal.style.display="none";modalContent.innerHTML=""}
 
 function toggleLike(i){
