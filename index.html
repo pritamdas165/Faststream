@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -13,10 +13,10 @@ body{background:#0f172a;color:#fff}
 .navbar{
  position:fixed;top:0;left:0;width:100%;
  padding:12px 18px;display:flex;align-items:center;
- background:rgba(15,23,42,.92);z-index:100
+ background:rgba(15,23,42,.95);z-index:100
 }
 .logo{
- font-size:20px;font-weight:700;
+ font-size:20px;font-weight:800;
  background:linear-gradient(90deg,#22c55e,#3b82f6);
  -webkit-background-clip:text;-webkit-text-fill-color:transparent
 }
@@ -27,7 +27,11 @@ body{background:#0f172a;color:#fff}
 /* HOME */
 .home{margin-top:64px;padding:18px}
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
-.card{background:#111827;border-radius:12px;overflow:hidden}
+.card{
+ background:#111827;border-radius:12px;overflow:hidden;
+ transition:.2s
+}
+.card:hover{transform:translateY(-3px)}
 .card img{width:100%;display:block}
 .card-body{padding:10px}
 .title{font-size:14px;font-weight:700;margin-bottom:8px}
@@ -42,7 +46,7 @@ body{background:#0f172a;color:#fff}
 
 /* DETAILS */
 .details{display:none;margin-top:64px}
-.details-box{padding:18px}
+.details-box{padding:18px;max-width:900px;margin:auto}
 .details-box h1{margin-bottom:10px}
 .timer{
  margin-top:16px;font-size:18px;
@@ -103,29 +107,29 @@ body{background:#0f172a;color:#fff}
 </div>
 
 <script>
-/* ================= CONFIG ================= */
+/* ===== CONFIG (EDIT ONLY THESE) ===== */
 const DIRECT_AD_URL = "https://YOUR_DIRECT_AD_LINK";
 const POP_AD_URL    = "https://YOUR_POP_AD_LINK";
 const WATCH_URL    = "https://EXTERNAL_WATCH_PAGE";
 const DOWNLOAD_URL = "https://EXTERNAL_DOWNLOAD_PAGE";
 const TIMER_SECONDS = 8;
-const COOLDOWN_MS = 30000; // 30s anti‑loop
-/* ========================================== */
+const COOLDOWN_MS = 30000;
+/* =================================== */
 
-let lastActionAt = 0;
-let currentAction = "";
+let lastActionAt=0;
+let currentAction="";
 
-/* DEMO DATA */
-const demoMovies=[
- {title:"Demo Movie 1",overview:"Sample description"},
- {title:"Demo Movie 2",overview:"Sample description"},
- {title:"Demo Movie 3",overview:"Sample description"},
- {title:"Demo Movie 4",overview:"Sample description"}
+/* DEMO MOVIES (replace later with real data) */
+const movies=[
+ {title:"Movie One",overview:"Short description"},
+ {title:"Movie Two",overview:"Short description"},
+ {title:"Movie Three",overview:"Short description"},
+ {title:"Movie Four",overview:"Short description"}
 ];
 
 function loadHome(){
  grid.innerHTML="";
- demoMovies.forEach(m=>{
+ movies.forEach(m=>{
   grid.innerHTML+=`
    <div class="card">
     <img loading="lazy" src="https://via.placeholder.com/300x450?text=Movie">
@@ -141,44 +145,37 @@ function loadHome(){
 }
 loadHome();
 
-/* DETAILS */
 function openDetails(m){
  home.style.display="none";
  details.style.display="block";
  dTitle.innerText=m.title;
  dOverview.innerText=m.overview;
  timerBox.style.display="none";
- enableButtons();
+ watchBtn.disabled=false;
+ downBtn.disabled=false;
+ window.scrollTo(0,0);
 }
+
 function goHome(){
  details.style.display="none";
  home.style.display="block";
 }
 
-/* SAFETY */
 function canProceed(){
  const now=Date.now();
  if(now-lastActionAt<COOLDOWN_MS){
-  alert("Please wait a few seconds before trying again.");
+  alert("Please wait before clicking again.");
   return false;
  }
  lastActionAt=now;
  return true;
 }
-function disableButtons(){
- watchBtn.disabled=true;
- downBtn.disabled=true;
-}
-function enableButtons(){
- watchBtn.disabled=false;
- downBtn.disabled=false;
-}
 
-/* ADS + TIMER FLOW */
 function startFlow(type){
  if(!canProceed()) return;
  currentAction=type;
- disableButtons();
+ watchBtn.disabled=true;
+ downBtn.disabled=true;
 
  window.open(DIRECT_AD_URL,"_blank");
  window.open(POP_AD_URL,"_blank");
@@ -191,13 +188,10 @@ function startFlow(type){
   t--; time.innerText=t;
   if(t<=0){
    clearInterval(interval);
-   redirectUser();
+   window.location.href =
+    (currentAction==="watch") ? WATCH_URL : DOWNLOAD_URL;
   }
  },1000);
-}
-
-function redirectUser(){
- window.location.href = (currentAction==="watch") ? WATCH_URL : DOWNLOAD_URL;
 }
 </script>
 
