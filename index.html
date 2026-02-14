@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -21,25 +21,19 @@ header{
 /* SECTION */
 .section{padding:15px;position:relative}
 
-/* SCROLL GRID */
+/* GRID */
 .grid{
-  display:flex;
-  gap:10px;
-  overflow-x:auto;
-  scroll-snap-type:x mandatory;
-  scroll-behavior:smooth
+  display:flex;gap:10px;
+  overflow-x:auto;scroll-snap-type:x mandatory
 }
 .grid::-webkit-scrollbar{display:none}
 
 /* CARD */
 .card{
-  min-width:150px;
-  background:#111;border-radius:6px;
-  overflow:hidden;position:relative;
-  scroll-snap-align:start;
-  transition:transform .3s
+  min-width:150px;background:#111;
+  border-radius:6px;overflow:hidden;
+  scroll-snap-align:start
 }
-.card:hover{transform:scale(1.05)}
 .card img{width:100%;height:160px;object-fit:cover}
 .card .info{padding:6px;font-size:12px}
 
@@ -53,49 +47,38 @@ header{
 .like.active{color:red}
 
 /* BUTTON */
-button{border:none;border-radius:4px;padding:6px;font-size:11px;cursor:pointer}
+button{border:none;border-radius:4px;padding:6px;font-size:11px}
 .watch{background:#e50914;color:#fff;width:100%;margin-top:4px}
 .download{background:#333;color:#fff;width:100%;margin-top:4px}
 
-/* SCROLL ARROWS */
-.arrow{
-  position:absolute;top:40%;
-  background:rgba(0,0,0,.7);
-  padding:8px;border-radius:50%;
-  cursor:pointer;z-index:5
-}
-.left{left:5px}
-.right{right:5px}
-
-/* MODAL + SMOOTH */
+/* MODAL */
 #modal{
   display:none;position:fixed;inset:0;
-  background:rgba(0,0,0,.9);
+  background:rgba(0,0,0,.92);
   z-index:999;
-  justify-content:center;align-items:center;
-  animation:fade .4s
+  justify-content:center;align-items:center
 }
-@keyframes fade{from{opacity:0}to{opacity:1}}
 #modalContent{
-  background:#111;padding:15px;
-  border-radius:6px;width:90%
+  width:92%;max-width:420px;
+  background:#111;border-radius:8px;
+  padding:15px
 }
-
-/* TRAILER */
-iframe{width:100%;height:200px;margin-top:10px}
+#modalContent img{width:100%;border-radius:6px}
+#modalContent h3{margin:10px 0}
+#modalContent p{font-size:13px;color:#ccc}
+#modalContent iframe{
+  width:100%;height:200px;
+  margin-top:10px;border-radius:6px
+}
 
 /* AD */
 #adBox{
-  display:none;
-  position:fixed;
-  inset:0;
+  display:none;position:fixed;inset:0;
   background:rgba(0,0,0,.95);
   z-index:1000;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center
+  justify-content:center;align-items:center;
+  flex-direction:column
 }
-
 #adTimer{color:#e50914;margin-top:10px}
 
 /* BOTTOM NAV */
@@ -104,7 +87,6 @@ iframe{width:100%;height:200px;margin-top:10px}
   background:#111;display:flex;
   justify-content:space-around;padding:8px 0
 }
-.bottom-nav button{background:none;color:#aaa}
 .bottom-nav .active{color:#e50914}
 </style>
 </head>
@@ -117,8 +99,6 @@ iframe{width:100%;height:200px;margin-top:10px}
 </header>
 
 <div class="section">
-  <div class="arrow left" onclick="scrollGrid(-1)">‹</div>
-  <div class="arrow right" onclick="scrollGrid(1)">›</div>
   <div class="grid" id="movieGrid"></div>
 </div>
 
@@ -128,22 +108,18 @@ iframe{width:100%;height:200px;margin-top:10px}
 </div>
 
 <!-- AD BOX -->
-<div id="adBox" style="display:none">
+<div id="adBox">
   <div>Advertisement</div>
   <div id="adTimer">Wait 5s</div>
-</div>
-
-<!-- ✅ MODAL (এইখানে paste করবে) -->
-<div id="modal" onclick="closeModal()">
-  <div id="modalContent" onclick="event.stopPropagation()"></div>
 </div>
 
 <div class="bottom-nav">
   <button class="active">Home</button>
   <button>Profile</button>
 </div>
+
 <script>
-/* ===== ELEMENTS ===== */
+/* ELEMENTS */
 const movieGrid = document.getElementById("movieGrid");
 const modal = document.getElementById("modal");
 const modalContent = document.getElementById("modalContent");
@@ -151,94 +127,60 @@ const search = document.getElementById("search");
 const adBox = document.getElementById("adBox");
 const adTimer = document.getElementById("adTimer");
 
-/* ===== ADS CONFIG ===== */
-const POP_AD = "https://example.com"; // popup only
+/* ADS CONFIG */
+const POP_AD = "https://example.com";
 const AD_DELAY = 5;
 let adRunning = false;
 
-/* ===== MOVIES ===== */
-let movies = [
+/* MOVIES */
+const movies = [
 {
-  title: "Dhoom 3",
-  poster: "https://upload.wikimedia.org/wikipedia/en/4/4f/Dhoom_3_Film_Poster.jpg",
-  desc: "A high‑octane action thriller with spectacular stunts.",
-  trailer: "https://www.youtube.com/embed/yeF_b8EQcK0",
-  watch: "https://youtube.com",
-  download: "#"
+  title:"Dhoom 3",
+  poster:"https://upload.wikimedia.org/wikipedia/en/4/4f/Dhoom_3_Film_Poster.jpg",
+  desc:"High‑octane action thriller.",
+  trailer:"https://www.youtube.com/embed/yeF_b8EQcK0",
+  watch:"https://youtube.com",
+  download:"#"
 },
 {
-  title: "Love Me Love Me",
-  poster: "https://www.mymovies.it/film/2026/love-me-love-me/poster/0/",
-  desc: "A romantic drama about love, destiny and emotions.",
-  trailer: "https://www.youtube.com/embed/B7prWpweShU",
-  watch: "#",
-  download: "#"
+  title:"Love Me Love Me",
+  poster:"https://www.mymovies.it/film/2026/love-me-love-me/poster/0/",
+  desc:"Romantic drama about love and destiny.",
+  trailer:"https://www.youtube.com/embed/B7prWpweShU",
+  watch:"#",
+  download:"#"
 }
 ];
 
-/* ===== LIKES ===== */
 let likes = JSON.parse(localStorage.getItem("likes")) || [];
 
-/* ===== RENDER ===== */
+/* RENDER */
 function render(list){
-  movieGrid.innerHTML = "";
+  movieGrid.innerHTML="";
   list.forEach((m,i)=>{
-    movieGrid.innerHTML += `
-      <div class="card">
-        <div class="like ${likes.includes(i)?"active":""}" onclick="toggleLike(${i})">♥</div>
-        <img src="${m.poster}" onclick="openModal(${i})">
-        <div class="info">
-          <b>${m.title}</b>
-          <button class="watch" onclick="runAds('${m.watch}')">Watch</button>
-          <button class="download" onclick="runAds('${m.download}')">Download</button>
-        </div>
-      </div>`;
+    movieGrid.innerHTML+=`
+    <div class="card">
+      <div class="like ${likes.includes(i)?"active":""}" onclick="toggleLike(${i})">♥</div>
+      <img src="${m.poster}" onclick="openModal(${i})">
+      <div class="info">
+        <b>${m.title}</b>
+        <button class="watch" onclick="runAds('${m.watch}')">Watch</button>
+        <button class="download" onclick="runAds('${m.download}')">Download</button>
+      </div>
+    </div>`;
   });
 }
- 
-#modal{
-  display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.92);
-  z-index:999;
-  justify-content:center;
-  align-items:center;
-}
-#modalContent{
-  width:92%;
-  max-width:420px;
-  background:#111;
-  border-radius:8px;
-  padding:15px;
-  animation:fade .3s;
-}
-#modalContent img{
-  width:100%;
-  border-radius:6px;
-}
-#modalContent h3{margin:10px 0}
-#modalContent p{
-  font-size:13px;
-  color:#ccc;
-}
-#modalContent iframe{
-  width:100%;
-  height:200px;
-  margin-top:10px;
-  border-radius:6px;
-}
-.modalBtns button{
-  width:100%;
-  margin-top:8px;
-}
 
-/* ===== MODAL ===== */
+/* MODAL */
 function openModal(i){
   modal.style.display="flex";
-  modalContent.innerHTML = `
+  modalContent.innerHTML=`
+    <img src="${movies[i].poster}">
     <h3>${movies[i].title}</h3>
-    <iframe src="${movies[i].trailer}" allow="autoplay; fullscreen"></iframe>
+    <p>${movies[i].desc}</p>
+    <iframe src="${movies[i].trailer}" allow="autoplay"></iframe>
+    <button class="watch" onclick="runAds('${movies[i].watch}')">Watch</button>
+    <button class="download" onclick="runAds('${movies[i].download}')">Download</button>
   `;
 }
 function closeModal(){
@@ -246,48 +188,39 @@ function closeModal(){
   modalContent.innerHTML="";
 }
 
-/* ===== LIKE ===== */
+/* LIKE */
 function toggleLike(i){
-  likes.includes(i) ? likes = likes.filter(x=>x!==i) : likes.push(i);
+  likes.includes(i)?likes=likes.filter(x=>x!==i):likes.push(i);
   localStorage.setItem("likes",JSON.stringify(likes));
   render(movies);
 }
 
-/* ===== ADS (ONLY ON CLICK) ===== */
+/* ADS – ONLY ON CLICK */
 function runAds(url){
   if(adRunning) return;
-  adRunning = true;
-
+  adRunning=true;
   window.open(POP_AD,"_blank");
   adBox.style.display="flex";
-
-  let t = AD_DELAY;
-  adTimer.innerText = "Wait " + t + "s";
-
-  let timer = setInterval(()=>{
+  let t=AD_DELAY;
+  adTimer.innerText="Wait "+t+"s";
+  let timer=setInterval(()=>{
     t--;
-    adTimer.innerText = "Wait " + t + "s";
-    if(t <= 0){
+    adTimer.innerText="Wait "+t+"s";
+    if(t<=0){
       clearInterval(timer);
       adBox.style.display="none";
-      adRunning = false;
-      window.location.href = url;
+      adRunning=false;
+      window.location.href=url;
     }
   },1000);
 }
 
-/* ===== SCROLL ===== */
-function scrollGrid(dir){
-  movieGrid.scrollBy({left:dir*200,behavior:"smooth"});
-}
-
-/* ===== SEARCH ===== */
-search.oninput = ()=>{
-  let q = search.value.toLowerCase();
+/* SEARCH */
+search.oninput=()=>{
+  let q=search.value.toLowerCase();
   render(movies.filter(m=>m.title.toLowerCase().includes(q)));
 };
 
-/* INIT */
 render(movies);
 </script>
 
