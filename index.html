@@ -2,84 +2,74 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>MovieFlix v5</title>
+<title>MovieFlix Final</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
-body{background:#000;color:#fff;padding-bottom:70px;overflow-x:hidden}
+body{background:#000;color:#fff;padding-bottom:70px}
 
 /* HEADER */
 header{
   position:sticky;top:0;z-index:10;
   background:#111;padding:12px 15px;
-  display:flex;justify-content:space-between;align-items:center
+  display:flex;gap:8px;align-items:center
 }
 .logo{color:#e50914;font-size:22px;font-weight:bold}
-#search{padding:6px;border-radius:4px;border:none;width:120px}
+#search,#category{
+  padding:6px;border-radius:4px;border:none
+}
 
 /* SECTION */
-.section{padding:15px;position:relative}
+.section{padding:15px}
 
 /* GRID */
 .grid{
-  display:flex;gap:10px;
-  overflow-x:auto;scroll-snap-type:x mandatory
+  display:flex;gap:10px;overflow-x:auto
 }
 .grid::-webkit-scrollbar{display:none}
 
 /* CARD */
 .card{
-  min-width:150px;background:#111;
-  border-radius:6px;overflow:hidden;
-  scroll-snap-align:start
+  min-width:150px;background:#111;border-radius:6px;
+  overflow:hidden;position:relative
 }
 .card img{width:100%;height:160px;object-fit:cover}
-.card .info{padding:6px;font-size:12px}
-
-/* LIKE */
-.like{
-  position:absolute;top:6px;right:6px;
-  background:rgba(0,0,0,.6);
-  padding:4px 6px;border-radius:50%;
-  cursor:pointer
-}
-.like.active{color:red}
-
-/* BUTTON */
-button{border:none;border-radius:4px;padding:6px;font-size:11px}
-.watch{background:#e50914;color:#fff;width:100%;margin-top:4px}
-.download{background:#333;color:#fff;width:100%;margin-top:4px}
+.info{padding:6px;font-size:12px}
+button{width:100%;margin-top:4px;padding:6px;border:none;border-radius:4px;cursor:pointer}
+.watch{background:#e50914;color:#fff}
+.download{background:#333;color:#fff}
 
 /* MODAL */
 #modal{
   display:none;position:fixed;inset:0;
-  background:rgba(0,0,0,.92);
-  z-index:999;
-  justify-content:center;align-items:center
+  background:rgba(0,0,0,.9);
+  justify-content:center;align-items:center;z-index:999
 }
 #modalContent{
   width:92%;max-width:420px;
-  background:#111;border-radius:8px;
-  padding:15px
+  background:#111;border-radius:8px;padding:15px
 }
 #modalContent img{width:100%;border-radius:6px}
-#modalContent h3{margin:10px 0}
 #modalContent p{font-size:13px;color:#ccc}
-#modalContent iframe{
-  width:100%;height:200px;
-  margin-top:10px;border-radius:6px
-}
+iframe{width:100%;height:200px;margin-top:10px;border-radius:6px}
 
 /* AD */
 #adBox{
   display:none;position:fixed;inset:0;
   background:rgba(0,0,0,.95);
-  z-index:1000;
   justify-content:center;align-items:center;
-  flex-direction:column
+  flex-direction:column;z-index:1000
 }
-#adTimer{color:#e50914;margin-top:10px}
+
+/* ADMIN */
+#admin{
+  display:none;padding:15px;background:#111
+}
+#admin input, #admin select{
+  width:100%;margin:5px 0;padding:6px
+}
+#admin button{background:#e50914;color:#fff;margin-top:6px}
 
 /* BOTTOM NAV */
 .bottom-nav{
@@ -87,6 +77,7 @@ button{border:none;border-radius:4px;padding:6px;font-size:11px}
   background:#111;display:flex;
   justify-content:space-around;padding:8px 0
 }
+.bottom-nav button{background:none;color:#aaa}
 .bottom-nav .active{color:#e50914}
 </style>
 </head>
@@ -96,6 +87,12 @@ button{border:none;border-radius:4px;padding:6px;font-size:11px}
 <header>
   <div class="logo">MovieFlix</div>
   <input id="search" placeholder="Search">
+  <select id="category">
+    <option value="all">All</option>
+    <option>Action</option>
+    <option>Romance</option>
+    <option>Thriller</option>
+  </select>
 </header>
 
 <div class="section">
@@ -107,120 +104,142 @@ button{border:none;border-radius:4px;padding:6px;font-size:11px}
   <div id="modalContent" onclick="event.stopPropagation()"></div>
 </div>
 
-<!-- AD BOX -->
+<!-- AD -->
 <div id="adBox">
   <div>Advertisement</div>
   <div id="adTimer">Wait 5s</div>
 </div>
 
+<!-- ADMIN PANEL -->
+<div id="admin">
+  <h3>Admin Panel</h3>
+  <input id="aTitle" placeholder="Title">
+  <input id="aPoster" placeholder="Poster URL">
+  <input id="aTrailer" placeholder="Trailer URL">
+  <input id="aDesc" placeholder="Description">
+  <select id="aCat">
+    <option>Action</option>
+    <option>Romance</option>
+    <option>Thriller</option>
+  </select>
+  <button onclick="addMovie()">Save Movie</button>
+</div>
+
 <div class="bottom-nav">
-  <button class="active">Home</button>
-  <button>Profile</button>
+  <button class="active" onclick="showHome()">Home</button>
+  <button onclick="showAdmin()">Admin</button>
 </div>
 
 <script>
-/* ELEMENTS */
-const movieGrid = document.getElementById("movieGrid");
-const modal = document.getElementById("modal");
-const modalContent = document.getElementById("modalContent");
-const search = document.getElementById("search");
-const adBox = document.getElementById("adBox");
-const adTimer = document.getElementById("adTimer");
+/* ===== ELEMENTS ===== */
+const grid=document.getElementById("movieGrid");
+const modal=document.getElementById("modal");
+const modalContent=document.getElementById("modalContent");
+const adBox=document.getElementById("adBox");
+const adTimer=document.getElementById("adTimer");
+const search=document.getElementById("search");
+const category=document.getElementById("category");
 
-/* ADS CONFIG */
-const POP_AD = "https://example.com";
-const AD_DELAY = 5;
-let adRunning = false;
+/* ===== ADS ===== */
+const POP_AD="https://example.com";
+const AD_DELAY=5;
+let adRunning=false;
 
-/* MOVIES */
-const movies = [
+/* ===== DATA ===== */
+let movies=JSON.parse(localStorage.getItem("movies"))||[
 {
-  title:"Dhoom 3",
-  poster:"https://upload.wikimedia.org/wikipedia/en/4/4f/Dhoom_3_Film_Poster.jpg",
-  desc:"High‑octane action thriller.",
-  trailer:"https://www.youtube.com/embed/yeF_b8EQcK0",
-  watch:"https://youtube.com",
-  download:"#"
-},
-{
-  title:"Love Me Love Me",
-  poster:"https://www.mymovies.it/film/2026/love-me-love-me/poster/0/",
-  desc:"Romantic drama about love and destiny.",
-  trailer:"https://www.youtube.com/embed/B7prWpweShU",
-  watch:"#",
-  download:"#"
+ title:"Dhoom 3",
+ poster:"https://upload.wikimedia.org/wikipedia/en/4/4f/Dhoom_3_Film_Poster.jpg",
+ trailer:"https://www.youtube.com/embed/yeF_b8EQcK0",
+ desc:"Action blockbuster",
+ cat:"Action"
 }
 ];
 
-let likes = JSON.parse(localStorage.getItem("likes")) || [];
+function save(){localStorage.setItem("movies",JSON.stringify(movies))}
 
-/* RENDER */
+/* ===== RENDER ===== */
 function render(list){
-  movieGrid.innerHTML="";
-  list.forEach((m,i)=>{
-    movieGrid.innerHTML+=`
-    <div class="card">
-      <div class="like ${likes.includes(i)?"active":""}" onclick="toggleLike(${i})">♥</div>
-      <img src="${m.poster}" onclick="openModal(${i})">
-      <div class="info">
-        <b>${m.title}</b>
-        <button class="watch" onclick="runAds('${m.watch}')">Watch</button>
-        <button class="download" onclick="runAds('${m.download}')">Download</button>
-      </div>
-    </div>`;
-  });
+ grid.innerHTML="";
+ list.forEach((m,i)=>{
+  grid.innerHTML+=`
+  <div class="card">
+    <img src="${m.poster}" onclick="openModal(${i})">
+    <div class="info">
+      <b>${m.title}</b>
+      <button class="watch" onclick="runAds('${m.trailer}')">Watch</button>
+      <button class="download" onclick="runAds('${m.trailer}')">Download</button>
+    </div>
+  </div>`;
+ });
 }
 
-/* MODAL */
+/* ===== MODAL ===== */
 function openModal(i){
-  modal.style.display="flex";
-  modalContent.innerHTML=`
-    <img src="${movies[i].poster}">
-    <h3>${movies[i].title}</h3>
-    <p>${movies[i].desc}</p>
-    <iframe src="${movies[i].trailer}" allow="autoplay"></iframe>
-    <button class="watch" onclick="runAds('${movies[i].watch}')">Watch</button>
-    <button class="download" onclick="runAds('${movies[i].download}')">Download</button>
-  `;
+ modal.style.display="flex";
+ modalContent.innerHTML=`
+ <img src="${movies[i].poster}">
+ <h3>${movies[i].title}</h3>
+ <p>${movies[i].desc}</p>
+ <iframe src="${movies[i].trailer}" allow="autoplay"></iframe>
+ `;
 }
-function closeModal(){
-  modal.style.display="none";
-  modalContent.innerHTML="";
-}
+function closeModal(){modal.style.display="none"}
 
-/* LIKE */
-function toggleLike(i){
-  likes.includes(i)?likes=likes.filter(x=>x!==i):likes.push(i);
-  localStorage.setItem("likes",JSON.stringify(likes));
-  render(movies);
-}
-
-/* ADS – ONLY ON CLICK */
+/* ===== ADS ONLY ON CLICK ===== */
 function runAds(url){
-  if(adRunning) return;
-  adRunning=true;
-  window.open(POP_AD,"_blank");
-  adBox.style.display="flex";
-  let t=AD_DELAY;
+ if(adRunning) return;
+ adRunning=true;
+ window.open(POP_AD,"_blank");
+ adBox.style.display="flex";
+ let t=AD_DELAY;
+ adTimer.innerText="Wait "+t+"s";
+ let timer=setInterval(()=>{
+  t--;
   adTimer.innerText="Wait "+t+"s";
-  let timer=setInterval(()=>{
-    t--;
-    adTimer.innerText="Wait "+t+"s";
-    if(t<=0){
-      clearInterval(timer);
-      adBox.style.display="none";
-      adRunning=false;
-      window.location.href=url;
-    }
-  },1000);
+  if(t<=0){
+   clearInterval(timer);
+   adBox.style.display="none";
+   adRunning=false;
+   window.location.href=url;
+  }
+ },1000);
 }
 
-/* SEARCH */
-search.oninput=()=>{
-  let q=search.value.toLowerCase();
-  render(movies.filter(m=>m.title.toLowerCase().includes(q)));
-};
+/* ===== SEARCH + CATEGORY ===== */
+function filter(){
+ let q=search.value.toLowerCase();
+ let c=category.value;
+ render(movies.filter(m=>
+  m.title.toLowerCase().includes(q) &&
+  (c=="all"||m.cat==c)
+ ));
+}
+search.oninput=filter;
+category.onchange=filter;
 
+/* ===== ADMIN ===== */
+function showAdmin(){
+ document.querySelector(".section").style.display="none";
+ document.getElementById("admin").style.display="block";
+}
+function showHome(){
+ document.querySelector(".section").style.display="block";
+ document.getElementById("admin").style.display="none";
+ render(movies);
+}
+function addMovie(){
+ movies.push({
+  title:aTitle.value,
+  poster:aPoster.value,
+  trailer:aTrailer.value,
+  desc:aDesc.value,
+  cat:aCat.value
+ });
+ save();showHome();
+}
+
+/* INIT */
 render(movies);
 </script>
 
