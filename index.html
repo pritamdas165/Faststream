@@ -121,84 +121,74 @@ header{
 
 <script>
 /* ===============================
-   CONFIG
-================================ */
-const AD_URL = "https://YOUR_AD_LINK_HERE";
+   VERSION 2 – STEP 1 BASE
+=============================== */
 
-/* ===============================
-   MOVIE DATA (LOCAL)
-================================ */
-let movies = [
-{
- title:"Dhoom 3",
- poster:"https://upload.wikimedia.org/wikipedia/en/4/4f/Dhoom_3_Film_Poster.jpg",
- watch:"https://youtube.com",
- download:"https://example.com",
- category:"bollywood"
-},
-{
- title:"Love Me Love Me",
- poster:"https://www.mymovies.it/film/2026/love-me-love-me/poster/0/",
- watch:"https://youtu.be/B7prWpweShU",
- download:"https://hubcloud.foo/drive/ybfq1tegjnbt1s1",
- category:"hollywood"
-}
+/* ---------- DEFAULT MOVIES ---------- */
+const defaultMovies = [
+  {
+    title:"Dhoom 3",
+    poster:"https://upload.wikimedia.org/wikipedia/en/4/4f/Dhoom_3_Film_Poster.jpg",
+    watch:"https://youtube.com",
+    download:"https://example.com",
+    category:"bollywood"
+  },
+  {
+    title:"Love Me Love Me",
+    poster:"https://www.mymovies.it/film/2026/love-me-love-me/poster/0/",
+    watch:"https://youtu.be/B7prWpweShU",
+    download:"#",
+    category:"hollywood"
+  }
 ];
 
-/* ===============================
-   RENDER MOVIES
-================================ */
+/* ---------- LOAD MOVIES FROM LOCAL STORAGE ---------- */
+function loadMovies(){
+  let stored = localStorage.getItem("movies_v2");
+
+  if(!stored){
+    // First time only
+    localStorage.setItem("movies_v2", JSON.stringify(defaultMovies));
+    return defaultMovies;
+  }
+
+  return JSON.parse(stored);
+}
+
+let movies = loadMovies();
+
+/* ---------- RENDER MOVIES ---------- */
 function renderMovies(list){
-  const box=document.getElementById("movieGrid");
-  box.innerHTML="";
+  const grid = document.getElementById("movieGrid");
+  grid.innerHTML = "";
+
   list.forEach(m=>{
-    box.innerHTML+=`
-    <div class="card">
-      <img src="${m.poster}">
-      <div class="info">
-        <strong>${m.title}</strong>
-        <button class="watch" onclick="runAds('${m.watch}')">▶ Watch</button>
-        <button class="download" onclick="runAds('${m.download}')">⬇ Download</button>
+    grid.innerHTML += `
+      <div class="card">
+        <img src="${m.poster}">
+        <div class="info">
+          <strong>${m.title}</strong>
+          <button class="watch" onclick="handleWatch('${m.watch}')">Watch</button>
+          <button class="download" onclick="handleDownload('${m.download}')">Download</button>
+        </div>
       </div>
-    </div>`;
+    `;
   });
 }
 
-/* ===============================
-   CATEGORY FILTER
-================================ */
-function filterCategory(cat,btn){
-  document.querySelectorAll(".bottom-nav button")
-    .forEach(b=>b.classList.remove("active"));
-  btn.classList.add("active");
-
-  document.getElementById("sectionTitle").innerText =
-    cat==="all" ? "All Movies" : cat.toUpperCase();
-
-  if(cat==="all"){
-    renderMovies(movies);
-  }else{
-    renderMovies(movies.filter(m=>m.category===cat));
-  }
+/* ---------- SAFE CLICK HANDLERS (NO ADS YET) ---------- */
+function handleWatch(url){
+  window.open(url, "_blank");
 }
 
-/* ===============================
-   CLEAN ADS LOGIC
-   (ONLY ON BUTTON CLICK)
-================================ */
-function runAds(finalURL){
-  // Ad opens in new tab
-  window.open(AD_URL,"_blank");
-
-  // Original link
-  setTimeout(()=>{
-    window.location.href = finalURL;
-  },300);
+function handleDownload(url){
+  window.open(url, "_blank");
 }
 
-/* INIT */
+/* ---------- INIT ---------- */
 renderMovies(movies);
 </script>
+
 
 </body>
 </html>
