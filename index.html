@@ -1,425 +1,301 @@
  <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Nova Stream</title>
 
 <style>
-body{
-  margin:0;
-  font-family:Arial, sans-serif;
-  background:#0b0b0f;
-  color:white;
-  overflow-x:hidden;
+:root{
+  --glass: rgba(255,255,255,.08);
+  --blur: blur(14px);
+  --accent: #e50914;
 }
-
-/* HEADER */
+*{box-sizing:border-box}
+body{
+  margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto;
+  background:#0b0b0f; color:#fff; overflow-x:hidden;
+}
 header{
-  padding:15px;
-  font-size:22px;
-  font-weight:bold;
-  position:absolute;
-  width:100%;
-  z-index:10;
-  background:linear-gradient(to bottom,#000,transparent);
+  position:fixed; top:0; left:0; right:0; z-index:10;
+  padding:14px 16px; font-weight:700; letter-spacing:.5px;
+  background:linear-gradient(#000,rgba(0,0,0,.35),transparent);
 }
 
 /* HERO */
-.hero{
-  position:relative;
-  height:65vh;
-  overflow:hidden;
-}
-
-.hero-slider{
-  display:flex;
-  height:100%;
-  transition:transform 0.6s ease;
-}
-
-.hero-slide{
-  min-width:100%;
-  position:relative;
-}
-
-.hero-slide img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-}
-
+.hero{height:64vh; position:relative; overflow:hidden; margin-top:48px}
+.hero-slider{display:flex; height:100%; transition:transform .7s ease}
+.hero-slide{min-width:100%; position:relative}
+.hero-slide img{width:100%; height:100%; object-fit:cover}
 .hero-slide::after{
-  content:"";
-  position:absolute;
-  bottom:0;
-  width:100%;
-  height:60%;
-  background:linear-gradient(to top,rgba(0,0,0,0.9),transparent);
+  content:""; position:absolute; inset:auto 0 0 0; height:60%;
+  background:linear-gradient(to top,rgba(0,0,0,.9),transparent);
 }
-
-.hero-content{
-  position:absolute;
-  bottom:40px;
-  left:20px;
+.hero-content{position:absolute; left:16px; bottom:28px}
+.hero-content h1{margin:0 0 8px; font-size:26px}
+.btn{
+  border:0; border-radius:999px; padding:9px 16px; cursor:pointer;
+  background:var(--accent); color:#fff; font-weight:600
 }
-
-.hero-content h1{
-  margin:0;
-  font-size:26px;
-}
-
-.hero-content button{
-  margin-top:10px;
-  padding:8px 15px;
-  border:none;
-  border-radius:20px;
-  background:red;
-  color:white;
-  cursor:pointer;
-}
-
 .rating-badge{
-  position:absolute;
-  top:20px;
-  right:20px;
-  backdrop-filter:blur(10px);
-  background:rgba(255,255,255,0.1);
-  padding:6px 12px;
-  border-radius:20px;
-  font-size:13px;
+  position:absolute; top:16px; right:16px;
+  background:var(--glass); backdrop-filter:var(--blur);
+  padding:6px 10px; border-radius:999px; font-size:13px
 }
 
-/* CATEGORY */
-.tabs{
-  display:flex;
-  overflow-x:auto;
-  gap:10px;
-  padding:15px;
-}
-
+/* TABS */
+.tabs{display:flex; gap:10px; padding:14px; overflow-x:auto}
 .tabs button{
-  backdrop-filter:blur(10px);
-  background:rgba(255,255,255,0.05);
-  border:none;
-  padding:8px 15px;
-  border-radius:20px;
-  color:white;
-  cursor:pointer;
+  background:var(--glass); backdrop-filter:var(--blur);
+  border:0; color:#fff; padding:8px 14px; border-radius:999px; cursor:pointer
 }
+.tabs .active{background:var(--accent)}
 
-.tabs button.active{
-  background:red;
+/* SECTIONS */
+.section-title{padding:6px 14px; font-size:18px}
+.row{
+  display:flex; gap:12px; padding:10px 14px; overflow-x:auto;
 }
-
-/* SECTION */
-.section-title{
-  padding:0 15px;
-  font-size:18px;
-  margin-top:10px;
+.card{
+  min-width:140px; border-radius:14px; overflow:hidden; cursor:pointer;
+  background:var(--glass); backdrop-filter:var(--blur); transition:.2s
 }
-
-.trending-row{
-  display:flex;
-  overflow-x:auto;
-  gap:12px;
-  padding:15px;
-}
-
-.trend-card{
-  min-width:140px;
-  border-radius:15px;
-  overflow:hidden;
-  background:rgba(255,255,255,0.05);
-  cursor:pointer;
-  transition:0.3s;
-}
-
-.trend-card:hover{
-  transform:scale(1.05);
-}
-
-.trend-card img{
-  width:100%;
-  height:200px;
-  object-fit:cover;
-}
+.card:hover{transform:scale(1.05)}
+.card img{width:100%; height:200px; object-fit:cover}
 
 /* GRID */
-.movie-grid{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:12px;
-  padding:12px;
-  padding-bottom:80px;
-}
-
-.movie{
-  position:relative;
-  border-radius:15px;
-  overflow:hidden;
-  cursor:pointer;
-}
-
-.movie img{
-  width:100%;
-  height:220px;
-  object-fit:cover;
-}
-
+.grid{display:grid; grid-template-columns:repeat(2,1fr); gap:12px; padding:12px 12px 80px}
+.tile{position:relative; border-radius:14px; overflow:hidden; cursor:pointer}
+.tile img{width:100%; height:220px; object-fit:cover}
 .overlay{
-  position:absolute;
-  bottom:0;
-  width:100%;
-  background:linear-gradient(to top,rgba(0,0,0,0.9),transparent);
-  padding:8px;
+  position:absolute; inset:auto 0 0 0; padding:8px;
+  background:linear-gradient(to top,rgba(0,0,0,.9),transparent)
 }
+.overlay h4{margin:0; font-size:13px}
 
-.overlay h4{
-  margin:0;
-  font-size:13px;
+/* DETAILS */
+#details{display:none; padding:14px}
+.back{margin-bottom:10px}
+.poster{width:100%; max-height:420px; object-fit:cover; border-radius:16px}
+.glass{
+  margin-top:12px; padding:14px; border-radius:16px;
+  background:var(--glass); backdrop-filter:var(--blur)
 }
+.meta{opacity:.85; margin:.25rem 0 .5rem}
 
-/* DETAILS PAGE */
-#detailsPage{
-  display:none;
-  padding:20px;
+/* CAST */
+.cast-row{display:flex; gap:10px; overflow-x:auto; padding-top:8px}
+.cast{
+  min-width:110px; text-align:center; border-radius:14px; padding:10px;
+  background:var(--glass); backdrop-filter:var(--blur)
 }
+.cast img{width:80px; height:80px; border-radius:50%; object-fit:cover}
 
-.back-btn{
-  margin-bottom:15px;
-  padding:8px 15px;
-  border:none;
-  border-radius:20px;
-  background:red;
-  color:white;
-  cursor:pointer;
+/* SCREENSHOTS */
+.shots{display:flex; gap:10px; overflow-x:auto; padding-top:8px}
+.shots img{height:150px; border-radius:12px; cursor:pointer}
+
+/* FULLSCREEN VIEWER */
+#viewer{
+  position:fixed; inset:0; background:rgba(0,0,0,.92);
+  display:none; align-items:center; justify-content:center; z-index:999
 }
-
-.details-poster{
-  width:100%;
-  max-height:400px;
-  object-fit:cover;
-  border-radius:15px;
-  margin-bottom:15px;
-}
-
-.details-info{
-  backdrop-filter:blur(10px);
-  background:rgba(255,255,255,0.05);
-  padding:15px;
-  border-radius:15px;
-}
-
-/* Screenshot Gallery */
-.screenshot-row{
-  display:flex;
-  overflow-x:auto;
-  gap:10px;
-  margin-top:15px;
-}
-
-.screenshot-row img{
-  height:150px;
-  border-radius:10px;
-  object-fit:cover;
+#viewer img{max-width:95%; max-height:95%; border-radius:14px}
+#viewer .close{
+  position:absolute; top:16px; right:16px; background:#111;
+  border-radius:999px; padding:8px 12px; cursor:pointer
 }
 </style>
 </head>
 
 <body>
-
-<div id="mainPage">
-
 <header>Nova Stream</header>
 
-<div class="hero">
-  <div class="hero-slider" id="heroSlider"></div>
-  <div class="hero-content">
-    <h1 id="heroTitle"></h1>
-    <button onclick="playTrailer(currentHeroTitle)">▶ Watch Trailer</button>
+<!-- HOME -->
+<div id="home">
+  <div class="hero">
+    <div id="heroSlider" class="hero-slider"></div>
+    <div class="hero-content">
+      <h1 id="heroTitle"></h1>
+      <button class="btn" onclick="playTrailer(currentTitle)">▶ Watch Trailer</button>
+    </div>
+    <div id="heroRating" class="rating-badge"></div>
   </div>
-  <div class="rating-badge" id="ratingBadge"></div>
+
+  <div class="tabs">
+    <button class="active" onclick="loadCategory('avengers',this)">Home</button>
+    <button onclick="loadCategory('action',this)">Action</button>
+    <button onclick="loadCategory('horror',this)">Horror</button>
+    <button onclick="loadCategory('comedy',this)">Comedy</button>
+  </div>
+
+  <h3 class="section-title">🔥 Trending Now</h3>
+  <div id="trending" class="row"></div>
+
+  <h3 class="section-title">🆕 Latest Releases</h3>
+  <div id="latest" class="row"></div>
+
+  <div id="grid" class="grid"></div>
 </div>
 
-<div class="tabs">
-  <button class="active" onclick="loadCategory('avengers',this)">Home</button>
-  <button onclick="loadCategory('action',this)">Action</button>
-  <button onclick="loadCategory('horror',this)">Horror</button>
-  <button onclick="loadCategory('comedy',this)">Comedy</button>
-</div>
+<!-- DETAILS -->
+<div id="details">
+  <button class="btn back" onclick="goBack()">⬅ Back</button>
+  <img id="dPoster" class="poster"/>
+  <div class="glass">
+    <h2 id="dTitle"></h2>
+    <div id="dMeta" class="meta"></div>
+    <p id="dPlot"></p>
+    <button class="btn" onclick="playTrailer(currentTitle)">▶ Watch Trailer</button>
 
-<h2 class="section-title">🔥 Trending Now</h2>
-<div class="trending-row" id="trendingRow"></div>
-
-<h2 class="section-title">🆕 Latest Releases</h2>
-<div class="trending-row" id="latestRow"></div>
-
-<div id="movieSection" class="movie-grid"></div>
-
-</div>
-
-<!-- DETAILS PAGE -->
-<div id="detailsPage">
-  <button class="back-btn" onclick="goBack()">⬅ Back</button>
-  <img id="detailPoster" class="details-poster">
-  <div class="details-info">
-    <h2 id="detailTitle"></h2>
-    <p id="detailMeta"></p>
-    <p id="detailPlot"></p>
-    <button onclick="playTrailer(currentHeroTitle)">▶ Watch Trailer</button>
+    <h3>🎭 Cast</h3>
+    <div id="castRow" class="cast-row"></div>
 
     <h3>📸 Screenshots</h3>
-    <div class="screenshot-row" id="screenshotRow"></div>
+    <div id="shotRow" class="shots"></div>
+
+    <h3>🎯 Related Movies</h3>
+    <div id="relatedRow" class="row"></div>
   </div>
+</div>
+
+<!-- FULLSCREEN IMAGE -->
+<div id="viewer" onclick="closeViewer()">
+  <span class="close">✕</span>
+  <img id="viewerImg"/>
 </div>
 
 <script>
 const API_KEY="66cb706";
-let heroMovies=[];
-let heroIndex=0;
-let sliderInterval;
-let currentHeroTitle="";
+let hero=[], heroIndex=0, timer=null, currentTitle="";
 
-async function loadCategory(cat,btn){
-  document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("active"));
-  if(btn) btn.classList.add("active");
+async function loadCategory(q,btn){
+  document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));
+  btn && btn.classList.add('active');
+  const r=await fetch(`https://www.omdbapi.com/?apikey=${API_KEY}&s=${q}`);
+  const d=await r.json();
+  if(d.Response!=="True") return;
 
-  const res=await fetch(`https://www.omdbapi.com/?apikey=${API_KEY}&s=${cat}`);
-  const data=await res.json();
+  hero=d.Search.slice(0,5);
+  await buildHero();
+  startHero();
 
-  if(data.Response==="True"){
-    heroMovies=data.Search.slice(0,5);
-    createSlider();
-    startSlider();
-    displayTrending(data.Search.slice(0,10));
-    displayLatest();
-    displayMovies(data.Search);
-  }
+  buildRow('trending', d.Search.slice(0,10));
+  loadLatest();
+  buildGrid(d.Search);
 }
 
-async function createSlider(){
-  const slider=document.getElementById("heroSlider");
-  slider.innerHTML="";
-  for(let movie of heroMovies){
-    const res=await fetch(`https://www.omdbapi.com/?apikey=${API_KEY}&i=${movie.imdbID}`);
-    const full=await res.json();
-    movie.imdbRating=full.imdbRating;
-    const slide=document.createElement("div");
-    slide.className="hero-slide";
-    slide.innerHTML=`<img src="${full.Poster}">`;
-    slider.appendChild(slide);
+async function buildHero(){
+  const wrap=document.getElementById('heroSlider'); wrap.innerHTML="";
+  for(const m of hero){
+    const r=await fetch(`https://www.omdbapi.com/?apikey=${API_KEY}&i=${m.imdbID}`);
+    const f=await r.json();
+    m.rating=f.imdbRating;
+    const s=document.createElement('div');
+    s.className='hero-slide';
+    s.innerHTML=`<img src="${f.Poster}">`;
+    wrap.appendChild(s);
   }
-  updateHero();
+  heroIndex=0; updateHero();
 }
-
 function updateHero(){
-  document.getElementById("heroSlider").style.transform=
-    `translateX(-${heroIndex*100}%)`;
-  document.getElementById("heroTitle").innerText=
-    heroMovies[heroIndex].Title;
-  document.getElementById("ratingBadge").innerText=
-    "⭐ "+heroMovies[heroIndex].imdbRating;
-  currentHeroTitle=heroMovies[heroIndex].Title;
+  document.getElementById('heroSlider').style.transform=`translateX(-${heroIndex*100}%)`;
+  document.getElementById('heroTitle').textContent=hero[heroIndex].Title;
+  document.getElementById('heroRating').textContent=`⭐ ${hero[heroIndex].rating}`;
+  currentTitle=hero[heroIndex].Title;
+}
+function startHero(){
+  clearInterval(timer);
+  timer=setInterval(()=>{heroIndex=(heroIndex+1)%hero.length; updateHero()},4000);
 }
 
-function startSlider(){
-  clearInterval(sliderInterval);
-  sliderInterval=setInterval(()=>{
-    heroIndex=(heroIndex+1)%heroMovies.length;
-    updateHero();
-  },4000);
-}
-
-function displayTrending(movies){
-  const row=document.getElementById("trendingRow");
-  row.innerHTML="";
-  movies.forEach(movie=>{
-    if(movie.Poster==="N/A") return;
-    const card=document.createElement("div");
-    card.className="trend-card";
-    card.innerHTML=`<img src="${movie.Poster}">`;
-    card.onclick=()=>openDetails(movie.imdbID);
-    row.appendChild(card);
+function buildRow(id,list){
+  const row=document.getElementById(id); row.innerHTML="";
+  list.forEach(m=>{
+    if(m.Poster==="N/A") return;
+    const c=document.createElement('div'); c.className='card';
+    c.innerHTML=`<img src="${m.Poster}">`;
+    c.onclick=()=>openDetails(m.imdbID);
+    row.appendChild(c);
   });
 }
 
-async function displayLatest(){
-  const year=new Date().getFullYear();
-  const res=await fetch(`https://www.omdbapi.com/?apikey=${API_KEY}&s=movie&y=${year}`);
-  const data=await res.json();
-  const row=document.getElementById("latestRow");
-  row.innerHTML="";
-  if(data.Response==="True"){
-    data.Search.slice(0,10).forEach(movie=>{
-      if(movie.Poster==="N/A") return;
-      const card=document.createElement("div");
-      card.className="trend-card";
-      card.innerHTML=`<img src="${movie.Poster}">`;
-      card.onclick=()=>openDetails(movie.imdbID);
-      row.appendChild(card);
-    });
-  }
+async function loadLatest(){
+  const y=new Date().getFullYear();
+  const r=await fetch(`https://www.omdbapi.com/?apikey=${API_KEY}&s=movie&y=${y}`);
+  const d=await r.json();
+  if(d.Response==="True") buildRow('latest', d.Search.slice(0,10));
 }
 
-function displayMovies(movies){
-  const section=document.getElementById("movieSection");
-  section.innerHTML="";
-  movies.forEach(movie=>{
-    if(movie.Poster==="N/A") return;
-    const div=document.createElement("div");
-    div.className="movie";
-    div.innerHTML=`
-      <img src="${movie.Poster}">
-      <div class="overlay">
-        <h4>${movie.Title}</h4>
-      </div>
-    `;
-    div.onclick=()=>openDetails(movie.imdbID);
-    section.appendChild(div);
+function buildGrid(list){
+  const g=document.getElementById('grid'); g.innerHTML="";
+  list.forEach(m=>{
+    if(m.Poster==="N/A") return;
+    const t=document.createElement('div'); t.className='tile';
+    t.innerHTML=`<img src="${m.Poster}"><div class="overlay"><h4>${m.Title}</h4></div>`;
+    t.onclick=()=>openDetails(m.imdbID);
+    g.appendChild(t);
   });
 }
 
 async function openDetails(id){
-  const res=await fetch(`https://www.omdbapi.com/?apikey=${API_KEY}&i=${id}`);
-  const data=await res.json();
+  const r=await fetch(`https://www.omdbapi.com/?apikey=${API_KEY}&i=${id}`);
+  const d=await r.json();
 
-  document.getElementById("mainPage").style.display="none";
-  document.getElementById("detailsPage").style.display="block";
+  document.getElementById('home').style.display='none';
+  document.getElementById('details').style.display='block';
 
-  document.getElementById("detailPoster").src=data.Poster;
-  document.getElementById("detailTitle").innerText=data.Title;
-  document.getElementById("detailMeta").innerText=
-    "⭐ "+data.imdbRating+" | "+data.Year+" | "+data.Genre;
-  document.getElementById("detailPlot").innerText=data.Plot;
+  dPoster.src=d.Poster; dTitle.textContent=d.Title;
+  dMeta.textContent=`⭐ ${d.imdbRating} | ${d.Year} | ${d.Genre}`;
+  dPlot.textContent=d.Plot; currentTitle=d.Title;
 
-  currentHeroTitle=data.Title;
-
-  loadScreenshots(data.Title);
+  buildCast(d.Actors);
+  buildShots(d.Title);
+  buildRelated(d.Genre.split(',')[0]);
 }
 
-function loadScreenshots(title){
-  const row=document.getElementById("screenshotRow");
-  row.innerHTML="";
-  for(let i=1;i<=5;i++){
-    const img=document.createElement("img");
-    img.src=`https://source.unsplash.com/400x300/?movie,${title},scene&sig=${i}`;
+function buildCast(actors){
+  const row=document.getElementById('castRow'); row.innerHTML="";
+  actors.split(',').slice(0,8).forEach(name=>{
+    const c=document.createElement('div'); c.className='cast';
+    c.innerHTML=`
+      <img src="https://source.unsplash.com/160x160/?portrait,actor&sig=${Math.random()}">
+      <div>${name.trim()}</div>`;
+    row.appendChild(c);
+  });
+}
+
+function buildShots(title){
+  const row=document.getElementById('shotRow'); row.innerHTML="";
+  for(let i=1;i<=6;i++){
+    const img=document.createElement('img');
+    img.src=`https://source.unsplash.com/500x300/?movie,${title},scene&sig=${i}`;
+    img.onclick=(e)=>openViewer(e.target.src);
     row.appendChild(img);
   }
 }
 
+async function buildRelated(genre){
+  const r=await fetch(`https://www.omdbapi.com/?apikey=${API_KEY}&s=${genre}`);
+  const d=await r.json();
+  if(d.Response==="True") buildRow('relatedRow', d.Search.slice(0,10));
+}
+
+function openViewer(src){
+  viewerImg.src=src; viewer.style.display='flex';
+}
+function closeViewer(){ viewer.style.display='none' }
+
 function goBack(){
-  document.getElementById("detailsPage").style.display="none";
-  document.getElementById("mainPage").style.display="block";
+  document.getElementById('details').style.display='none';
+  document.getElementById('home').style.display='block';
 }
 
 function playTrailer(title){
-  const query=encodeURIComponent(title+" official trailer");
-  window.open("https://www.youtube.com/results?search_query="+query,"_blank");
+  window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(title+' official trailer')}`,'_blank');
 }
 
-loadCategory("avengers");
+loadCategory('avengers');
 </script>
-
 </body>
 </html>
