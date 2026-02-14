@@ -1,81 +1,134 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Movie Site</title>
+<title>Movie Hub</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
+*{box-sizing:border-box}
 body{
   margin:0;
-  font-family: Poppins, Arial, sans-serif;
-  background:#0f172a;
+  font-family:Poppins,Arial,sans-serif;
+  background:#0b1220;
   color:#fff;
 }
 
 /* HEADER */
 header{
   display:flex;
-  justify-content:space-between;
   align-items:center;
-  padding:12px 16px;
+  gap:10px;
+  padding:10px 14px;
   background:#020617;
   position:sticky;
   top:0;
-  z-index:999;
+  z-index:1000;
 }
 
 .logo{
   font-size:20px;
-  font-weight:600;
-}
-
-nav a{
-  color:#fff;
-  margin-left:15px;
-  text-decoration:none;
-  font-size:15px;
-}
-
-nav a:hover{
-  color:#22c55e;
+  font-weight:700;
+  white-space:nowrap;
 }
 
 /* SEARCH */
-.search-box{
-  width:100%;
-  padding:10px;
+.search-wrap{
+  flex:1;
+  display:flex;
+}
+
+.search-wrap input{
+  flex:1;
+  padding:8px 10px;
   border:none;
-  border-radius:6px;
+  outline:none;
+  border-radius:6px 0 0 6px;
+}
+
+.search-wrap button{
+  padding:8px 14px;
+  border:none;
+  background:#22c55e;
+  font-weight:600;
+  border-radius:0 6px 6px 0;
+}
+
+/* MENU */
+.menu{
+  display:flex;
+  gap:12px;
+  overflow-x:auto;
+}
+
+.menu a{
+  color:#fff;
+  text-decoration:none;
+  font-size:14px;
+  white-space:nowrap;
+}
+
+.menu a:hover{color:#22c55e}
+
+/* HERO */
+.hero{
   margin:15px;
+  border-radius:12px;
+  overflow:hidden;
+  position:relative;
 }
 
-/* HOME SECTION */
-#home{
-  padding:15px;
+.hero img{
+  width:100%;
+  height:200px;
+  object-fit:cover;
 }
 
-/* CATEGORY */
-.categories{
+.hero-info{
+  position:absolute;
+  bottom:0;
+  left:0;
+  right:0;
+  padding:12px;
+  background:linear-gradient(transparent,rgba(0,0,0,.9));
+}
+
+.hero-title{
+  font-size:18px;
+  font-weight:700;
+}
+
+.hero-btns{
+  margin-top:8px;
   display:flex;
   gap:10px;
-  overflow-x:auto;
-  margin-bottom:15px;
 }
 
-.cat{
-  background:#111827;
+.hero-btns button{
   padding:8px 14px;
-  border-radius:20px;
-  white-space:nowrap;
-  font-size:14px;
+  border:none;
+  border-radius:8px;
+  font-weight:600;
 }
 
-/* MOVIE GRID */
+.watch{background:#22c55e}
+.download{background:#3b82f6;color:#fff}
+
+/* SECTION */
+.section{
+  padding:0 15px 20px;
+}
+
+.section h2{
+  font-size:18px;
+  margin:10px 0;
+}
+
+/* GRID */
 .grid{
   display:grid;
   grid-template-columns:repeat(2,1fr);
-  gap:15px;
+  gap:14px;
 }
 
 .card{
@@ -88,86 +141,76 @@ nav a:hover{
   width:100%;
   height:220px;
   object-fit:cover;
-  display:block;
 }
 
 .card .info{
-  padding:10px;
+  padding:8px;
 }
 
-.title{
+.card .title{
   font-size:14px;
   font-weight:600;
 }
 
-.btns{
+.card .btns{
   display:flex;
   gap:8px;
-  margin-top:8px;
+  margin-top:6px;
 }
 
-.watch{
+.card button{
   flex:1;
-  background:#22c55e;
-  color:#000;
-  border:none;
   padding:6px;
+  border:none;
   border-radius:6px;
   font-size:13px;
-}
-
-.download{
-  flex:1;
-  background:#3b82f6;
-  color:#fff;
-  border:none;
-  padding:6px;
-  border-radius:6px;
-  font-size:13px;
+  font-weight:600;
 }
 </style>
 </head>
 
 <body>
 
+<!-- HEADER -->
 <header>
-  <div class="logo">MyMovies</div>
-  <nav>
+  <div class="logo">MovieHub</div>
+
+  <div class="search-wrap">
+    <input placeholder="Search movies...">
+    <button>Search</button>
+  </div>
+
+  <nav class="menu">
     <a href="#home">Home</a>
+    <a href="#bollywood">Bollywood</a>
+    <a href="#hollywood">Hollywood</a>
+    <a href="#south">South</a>
+    <a href="#webseries">Web Series</a>
+    <a href="#bengali">Bengali Movie</a>
+    <a href="#bengaliweb">Bengali Webseries</a>
   </nav>
 </header>
 
-<input class="search-box" placeholder="Search movies...">
-
-<section id="home">
-  
-  <div class="categories">
-    <div class="cat">Bollywood</div>
-    <div class="cat">Hollywood</div>
-    <div class="cat">South</div>
-    <div class="cat">Web Series</div>
-    <div class="cat">Dual Audio</div>
-  </div>
-
-  <div class="grid">
-
-    <!-- MOVIE 1 -->
-    <div class="card">
-      <img src="https://i.imgur.com/8Km9tLL.jpg">
-      <div class="info">
-        <div class="title">Sample Movie 1 (2024)</div>
-        <div class="btns">
-          <button class="watch">Watch</button>
-          <button class="download">Download</button>
-        </div>
-      </div>
+<!-- HERO -->
+<section class="hero" id="home">
+  <img src="https://i.imgur.com/8Km9tLL.jpg">
+  <div class="hero-info">
+    <div class="hero-title">Trending Movie 2024</div>
+    <div class="hero-btns">
+      <button class="watch">Watch</button>
+      <button class="download">Download</button>
     </div>
+  </div>
+</section>
 
-    <!-- MOVIE 2 -->
+<!-- LATEST / TRENDING -->
+<section class="section">
+  <h2>🔥 Latest / Trending</h2>
+  <div class="grid">
     <div class="card">
       <img src="https://i.imgur.com/4Z7k6Kx.jpg">
       <div class="info">
-        <div class="title">Sample Movie 2 (2023)</div>
+        <div class="title">Movie One</div>
         <div class="btns">
           <button class="watch">Watch</button>
           <button class="download">Download</button>
@@ -175,8 +218,54 @@ nav a:hover{
       </div>
     </div>
 
+    <div class="card">
+      <img src="https://i.imgur.com/6Iej2c3.jpg">
+      <div class="info">
+        <div class="title">Movie Two</div>
+        <div class="btns">
+          <button class="watch">Watch</button>
+          <button class="download">Download</button>
+        </div>
+      </div>
+    </div>
   </div>
+</section>
 
+<!-- CATEGORY SECTIONS -->
+<section class="section" id="bollywood">
+  <h2>Bollywood</h2>
+  <div class="grid">
+    <div class="card">
+      <img src="https://i.imgur.com/8Km9tLL.jpg">
+      <div class="info">
+        <div class="title">Bollywood Movie</div>
+        <div class="btns">
+          <button class="watch">Watch</button>
+          <button class="download">Download</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="hollywood">
+  <h2>Hollywood (Hindi Dubbed)</h2>
+</section>
+
+<section class="section" id="south">
+  <h2>South Movies</h2>
+</section>
+
+<section class="section" id="webseries">
+  <h2>Web Series</h2>
+</section>
+
+<section class="section" id="bengali">
+  <h2>Bengali Movie</h2>
+</section>
+
+<section class="section" id="bengaliweb">
+  <h2>Bengali Webseries</h2>
 </section>
 
 </body>
