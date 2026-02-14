@@ -11,69 +11,61 @@ body{background:#000;color:#fff;padding-bottom:70px}
 
 /* Header */
 header{
-  position:sticky;top:0;z-index:10;
-  background:#111;padding:14px
+  padding:15px;
+  background:#111;
+  position:sticky;
+  top:0;
 }
 .logo{color:#e50914;font-size:22px;font-weight:bold}
 
-/* Hero */
-.hero{
-  height:200px;
-  background:linear-gradient(to top,rgba(0,0,0,.9),rgba(0,0,0,.3)),
-  url("https://upload.wikimedia.org/wikipedia/en/4/4f/Dhoom_3_Film_Poster.jpg") center/cover;
-  display:flex;align-items:end;padding:15px
-}
-
-/* Section */
+/* Movies */
 .section{padding:15px}
-.section h2{margin-bottom:10px}
-
-/* Grid */
 .grid{
   display:grid;
   grid-template-columns:repeat(3,1fr);
-  gap:10px
+  gap:10px;
 }
-
-/* Card */
 .card{
-  background:#111;border-radius:6px;overflow:hidden
+  background:#111;
+  border-radius:6px;
+  overflow:hidden;
 }
 .card img{
-  width:100%;height:160px;object-fit:cover
+  width:100%;
+  height:160px;
+  object-fit:cover;
 }
 .info{padding:6px}
 .info strong{font-size:12px;display:block}
 .info button{
-  width:100%;margin-top:5px;padding:6px;
-  border:none;border-radius:4px;
-  font-size:11px;color:#fff
+  width:100%;
+  margin-top:5px;
+  padding:6px;
+  border:none;
+  border-radius:4px;
+  font-size:11px;
 }
-.watch{background:#e50914}
-.download{background:#333}
+.watch{background:#e50914;color:#fff}
+.download{background:#333;color:#fff}
 
 /* Bottom Nav */
 .bottom-nav{
-  position:fixed;bottom:0;left:0;width:100%;
-  background:#111;display:flex;justify-content:space-around;
-  padding:8px 0;border-top:1px solid #222
+  position:fixed;
+  bottom:0;
+  width:100%;
+  background:#111;
+  display:flex;
+  justify-content:space-around;
+  padding:8px 0;
+  border-top:1px solid #222;
 }
 .bottom-nav button{
-  background:none;border:none;color:#aaa;font-size:12px
+  background:none;
+  border:none;
+  color:#aaa;
+  font-size:12px;
 }
 .bottom-nav .active{color:#e50914}
-
-/* Ad Overlay (ONLY after click) */
-#adBox{
-  display:none;position:fixed;inset:0;
-  background:rgba(0,0,0,.9);
-  z-index:999;display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center
-}
-#adBox p{margin-bottom:10px}
-#adTimer{color:#e50914;font-size:18px}
 </style>
 </head>
 
@@ -83,22 +75,11 @@ header{
   <div class="logo">MovieFlix</div>
 </header>
 
-<div class="hero">
-  <h2>Featured Movie</h2>
-</div>
-
 <div class="section">
   <h2 id="title">All Movies</h2>
-  <div class="grid" id="grid"></div>
+  <div class="grid" id="movieGrid"></div>
 </div>
 
-<!-- AD BOX -->
-<div id="adBox">
-  <p>Advertisement</p>
-  <div id="adTimer">5</div>
-</div>
-
-<!-- Bottom Nav -->
 <div class="bottom-nav">
   <button class="active" onclick="filter('all',this)">Home</button>
   <button onclick="filter('bollywood',this)">Bollywood</button>
@@ -107,77 +88,69 @@ header{
 
 <script>
 /* ================= CONFIG ================= */
-const POPUP_AD = "https://example.com"; // popup ad link
-const AD_DELAY = 5;
+const POPUP_AD = "https://example.com";   // popup ad
+const AD_DELAY = 5; // seconds
 
 /* ================= MOVIES ================= */
 let movies = JSON.parse(localStorage.getItem("movies")) || [
- {
-  title:"Dhoom 3",
-  poster:"https://upload.wikimedia.org/wikipedia/en/4/4f/Dhoom_3_Film_Poster.jpg",
-  watch:"https://youtube.com",
-  download:"https://example.com",
-  category:"bollywood"
- },
- {
-  title:"Love Me Love Me",
-  poster:"https://www.mymovies.it/film/2026/love-me-love-me/poster/0/",
-  watch:"https://youtu.be/B7prWpweShU",
-  download:"https://example.com",
-  category:"hollywood"
- }
+  {
+    title:"Dhoom 3",
+    poster:"https://upload.wikimedia.org/wikipedia/en/4/4f/Dhoom_3_Film_Poster.jpg",
+    watch:"https://youtube.com",
+    download:"https://example.com",
+    category:"bollywood"
+  },
+  {
+    title:"Love Me Love Me",
+    poster:"https://www.mymovies.it/film/2026/love-me-love-me/poster/0/",
+    watch:"https://youtu.be/B7prWpweShU",
+    download:"https://example.com",
+    category:"hollywood"
+  }
 ];
 
 localStorage.setItem("movies",JSON.stringify(movies));
 
 /* ================= RENDER ================= */
 function render(list){
-  const g=document.getElementById("grid");
-  g.innerHTML="";
+  let box=document.getElementById("movieGrid");
+  box.innerHTML="";
   list.forEach(m=>{
-    g.innerHTML+=`
+    box.innerHTML+=`
     <div class="card">
       <img src="${m.poster}">
       <div class="info">
         <strong>${m.title}</strong>
-        <button class="watch" onclick="showAd('${m.watch}')">Watch</button>
-        <button class="download" onclick="showAd('${m.download}')">Download</button>
+        <button class="watch" onclick="runAd('${m.watch}')">Watch</button>
+        <button class="download" onclick="runAd('${m.download}')">Download</button>
       </div>
     </div>`;
   });
 }
+render(movies);
 
 /* ================= FILTER ================= */
 function filter(cat,btn){
   document.querySelectorAll(".bottom-nav button").forEach(b=>b.classList.remove("active"));
   btn.classList.add("active");
-  document.getElementById("title").innerText =
-    cat==="all" ? "All Movies" : cat.toUpperCase();
-  render(cat==="all"?movies:movies.filter(m=>m.category===cat));
+  if(cat==="all") render(movies);
+  else render(movies.filter(m=>m.category===cat));
 }
 
-/* ================= ADS (ONLY ON CLICK) ================= */
-function showAd(finalURL){
-  window.open(POPUP_AD,"_blank"); // popup ad
-  let box=document.getElementById("adBox");
-  let timer=document.getElementById("adTimer");
-  box.style.display="flex";
+/* ================= ADS (FIXED) ================= */
+function runAd(finalURL){
+  // popup ad only on click
+  window.open(POPUP_AD,"_blank");
 
   let t=AD_DELAY;
-  timer.innerText=t;
-  let int=setInterval(()=>{
+  let timer=setInterval(()=>{
     t--;
-    timer.innerText=t;
     if(t<=0){
-      clearInterval(int);
-      box.style.display="none";
-      window.location.href=finalURL;
+      clearInterval(timer);
+      window.location.href = finalURL;
     }
   },1000);
 }
-
-/* INIT */
-render(movies);
 </script>
 
 </body>
