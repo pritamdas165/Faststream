@@ -2,36 +2,34 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>MovieFlix</title>
+<title>MovieFlix App</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 /* =================================================
-   🔥 GLOBAL RESET
+   GLOBAL STYLE (Netflix‑like Dark Theme)
 ================================================= */
 *{
   margin:0;
   padding:0;
   box-sizing:border-box;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family:Arial,Helvetica,sans-serif;
 }
 body{
-  background:#0f0f0f;
+  background:#000;
   color:#fff;
+  padding-bottom:70px; /* bottom nav space */
 }
 
 /* =================================================
-   🔴 HEADER (Netflix style)
+   HEADER
 ================================================= */
 header{
-  position:fixed;
+  padding:15px;
+  background:#111;
+  position:sticky;
   top:0;
-  width:100%;
-  background:rgba(0,0,0,.9);
-  display:flex;
-  align-items:center;
-  padding:12px 16px;
-  z-index:100;
+  z-index:10;
 }
 .logo{
   color:#e50914;
@@ -39,45 +37,23 @@ header{
   font-weight:bold;
 }
 
-/* Category menu */
-nav{
-  display:flex;
-  gap:14px;
-  margin-left:20px;
-  overflow-x:auto;
-}
-nav button{
-  background:none;
-  border:none;
-  color:#ccc;
-  font-size:14px;
-  cursor:pointer;
-  white-space:nowrap;
-}
-nav button.active,
-nav button:hover{
-  color:#fff;
-}
-
 /* =================================================
-   🎬 HERO BANNER
+   HERO BANNER
 ================================================= */
 .hero{
-  height:65vh;
-  background:
-    linear-gradient(to top,#0f0f0f,transparent),
-    url("https://wallpapercave.com/wp/wp4056410.jpg") center/cover;
+  height:200px;
+  background:linear-gradient(to top,rgba(0,0,0,.9),rgba(0,0,0,.2)),
+  url("https://upload.wikimedia.org/wikipedia/en/4/4f/Dhoom_3_Film_Poster.jpg") center/cover;
   display:flex;
   align-items:flex-end;
-  padding:20px;
-  margin-top:55px;
+  padding:15px;
 }
 .hero h1{
-  font-size:32px;
+  font-size:20px;
 }
 
 /* =================================================
-   🎞️ MOVIE SECTION
+   MOVIE SECTION
 ================================================= */
 .section{
   padding:15px;
@@ -87,45 +63,86 @@ nav button:hover{
   font-size:18px;
 }
 
-/* Movie horizontal row */
-.row{
-  display:flex;
+/* GRID */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
   gap:10px;
-  overflow-x:auto;
-  padding-bottom:10px;
 }
 
-/* Movie card */
+/* CARD */
 .card{
-  min-width:140px;
-  background:#181818;
+  background:#111;
   border-radius:6px;
   overflow:hidden;
-  transition:.3s;
-}
-.card:hover{
-  transform:scale(1.08);
 }
 .card img{
   width:100%;
-  height:200px;
+  height:160px;
   object-fit:cover;
 }
 .card .info{
   padding:6px;
-  font-size:13px;
+}
+.card .info strong{
+  font-size:12px;
+  display:block;
+}
+.card button{
+  width:100%;
+  margin-top:4px;
+  padding:5px;
+  font-size:11px;
+  border:none;
+  border-radius:4px;
+}
+.watch{background:#e50914;color:#fff}
+.download{background:#333;color:#fff}
+
+/* =================================================
+   AD OVERLAY
+================================================= */
+#adBox{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.9);
+  z-index:999;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+}
+#adBox a{
+  color:#fff;
+  margin-bottom:10px;
+}
+#adTimer{
+  color:#e50914;
 }
 
 /* =================================================
-   📱 MOBILE OPTIMISE
+   BOTTOM NAV (APP‑LIKE)
 ================================================= */
-@media(min-width:768px){
-  .row{
-    flex-wrap:wrap;
-  }
-  .card{
-    min-width:160px;
-  }
+.bottom-nav{
+  position:fixed;
+  bottom:0;
+  left:0;
+  width:100%;
+  background:#111;
+  display:flex;
+  justify-content:space-around;
+  padding:8px 0;
+  border-top:1px solid #222;
+}
+.bottom-nav button{
+  background:none;
+  border:none;
+  color:#aaa;
+  font-size:12px;
+}
+.bottom-nav button.active{
+  color:#e50914;
 }
 </style>
 </head>
@@ -135,87 +152,120 @@ nav button:hover{
 <!-- ================= HEADER ================= -->
 <header>
   <div class="logo">MovieFlix</div>
-  <nav id="categoryMenu">
-    <button class="active" onclick="filterMovies('all')">All</button>
-    <button onclick="filterMovies('bollywood')">Bollywood</button>
-    <button onclick="filterMovies('hollywood')">Hollywood</button>
-    <button onclick="filterMovies('south')">South</button>
-    <button onclick="filterMovies('bengali')">Bengali</button>
-  </nav>
 </header>
 
 <!-- ================= HERO ================= -->
 <div class="hero">
-  <h1>Unlimited Movies</h1>
+  <h1>Featured Movie</h1>
 </div>
 
-<!-- ================= MOVIE LIST ================= -->
+<!-- ================= MOVIES ================= -->
 <div class="section">
   <h2 id="sectionTitle">All Movies</h2>
-  <div class="row" id="movieRow"></div>
+  <div class="grid" id="movieGrid"></div>
+</div>
+
+<!-- ================= AD BOX ================= -->
+<div id="adBox">
+  <a id="adLink" href="#" target="_blank">Advertisement</a>
+  <div id="adTimer">Wait...</div>
+</div>
+
+<!-- ================= BOTTOM NAV ================= -->
+<div class="bottom-nav">
+  <button class="active" onclick="filterCategory('all',this)">Home</button>
+  <button onclick="filterCategory('bollywood',this)">Bollywood</button>
+  <button onclick="filterCategory('hollywood',this)">Hollywood</button>
+  <button onclick="filterCategory('south',this)">South</button>
 </div>
 
 <script>
 /* =================================================
-   🎬 MOVIE DATA
-   👉 নতুন movie add করতে শুধু object add করো
+   CONFIG
 ================================================= */
-const movies = [
-  {
-    title:"Dhoom 3",
-    poster:"https://upload.wikimedia.org/wikipedia/en/4/4f/Dhoom_3_Film_Poster.jpg",
-    category:"bollywood"
-  },
-  {
-    title:"Love Me Love Me",
-    poster:"https://www.mymovies.it/film/2026/love-me-love-me/poster/0/",
-    category:"hollywood"
-  },
-  {
-    title:"KGF",
-    poster:"https://upload.wikimedia.org/wikipedia/en/5/5e/KGF_Chapter_1_poster.jpg",
-    category:"south"
-  }
+const DIRECT_AD_URL = "https://YOUR_DIRECT_AD_LINK";
+const POP_AD_URL = "https://YOUR_POP_AD_LINK";
+const AD_TIMER = 5;
+
+/* =================================================
+   MOVIE DATA (এখানেই future এ movie add করবে)
+================================================= */
+let movies = [
+{
+ title:"Dhoom 3",
+ poster:"https://upload.wikimedia.org/wikipedia/en/4/4f/Dhoom_3_Film_Poster.jpg",
+ watch:"https://youtube.com",
+ download:"https://example.com",
+ category:"bollywood"
+},
+{
+ title:"Love Me Love Me",
+ poster:"https://www.mymovies.it/film/2026/love-me-love-me/poster/0/",
+ watch:"https://youtu.be/B7prWpweShU",
+ download:"https://hubcloud.foo/drive/ybfq1tegjnbt1s1",
+ category:"hollywood"
+}
 ];
 
 /* =================================================
-   🖥️ RENDER MOVIES
+   RENDER MOVIES
 ================================================= */
-function render(list){
-  const box = document.getElementById("movieRow");
-  box.innerHTML = "";
+function renderMovies(list){
+  let box=document.getElementById("movieGrid");
+  box.innerHTML="";
   list.forEach(m=>{
-    box.innerHTML += `
-      <div class="card">
-        <img src="${m.poster}">
-        <div class="info">${m.title}</div>
+    box.innerHTML+=`
+    <div class="card">
+      <img src="${m.poster}">
+      <div class="info">
+        <strong>${m.title}</strong>
+        <button class="watch" onclick="runAds('${m.watch}')">Watch</button>
+        <button class="download" onclick="runAds('${m.download}')">Download</button>
       </div>
-    `;
+    </div>`;
   });
 }
 
 /* =================================================
-   🎯 CATEGORY FILTER
+   CATEGORY FILTER
 ================================================= */
-function filterMovies(cat){
-  document.querySelectorAll("nav button")
-    .forEach(b=>b.classList.remove("active"));
-  event.target.classList.add("active");
+function filterCategory(cat,btn){
+  document.querySelectorAll(".bottom-nav button").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
 
   document.getElementById("sectionTitle").innerText =
     cat==="all" ? "All Movies" : cat.toUpperCase();
 
   if(cat==="all"){
-    render(movies);
+    renderMovies(movies);
   }else{
-    render(movies.filter(m=>m.category===cat));
+    renderMovies(movies.filter(m=>m.category===cat));
   }
 }
 
 /* =================================================
-   🚀 INIT
+   ADS SYSTEM
 ================================================= */
-render(movies);
+function runAds(finalURL){
+  window.open(POP_AD_URL,"_blank");
+  document.getElementById("adBox").style.display="flex";
+  document.getElementById("adLink").href=DIRECT_AD_URL;
+
+  let t=AD_TIMER;
+  document.getElementById("adTimer").innerText="Wait "+t+" sec";
+  let timer=setInterval(()=>{
+    t--;
+    document.getElementById("adTimer").innerText="Wait "+t+" sec";
+    if(t<=0){
+      clearInterval(timer);
+      document.getElementById("adBox").style.display="none";
+      window.location.href=finalURL;
+    }
+  },1000);
+}
+
+/* INIT */
+renderMovies(movies);
 </script>
 
 </body>
