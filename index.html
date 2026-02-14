@@ -1,170 +1,91 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Movie Hub</title>
+<title>Movie Site</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-*{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:Poppins,Arial,sans-serif;
-  background:#0b1220;
-  color:#fff;
-}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+body{background:#0b0b0b;color:#fff}
 
 /* HEADER */
-header{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:10px 14px;
-  background:#020617;
-  position:sticky;
-  top:0;
+.navbar{
+  position:fixed;top:0;left:0;width:100%;
+  display:flex;align-items:center;
+  justify-content:space-between;
+  padding:12px 20px;
+  background:rgba(0,0,0,0.7);
   z-index:1000;
 }
-
-.logo{
-  font-size:20px;
-  font-weight:700;
-  white-space:nowrap;
-}
+.logo{font-size:22px;font-weight:bold;color:#e50914}
 
 /* SEARCH */
-.search-wrap{
-  flex:1;
-  display:flex;
+.search-box{
+  display:flex;gap:5px;
 }
-
-.search-wrap input{
-  flex:1;
-  padding:8px 10px;
-  border:none;
-  outline:none;
-  border-radius:6px 0 0 6px;
+.search-box input{
+  padding:6px;border:none;border-radius:4px;
 }
-
-.search-wrap button{
-  padding:8px 14px;
-  border:none;
-  background:#22c55e;
-  font-weight:600;
-  border-radius:0 6px 6px 0;
+.search-box button{
+  padding:6px 10px;
+  background:#e50914;color:#fff;
+  border:none;border-radius:4px;
+  cursor:pointer;
 }
 
 /* MENU */
-.menu{
-  display:flex;
-  gap:12px;
-  overflow-x:auto;
-}
-
 .menu a{
+  margin-left:12px;
   color:#fff;
   text-decoration:none;
   font-size:14px;
-  white-space:nowrap;
+  cursor:pointer;
 }
-
-.menu a:hover{color:#22c55e}
+.menu a:hover{color:#e50914}
 
 /* HERO */
 .hero{
-  margin:15px;
-  border-radius:12px;
-  overflow:hidden;
-  position:relative;
-}
-
-.hero img{
-  width:100%;
-  height:200px;
-  object-fit:cover;
-}
-
-.hero-info{
-  position:absolute;
-  bottom:0;
-  left:0;
-  right:0;
-  padding:12px;
-  background:linear-gradient(transparent,rgba(0,0,0,.9));
-}
-
-.hero-title{
-  font-size:18px;
-  font-weight:700;
-}
-
-.hero-btns{
-  margin-top:8px;
+  height:70vh;
+  background:url("https://picsum.photos/1200/600") center/cover;
   display:flex;
-  gap:10px;
+  align-items:flex-end;
+  padding:30px;
+  margin-top:70px;
 }
-
-.hero-btns button{
-  padding:8px 14px;
-  border:none;
-  border-radius:8px;
-  font-weight:600;
+.hero button{
+  padding:10px 18px;
+  background:#e50914;
+  border:none;color:#fff;
+  cursor:pointer;
+  border-radius:5px;
 }
-
-.watch{background:#22c55e}
-.download{background:#3b82f6;color:#fff}
 
 /* SECTION */
-.section{
-  padding:0 15px 20px;
-}
+.section{padding:30px}
+.section h2{margin-bottom:15px}
 
-.section h2{
-  font-size:18px;
-  margin:10px 0;
-}
-
-/* GRID */
+/* MOVIE GRID */
 .grid{
   display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:14px;
+  grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+  gap:15px;
 }
-
 .card{
-  background:#111827;
-  border-radius:10px;
+  background:#111;
+  border-radius:8px;
   overflow:hidden;
 }
-
 .card img{
-  width:100%;
-  height:220px;
-  object-fit:cover;
+  width:100%;display:block;
 }
-
-.card .info{
-  padding:8px;
-}
-
-.card .title{
-  font-size:14px;
-  font-weight:600;
-}
-
-.card .btns{
-  display:flex;
-  gap:8px;
-  margin-top:6px;
-}
-
 .card button{
-  flex:1;
-  padding:6px;
+  width:100%;
+  padding:8px;
   border:none;
-  border-radius:6px;
-  font-size:13px;
-  font-weight:600;
+  background:#e50914;
+  color:#fff;
+  cursor:pointer;
 }
 </style>
 </head>
@@ -172,101 +93,87 @@ header{
 <body>
 
 <!-- HEADER -->
-<header>
-  <div class="logo">MovieHub</div>
+<div class="navbar">
+  <div class="logo">MOVIES</div>
 
-  <div class="search-wrap">
-    <input placeholder="Search movies...">
-    <button>Search</button>
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="Search movie">
+    <button onclick="searchMovie()">Search</button>
   </div>
 
-  <nav class="menu">
-    <a href="#home">Home</a>
-    <a href="#bollywood">Bollywood</a>
-    <a href="#hollywood">Hollywood</a>
-    <a href="#south">South</a>
-    <a href="#webseries">Web Series</a>
-    <a href="#bengali">Bengali Movie</a>
-    <a href="#bengaliweb">Bengali Webseries</a>
-  </nav>
-</header>
+  <div class="menu">
+    <a onclick="scrollToSection('home')">Home</a>
+    <a onclick="scrollToSection('bollywood')">Bollywood</a>
+    <a onclick="scrollToSection('hollywood')">Hollywood</a>
+    <a onclick="scrollToSection('south')">South</a>
+    <a onclick="scrollToSection('webseries')">Web Series</a>
+    <a onclick="scrollToSection('bengali')">Bengali</a>
+  </div>
+</div>
 
 <!-- HERO -->
-<section class="hero" id="home">
-  <img src="https://i.imgur.com/8Km9tLL.jpg">
-  <div class="hero-info">
-    <div class="hero-title">Trending Movie 2024</div>
-    <div class="hero-btns">
-      <button class="watch">Watch</button>
-      <button class="download">Download</button>
-    </div>
-  </div>
-</section>
+<div class="hero" id="home">
+  <button onclick="watchMovie()">Watch / Download</button>
+</div>
 
-<!-- LATEST / TRENDING -->
-<section class="section">
-  <h2>🔥 Latest / Trending</h2>
-  <div class="grid">
-    <div class="card">
-      <img src="https://i.imgur.com/4Z7k6Kx.jpg">
-      <div class="info">
-        <div class="title">Movie One</div>
-        <div class="btns">
-          <button class="watch">Watch</button>
-          <button class="download">Download</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <img src="https://i.imgur.com/6Iej2c3.jpg">
-      <div class="info">
-        <div class="title">Movie Two</div>
-        <div class="btns">
-          <button class="watch">Watch</button>
-          <button class="download">Download</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- CATEGORY SECTIONS -->
-<section class="section" id="bollywood">
+<!-- BOLLYWOOD -->
+<div class="section" id="bollywood">
   <h2>Bollywood</h2>
   <div class="grid">
     <div class="card">
-      <img src="https://i.imgur.com/8Km9tLL.jpg">
-      <div class="info">
-        <div class="title">Bollywood Movie</div>
-        <div class="btns">
-          <button class="watch">Watch</button>
-          <button class="download">Download</button>
-        </div>
-      </div>
+      <img src="https://picsum.photos/200/300?1">
+      <button onclick="watchMovie()">Watch / Download</button>
+    </div>
+    <div class="card">
+      <img src="https://picsum.photos/200/300?2">
+      <button onclick="watchMovie()">Watch / Download</button>
     </div>
   </div>
-</section>
+</div>
 
-<section class="section" id="hollywood">
+<!-- HOLLYWOOD -->
+<div class="section" id="hollywood">
   <h2>Hollywood (Hindi Dubbed)</h2>
-</section>
+  <div class="grid">
+    <div class="card">
+      <img src="https://picsum.photos/200/300?3">
+      <button onclick="watchMovie()">Watch / Download</button>
+    </div>
+  </div>
+</div>
 
-<section class="section" id="south">
+<!-- SOUTH -->
+<div class="section" id="south">
   <h2>South Movies</h2>
-</section>
+  <div class="grid">
+    <div class="card">
+      <img src="https://picsum.photos/200/300?4">
+      <button onclick="watchMovie()">Watch / Download</button>
+    </div>
+  </div>
+</div>
 
-<section class="section" id="webseries">
-  <h2>Web Series</h2>
-</section>
+<!-- JS -->
+<script>
+const WATCH_URL = "https://example.com/watch";
+const DOWNLOAD_URL = "https://example.com/download";
 
-<section class="section" id="bengali">
-  <h2>Bengali Movie</h2>
-</section>
+/* MENU SCROLL */
+function scrollToSection(id){
+  document.getElementById(id).scrollIntoView({behavior:"smooth"});
+}
 
-<section class="section" id="bengaliweb">
-  <h2>Bengali Webseries</h2>
-</section>
+/* WATCH */
+function watchMovie(){
+  window.location.href = WATCH_URL;
+}
+
+/* SEARCH */
+function searchMovie(){
+  const q = document.getElementById("searchInput").value;
+  alert("Search: " + q);
+}
+</script>
 
 </body>
 </html>
