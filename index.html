@@ -1,99 +1,130 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>MovieFlix</title>
+<title>MovieFlix v2</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
-body{background:#000;color:#fff;padding-bottom:70px}
+:root{
+  --bg:#000;
+  --card:#111;
+  --red:#e50914;
+  --text:#fff;
+  --muted:#aaa;
+}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+body{background:var(--bg);color:var(--text);padding-bottom:70px}
 
 /* HEADER */
 header{
-  padding:14px;
-  background:#111;
-  position:sticky;
-  top:0;
-  z-index:10;
+  position:sticky;top:0;z-index:10;
+  padding:12px 15px;
+  background:#000;
+  display:flex;justify-content:space-between;align-items:center
 }
-.logo{
-  color:#e50914;
-  font-size:22px;
-  font-weight:bold;
+.logo{color:var(--red);font-size:22px;font-weight:bold}
+header input{
+  width:55%;padding:6px;border-radius:4px;border:none;
+  background:#222;color:#fff
 }
 
 /* HERO */
 .hero{
   height:200px;
-  background:
-    linear-gradient(to top,rgba(0,0,0,.9),rgba(0,0,0,.2)),
-    url("https://images.unsplash.com/photo-1524985069026-dd778a71c7b4?q=80&w=1920")
-    center/cover;
-  display:flex;
-  align-items:flex-end;
-  padding:15px;
+  background:linear-gradient(to top,#000,rgba(0,0,0,.3)),
+  url("https://upload.wikimedia.org/wikipedia/en/4/4f/Dhoom_3_Film_Poster.jpg") center/cover;
+  display:flex;align-items:flex-end;padding:15px
 }
-.hero h1{font-size:20px}
-
-/* SECTION */
-.section{padding:15px}
-.section h2{margin-bottom:10px;font-size:18px}
 
 /* GRID */
+.section{padding:15px}
 .grid{
   display:grid;
   grid-template-columns:repeat(3,1fr);
-  gap:10px;
+  gap:10px
 }
+
+/* CARD */
 .card{
-  background:#111;
+  background:var(--card);
   border-radius:6px;
   overflow:hidden;
-  transition:.3s;
+  position:relative
 }
-.card:hover{transform:scale(1.05)}
-.card img{
-  width:100%;
-  height:160px;
-  object-fit:cover;
+.card img{width:100%;height:160px;object-fit:cover}
+.play{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:40px;color:#fff;
+  background:rgba(0,0,0,.5)
+}
+.fav{
+  position:absolute;top:6px;right:6px;
+  font-size:18px;color:#fff
 }
 .info{padding:6px}
-.info strong{
-  font-size:12px;
-  display:block;
-  margin-bottom:4px;
+.info strong{font-size:12px}
+.info button{
+  width:100%;margin-top:4px;
+  padding:5px;border:none;border-radius:4px;
+  font-size:11px
 }
-.card button{
-  width:100%;
-  margin-top:4px;
-  padding:6px;
-  font-size:11px;
-  border:none;
-  border-radius:4px;
-}
-.watch{background:#e50914;color:#fff}
+.watch{background:var(--red);color:#fff}
 .download{background:#333;color:#fff}
 
+/* SKELETON */
+.skeleton{
+  height:160px;
+  background:linear-gradient(90deg,#222,#333,#222);
+  animation:load 1.2s infinite
+}
+@keyframes load{
+  0%{background-position:-200px}
+  100%{background-position:200px}
+}
+
+/* MODAL */
+#modal{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.9);
+  display:none;z-index:999;
+  align-items:center;justify-content:center
+}
+#modalBox{
+  background:#111;padding:15px;border-radius:6px;
+  width:90%
+}
+
+/* AD BOX */
+#adBox{
+  display:none;
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.95);
+  z-index:1000;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center
+}
+#adTimer{color:var(--red);margin-top:10px}
+
+/* ADMIN */
+#admin{
+  display:none;position:fixed;inset:0;
+  background:#000;z-index:1000;
+  padding:20px
+}
+#admin input,select,button{
+  width:100%;padding:8px;margin-top:8px
+}
+
 /* BOTTOM NAV */
-.bottom-nav{
-  position:fixed;
-  bottom:0;
-  left:0;
-  width:100%;
-  background:#111;
-  display:flex;
-  justify-content:space-around;
-  padding:8px 0;
-  border-top:1px solid #222;
+.nav{
+  position:fixed;bottom:0;left:0;width:100%;
+  background:#111;display:flex;
+  justify-content:space-around;padding:8px 0
 }
-.bottom-nav button{
-  background:none;
-  border:none;
-  color:#aaa;
-  font-size:12px;
-}
-.bottom-nav button.active{color:#e50914}
+.nav button{background:none;border:none;color:#aaa}
+.nav .active{color:var(--red)}
 </style>
 </head>
 
@@ -101,94 +132,149 @@ header{
 
 <header>
   <div class="logo">MovieFlix</div>
+  <input placeholder="Search…" oninput="search(this.value)">
 </header>
 
-<div class="hero">
-  <h1>Featured Movie</h1>
-</div>
+<div class="hero"><h2>Featured</h2></div>
 
 <div class="section">
-  <h2 id="sectionTitle">All Movies</h2>
-  <div class="grid" id="movieGrid"></div>
+  <div class="grid" id="grid"></div>
 </div>
 
-<div class="bottom-nav">
-  <button class="active" onclick="filterCategory('all',this)">Home</button>
-  <button onclick="filterCategory('bollywood',this)">Bollywood</button>
-  <button onclick="filterCategory('hollywood',this)">Hollywood</button>
-  <button onclick="filterCategory('south',this)">South</button>
+<!-- MODAL -->
+<div id="modal" onclick="closeModal()">
+  <div id="modalBox" onclick="event.stopPropagation()"></div>
+</div>
+
+<!-- AD -->
+<div id="adBox">
+  <h3>Advertisement</h3>
+  <div id="adTimer"></div>
+</div>
+
+<!-- ADMIN -->
+<div id="admin">
+  <h2>Admin Panel</h2>
+  <input id="apass" placeholder="Password">
+  <button onclick="login()">Login</button>
+  <div id="adminForm" style="display:none">
+    <input id="title" placeholder="Title">
+    <input id="poster" placeholder="Poster URL">
+    <input id="watch" placeholder="Watch link">
+    <input id="down" placeholder="Download link">
+    <button onclick="addMovie()">Add Movie</button>
+    <button onclick="closeAdmin()">Close</button>
+  </div>
+</div>
+
+<div class="nav">
+  <button class="active">Home</button>
+  <button onclick="openAdmin()">Admin</button>
 </div>
 
 <script>
-/* ===============================
-   VERSION 2 – STEP 1 BASE
-=============================== */
+/* ===== CONFIG ===== */
+const AD_POP="https://example.com";
+const AD_DELAY=5;
 
-/* ---------- DEFAULT MOVIES ---------- */
-const defaultMovies = [
+/* ===== STORAGE ===== */
+let movies=JSON.parse(localStorage.getItem("movies")||"[]");
+let favs=JSON.parse(localStorage.getItem("favs")||"[]");
+let adminPass=localStorage.getItem("ap")||"admin123";
+
+/* ===== INIT ===== */
+if(!movies.length){
+ movies=[
   {
-    title:"Dhoom 3",
-    poster:"https://upload.wikimedia.org/wikipedia/en/4/4f/Dhoom_3_Film_Poster.jpg",
-    watch:"https://youtube.com",
-    download:"https://example.com",
-    category:"bollywood"
-  },
-  {
-    title:"Love Me Love Me",
-    poster:"https://www.mymovies.it/film/2026/love-me-love-me/poster/0/",
-    watch:"https://youtu.be/B7prWpweShU",
-    download:"#",
-    category:"hollywood"
+   title:"Dhoom 3",
+   poster:"https://upload.wikimedia.org/wikipedia/en/4/4f/Dhoom_3_Film_Poster.jpg",
+   watch:"https://youtu.be/B7prWpweShU",
+   down:"https://example.com"
   }
-];
+ ];
+ localStorage.setItem("movies",JSON.stringify(movies));
+}
+render(movies);
 
-/* ---------- LOAD MOVIES FROM LOCAL STORAGE ---------- */
-function loadMovies(){
-  let stored = localStorage.getItem("movies_v2");
+/* ===== RENDER ===== */
+function render(list){
+ let g=document.getElementById("grid");
+ g.innerHTML="";
+ list.forEach((m,i)=>{
+  g.innerHTML+=`
+  <div class="card">
+   <img src="${m.poster}">
+   <div class="play" onclick="details(${i})">▶</div>
+   <div class="fav" onclick="toggleFav(${i})">
+    ${favs.includes(i)?"❤️":"🤍"}
+   </div>
+   <div class="info">
+    <strong>${m.title}</strong>
+    <button class="watch" onclick="ads('${m.watch}')">Watch</button>
+    <button class="download" onclick="ads('${m.down}')">Download</button>
+   </div>
+  </div>`;
+ });
+}
 
-  if(!stored){
-    // First time only
-    localStorage.setItem("movies_v2", JSON.stringify(defaultMovies));
-    return defaultMovies;
+/* ===== SEARCH ===== */
+function search(v){
+ render(movies.filter(m=>m.title.toLowerCase().includes(v.toLowerCase())));
+}
+
+/* ===== MODAL ===== */
+function details(i){
+ modal.style.display="flex";
+ modalBox.innerHTML=`
+  <h3>${movies[i].title}</h3>
+  <img src="${movies[i].poster}" style="width:100%;margin-top:10px">
+ `;
+}
+function closeModal(){modal.style.display="none"}
+
+/* ===== FAV ===== */
+function toggleFav(i){
+ if(favs.includes(i))favs=favs.filter(x=>x!=i);
+ else favs.push(i);
+ localStorage.setItem("favs",JSON.stringify(favs));
+ render(movies);
+}
+
+/* ===== ADS ===== */
+function ads(url){
+ window.open(AD_POP,"_blank");
+ adBox.style.display="flex";
+ let t=AD_DELAY;
+ adTimer.innerText="Wait "+t+" sec";
+ let x=setInterval(()=>{
+  t--;adTimer.innerText="Wait "+t+" sec";
+  if(t<=0){
+   clearInterval(x);
+   adBox.style.display="none";
+   window.location.href=url;
   }
-
-  return JSON.parse(stored);
+ },1000);
 }
 
-let movies = loadMovies();
-
-/* ---------- RENDER MOVIES ---------- */
-function renderMovies(list){
-  const grid = document.getElementById("movieGrid");
-  grid.innerHTML = "";
-
-  list.forEach(m=>{
-    grid.innerHTML += `
-      <div class="card">
-        <img src="${m.poster}">
-        <div class="info">
-          <strong>${m.title}</strong>
-          <button class="watch" onclick="handleWatch('${m.watch}')">Watch</button>
-          <button class="download" onclick="handleDownload('${m.download}')">Download</button>
-        </div>
-      </div>
-    `;
-  });
+/* ===== ADMIN ===== */
+function openAdmin(){admin.style.display="block"}
+function closeAdmin(){admin.style.display="none"}
+function login(){
+ if(apass.value===adminPass){
+  adminForm.style.display="block";
+ }else alert("Wrong password");
 }
-
-/* ---------- SAFE CLICK HANDLERS (NO ADS YET) ---------- */
-function handleWatch(url){
-  window.open(url, "_blank");
+function addMovie(){
+ movies.push({
+  title:title.value,
+  poster:poster.value,
+  watch:watch.value,
+  down:down.value
+ });
+ localStorage.setItem("movies",JSON.stringify(movies));
+ render(movies);
+ alert("Movie Added");
 }
-
-function handleDownload(url){
-  window.open(url, "_blank");
-}
-
-/* ---------- INIT ---------- */
-renderMovies(movies);
 </script>
-
-
 </body>
 </html>
