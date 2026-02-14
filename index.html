@@ -1,271 +1,242 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>MovieFlix App</title>
+<title>MovieFlix – Netflix Style</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-/* =================================================
-   GLOBAL STYLE (Netflix‑like Dark Theme)
-================================================= */
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:Arial,Helvetica,sans-serif;
+:root{
+  --bg:#000;
+  --card:#111;
+  --red:#e50914;
+  --text:#fff;
+  --muted:#aaa;
 }
-body{
-  background:#000;
-  color:#fff;
-  padding-bottom:70px; /* bottom nav space */
-}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
+body{background:var(--bg);color:var(--text);overflow-x:hidden;padding-bottom:70px}
 
-/* =================================================
-   HEADER
-================================================= */
+/* HEADER */
 header{
-  padding:15px;
-  background:#111;
-  position:sticky;
-  top:0;
-  z-index:10;
+  position:fixed;top:0;width:100%;z-index:20;
+  padding:12px 16px;
+  display:flex;justify-content:space-between;align-items:center;
+  background:linear-gradient(to bottom,rgba(0,0,0,.9),transparent);
 }
-.logo{
-  color:#e50914;
-  font-size:22px;
-  font-weight:bold;
-}
-
-/* =================================================
-   HERO BANNER
-================================================= */
-.hero{
-  height:200px;
-  background:linear-gradient(to top,rgba(0,0,0,.9),rgba(0,0,0,.2)),
-  url("https://upload.wikimedia.org/wikipedia/en/4/4f/Dhoom_3_Film_Poster.jpg") center/cover;
-  display:flex;
-  align-items:flex-end;
-  padding:15px;
-}
-.hero h1{
-  font-size:20px;
+.logo{font-size:22px;font-weight:bold;color:var(--red)}
+.search{
+  background:#222;border:none;color:#fff;
+  padding:6px 10px;border-radius:20px;width:120px
 }
 
-/* =================================================
-   MOVIE SECTION
-================================================= */
-.section{
-  padding:15px;
-}
-.section h2{
-  margin-bottom:10px;
-  font-size:18px;
-}
+/* HERO */
+.hero{margin-top:55px;height:220px;overflow:hidden;position:relative}
+.slides{display:flex;height:100%;transition:.6s}
+.slide{min-width:100%;position:relative}
+.slide img{width:100%;height:100%;object-fit:cover;filter:brightness(.7)}
+.slide .caption{position:absolute;bottom:15px;left:15px}
+.slide h2{font-size:18px}
+.dots{position:absolute;bottom:10px;right:15px;display:flex;gap:6px}
+.dots span{width:8px;height:8px;border-radius:50%;background:#555}
+.dots .active{background:var(--red)}
 
-/* GRID */
-.grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:10px;
-}
-
-/* CARD */
+/* SECTION */
+.section{padding:15px}
+.row{display:flex;gap:10px;overflow-x:auto}
+.row::-webkit-scrollbar{display:none}
 .card{
-  background:#111;
-  border-radius:6px;
-  overflow:hidden;
+  min-width:130px;background:var(--card);
+  border-radius:6px;overflow:hidden;position:relative;
+  transition:.3s
 }
-.card img{
-  width:100%;
-  height:160px;
-  object-fit:cover;
+.card:hover{transform:scale(1.08)}
+.card img{width:100%;height:180px;object-fit:cover}
+.card p{text-align:center;font-size:12px;padding:6px}
+.play{
+  position:absolute;inset:0;display:flex;
+  align-items:center;justify-content:center;
+  font-size:40px;background:rgba(0,0,0,.4);
+  opacity:0;transition:.3s
 }
-.card .info{
-  padding:6px;
+.card:hover .play{opacity:1}
+.like{
+  position:absolute;top:6px;right:6px;
+  font-size:18px;color:#fff
 }
-.card .info strong{
-  font-size:12px;
-  display:block;
-}
-.card button{
-  width:100%;
-  margin-top:4px;
-  padding:5px;
-  font-size:11px;
-  border:none;
-  border-radius:4px;
-}
-.watch{background:#e50914;color:#fff}
-.download{background:#333;color:#fff}
+.like.active{color:red}
 
-/* =================================================
-   AD OVERLAY
-================================================= */
-#adBox{
-  display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.9);
-  z-index:999;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
+/* MODAL */
+#modal{
+  position:fixed;inset:0;background:rgba(0,0,0,.9);
+  display:none;z-index:999;padding:20px
 }
-#adBox a{
-  color:#fff;
-  margin-bottom:10px;
+#modalContent{max-width:600px;margin:auto}
+#modal iframe,#modal video{width:100%;height:220px}
+.close{margin-top:10px;background:var(--red);border:none;color:#fff;padding:8px;width:100%}
+
+/* SKELETON */
+.skeleton{
+  min-width:130px;height:220px;
+  background:linear-gradient(90deg,#222,#333,#222);
+  animation:load 1.5s infinite
 }
-#adTimer{
-  color:#e50914;
+@keyframes load{
+  0%{background-position:-200px}
+  100%{background-position:200px}
 }
 
-/* =================================================
-   BOTTOM NAV (APP‑LIKE)
-================================================= */
+/* BOTTOM NAV */
 .bottom-nav{
-  position:fixed;
-  bottom:0;
-  left:0;
-  width:100%;
-  background:#111;
-  display:flex;
-  justify-content:space-around;
-  padding:8px 0;
-  border-top:1px solid #222;
+  position:fixed;bottom:0;width:100%;
+  background:#111;display:flex;
+  justify-content:space-around;padding:10px 0;
+  border-top:1px solid #222
 }
-.bottom-nav button{
-  background:none;
-  border:none;
-  color:#aaa;
-  font-size:12px;
+.bottom-nav div{font-size:11px;color:#aaa}
+.bottom-nav .active{color:var(--red)}
+
+/* ADMIN */
+#admin{
+  position:fixed;inset:0;background:#000;
+  color:#fff;display:none;z-index:1000;padding:20px
 }
-.bottom-nav button.active{
-  color:#e50914;
+#admin input,#admin button{
+  width:100%;padding:8px;margin:6px 0
 }
 </style>
 </head>
 
 <body>
 
-<!-- ================= HEADER ================= -->
 <header>
   <div class="logo">MovieFlix</div>
+  <input class="search" placeholder="Search" oninput="searchMovie(this.value)">
 </header>
 
-<!-- ================= HERO ================= -->
+<!-- HERO -->
 <div class="hero">
-  <h1>Featured Movie</h1>
+  <div class="slides" id="slides">
+    <div class="slide"><img src="https://images.unsplash.com/photo-1524985069026-dd778a71c7b4?q=80&w=1920"><div class="caption"><h2>Action Hit</h2></div></div>
+    <div class="slide"><img src="https://images.unsplash.com/photo-1517602302552-471fe67acf66?q=80&w=1920"><div class="caption"><h2>Romantic Drama</h2></div></div>
+  </div>
+  <div class="dots"><span class="active"></span><span></span></div>
 </div>
 
-<!-- ================= MOVIES ================= -->
+<!-- MOVIES -->
 <div class="section">
-  <h2 id="sectionTitle">All Movies</h2>
-  <div class="grid" id="movieGrid"></div>
+  <h3>Popular</h3>
+  <div class="row" id="movies"></div>
 </div>
 
-<!-- ================= AD BOX ================= -->
-<div id="adBox">
-  <a id="adLink" href="#" target="_blank">Advertisement</a>
-  <div id="adTimer">Wait...</div>
+<!-- MODAL -->
+<div id="modal">
+  <div id="modalContent"></div>
+  <button class="close" onclick="closeModal()">Close</button>
 </div>
 
-<!-- ================= BOTTOM NAV ================= -->
+<!-- ADMIN -->
+<div id="admin">
+  <h3>Admin Panel</h3>
+  <input type="password" id="adminPass" placeholder="Password">
+  <button onclick="adminLogin()">Login</button>
+  <div id="adminArea" style="display:none">
+    <input id="title" placeholder="Movie Title">
+    <input id="poster" placeholder="Poster URL">
+    <input id="video" placeholder="YouTube / MP4 link">
+    <button onclick="addMovie()">Add Movie</button>
+    <input id="newPass" placeholder="New Admin Password">
+    <button onclick="changePass()">Change Password</button>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
 <div class="bottom-nav">
-  <button class="active" onclick="filterCategory('all',this)">Home</button>
-  <button onclick="filterCategory('bollywood',this)">Bollywood</button>
-  <button onclick="filterCategory('hollywood',this)">Hollywood</button>
-  <button onclick="filterCategory('south',this)">South</button>
+  <div class="active">Home</div>
+  <div onclick="openAdmin()">Admin</div>
 </div>
 
 <script>
-/* =================================================
-   CONFIG
-================================================= */
-const DIRECT_AD_URL = "https://YOUR_DIRECT_AD_LINK";
-const POP_AD_URL = "https://YOUR_POP_AD_LINK";
-const AD_TIMER = 5;
+/* DATA */
+let movies=JSON.parse(localStorage.getItem("movies")||"[]");
+let likes=JSON.parse(localStorage.getItem("likes")||"[]");
 
-/* =================================================
-   MOVIE DATA (এখানেই future এ movie add করবে)
-================================================= */
-let movies = [
-{
- title:"Dhoom 3",
- poster:"https://upload.wikimedia.org/wikipedia/en/4/4f/Dhoom_3_Film_Poster.jpg",
- watch:"https://youtube.com",
- download:"https://example.com",
- category:"bollywood"
-},
-{
- title:"Love Me Love Me",
- poster:"https://www.mymovies.it/film/2026/love-me-love-me/poster/0/",
- watch:"https://youtu.be/B7prWpweShU",
- download:"https://hubcloud.foo/drive/ybfq1tegjnbt1s1",
- category:"hollywood"
-}
-];
+/* INIT */
+setTimeout(renderMovies,1200);
 
-/* =================================================
-   RENDER MOVIES
-================================================= */
-function renderMovies(list){
-  let box=document.getElementById("movieGrid");
-  box.innerHTML="";
-  list.forEach(m=>{
-    box.innerHTML+=`
+/* HERO SLIDER */
+let i=0;
+setInterval(()=>{
+  const s=document.getElementById("slides");
+  const d=document.querySelectorAll(".dots span");
+  i=(i+1)%d.length;
+  s.style.transform=`translateX(-${i*100}%)`;
+  d.forEach(x=>x.classList.remove("active"));
+  d[i].classList.add("active");
+},3500);
+
+/* RENDER */
+function renderMovies(list=movies){
+  const m=document.getElementById("movies");
+  m.innerHTML="";
+  if(!list.length){
+    for(let i=0;i<4;i++)m.innerHTML+=`<div class="skeleton"></div>`;
+    return;
+  }
+  list.forEach((x,idx)=>{
+    m.innerHTML+=`
     <div class="card">
-      <img src="${m.poster}">
-      <div class="info">
-        <strong>${m.title}</strong>
-        <button class="watch" onclick="runAds('${m.watch}')">Watch</button>
-        <button class="download" onclick="runAds('${m.download}')">Download</button>
-      </div>
+      <img src="${x.poster}">
+      <div class="play" onclick="openModal(${idx})">▶</div>
+      <div class="like ${likes.includes(idx)?'active':''}" onclick="toggleLike(event,${idx})">❤</div>
+      <p>${x.title}</p>
     </div>`;
   });
 }
 
-/* =================================================
-   CATEGORY FILTER
-================================================= */
-function filterCategory(cat,btn){
-  document.querySelectorAll(".bottom-nav button").forEach(b=>b.classList.remove("active"));
-  btn.classList.add("active");
-
-  document.getElementById("sectionTitle").innerText =
-    cat==="all" ? "All Movies" : cat.toUpperCase();
-
-  if(cat==="all"){
-    renderMovies(movies);
+/* MODAL */
+function openModal(i){
+  const x=movies[i];
+  let html="";
+  if(x.video.includes("youtube")){
+    const id=x.video.split("v=")[1];
+    html=`<iframe src="https://www.youtube.com/embed/${id}" allowfullscreen></iframe>`;
   }else{
-    renderMovies(movies.filter(m=>m.category===cat));
+    html=`<video controls src="${x.video}"></video>`;
   }
+  document.getElementById("modalContent").innerHTML=`<h3>${x.title}</h3>${html}`;
+  document.getElementById("modal").style.display="block";
+}
+function closeModal(){modal.style.display="none"}
+
+/* SEARCH */
+function searchMovie(q){
+  q=q.toLowerCase();
+  renderMovies(movies.filter(x=>x.title.toLowerCase().includes(q)));
 }
 
-/* =================================================
-   ADS SYSTEM
-================================================= */
-function runAds(finalURL){
-  window.open(POP_AD_URL,"_blank");
-  document.getElementById("adBox").style.display="flex";
-  document.getElementById("adLink").href=DIRECT_AD_URL;
-
-  let t=AD_TIMER;
-  document.getElementById("adTimer").innerText="Wait "+t+" sec";
-  let timer=setInterval(()=>{
-    t--;
-    document.getElementById("adTimer").innerText="Wait "+t+" sec";
-    if(t<=0){
-      clearInterval(timer);
-      document.getElementById("adBox").style.display="none";
-      window.location.href=finalURL;
-    }
-  },1000);
+/* LIKE */
+function toggleLike(e,i){
+  e.stopPropagation();
+  likes.includes(i)?likes=likes.filter(x=>x!==i):likes.push(i);
+  localStorage.setItem("likes",JSON.stringify(likes));
+  renderMovies();
 }
 
-/* INIT */
-renderMovies(movies);
+/* ADMIN */
+function openAdmin(){admin.style.display="block"}
+function adminLogin(){
+  if(adminPass.value===(localStorage.getItem("adminPass")||"admin123"))
+    adminArea.style.display="block";
+}
+function addMovie(){
+  movies.push({title:title.value,poster:poster.value,video:video.value});
+  localStorage.setItem("movies",JSON.stringify(movies));
+  renderMovies();
+}
+function changePass(){
+  localStorage.setItem("adminPass",newPass.value);
+  alert("Password changed");
+}
 </script>
 
 </body>
