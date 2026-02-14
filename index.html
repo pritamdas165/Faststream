@@ -7,266 +7,203 @@
 
 <style>
 :root{
-  --bg:#000;
-  --card:#141414;
-  --red:#e50914;
-  --text:#fff;
-  --muted:#999;
+ --bg:#000;
+ --card:#141414;
+ --red:#e50914;
+ --text:#fff;
+ --muted:#777;
 }
-*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,Helvetica,sans-serif}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
 body{background:var(--bg);color:var(--text);padding-bottom:70px}
 
 /* Header */
-header{
-  padding:12px 16px;
-  font-size:20px;
-  font-weight:bold;
-  color:var(--red);
-}
+header{padding:14px;font-size:20px;color:var(--red);font-weight:bold}
 
 /* Search */
-#searchBox{
-  width:94%;
-  margin:10px auto;
-  display:block;
-  padding:8px 12px;
-  border-radius:20px;
-  border:none;
-  background:#222;
-  color:#fff;
-}
+#search{width:94%;margin:10px auto;display:block;
+ padding:8px;border-radius:20px;border:none;background:#222;color:#fff}
 
 /* Hero */
-#hero{position:relative;height:160px;overflow:hidden}
-.hero-slide{
-  position:absolute;inset:0;
-  background-size:cover;
-  background-position:center;
-  opacity:0;transition:.8s
-}
+#hero{height:160px;position:relative;overflow:hidden}
+.hero-slide{position:absolute;inset:0;background-size:cover;
+ background-position:center;opacity:0;transition:.8s}
 .hero-slide.active{opacity:1}
-.hero-dots{
-  position:absolute;bottom:8px;width:100%;text-align:center
-}
-.hero-dots span{
-  display:inline-block;width:8px;height:8px;
-  border-radius:50%;background:#555;margin:0 3px
-}
-.hero-dots .active{background:var(--red)}
 
 /* Categories */
-#categories{
-  display:flex;gap:10px;overflow-x:auto;padding:10px
-}
-#categories button{
-  background:#222;color:#fff;border:none;
-  padding:6px 14px;border-radius:20px
-}
+#categories{display:flex;gap:10px;overflow-x:auto;padding:10px}
+#categories button{background:#222;color:#fff;border:none;
+ padding:6px 14px;border-radius:20px}
 #categories button.active{background:var(--red)}
 
+/* Skeleton */
+.skeleton{
+ background:linear-gradient(90deg,#222,#333,#222);
+ background-size:200% 100%;
+ animation:sk 1.5s infinite;
+ height:160px;border-radius:6px
+}
+@keyframes sk{0%{background-position:200%}100%{background-position:-200%}}
+
 /* Movies */
-#movies{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(110px,1fr));
-  gap:10px;padding:10px
-}
-.movie{
-  background:var(--card);
-  border-radius:6px;overflow:hidden;
-  position:relative;cursor:pointer
-}
+#movies{display:grid;
+ grid-template-columns:repeat(auto-fill,minmax(110px,1fr));
+ gap:10px;padding:10px}
+.movie{background:var(--card);border-radius:6px;overflow:hidden;
+ position:relative;cursor:pointer}
 .movie img{width:100%;height:160px;object-fit:cover}
-.movie p{font-size:13px;padding:6px;text-align:center}
-.play{
-  position:absolute;inset:0;
-  display:flex;align-items:center;justify-content:center;
-  font-size:40px;color:#fff;
-  background:rgba(0,0,0,.5);
-  opacity:0;transition:.3s
-}
+.movie p{text-align:center;font-size:13px;padding:6px}
+
+/* Play */
+.play{position:absolute;inset:0;display:flex;
+ align-items:center;justify-content:center;
+ background:rgba(0,0,0,.5);font-size:36px;opacity:0}
 .movie:hover .play{opacity:1}
 
-/* Bottom nav */
-nav{
-  position:fixed;bottom:0;left:0;right:0;
-  background:#111;display:flex;
-  justify-content:space-around;padding:10px
-}
-nav button{
-  background:none;border:none;
-  color:#aaa;font-size:14px
-}
+/* Like */
+.like{position:absolute;top:6px;right:6px;font-size:18px}
+.like.active{color:var(--red)}
+
+/* Nav */
+nav{position:fixed;bottom:0;left:0;right:0;
+ background:#111;display:flex;justify-content:space-around;padding:10px}
+nav button{background:none;border:none;color:#aaa}
 nav button.active{color:var(--red)}
 
 /* Modal */
-#modal{
-  position:fixed;inset:0;
-  background:rgba(0,0,0,.9);
-  display:none;align-items:center;
-  justify-content:center;z-index:999
-}
-#modalContent{
-  background:#111;padding:15px;
-  width:90%;max-width:300px
-}
-#modalContent img{width:100%;border-radius:6px}
-#modalContent button{
-  width:100%;margin-top:10px;
-  padding:8px;background:var(--red);
-  border:none;color:#fff
-}
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.9);
+ display:none;align-items:center;justify-content:center}
+#modal div{background:#111;padding:12px;width:90%;max-width:320px}
+#modal img{width:100%;border-radius:6px}
 
 /* Admin */
-#admin{
-  position:fixed;inset:0;
-  background:#000;display:none;
-  padding:20px;overflow:auto
-}
+#admin{position:fixed;inset:0;background:#000;
+ display:none;padding:20px;overflow:auto}
 #admin input{width:100%;padding:8px;margin:6px 0}
-#admin button{
-  width:100%;padding:10px;
-  background:var(--red);
-  border:none;color:#fff;margin-top:6px
-}
+#admin button{width:100%;padding:10px;
+ background:var(--red);border:none;color:#fff}
 </style>
 </head>
 
 <body>
 
 <header>FastStream</header>
+<input id="search" placeholder="Search movies..." oninput="renderMovies()">
 
-<input id="searchBox" placeholder="Search movies..." oninput="renderMovies()">
+<div id="hero"></div>
+<div id="categories"></div>
 
-<div id="hero">
-  <div class="hero-dots" id="heroDots"></div>
+<div id="movies">
+ <div class="skeleton"></div>
+ <div class="skeleton"></div>
+ <div class="skeleton"></div>
 </div>
 
-<div id="categories"></div>
-<div id="movies"></div>
-
 <nav>
-  <button class="active" onclick="setNav(this)">Home</button>
-  <button onclick="setNav(this);openAdmin()">Admin</button>
+ <button class="active">Home</button>
+ <button onclick="openAdmin()">Admin</button>
 </nav>
 
 <!-- Modal -->
 <div id="modal" onclick="closeModal()">
-  <div id="modalContent" onclick="event.stopPropagation()">
-    <img id="modalImg">
-    <h3 id="modalTitle"></h3>
-    <button onclick="alert('Demo Play')">▶ Play</button>
-  </div>
+ <div onclick="event.stopPropagation()">
+  <img id="mImg">
+  <h3 id="mTitle"></h3>
+  <button onclick="playMovie()">▶ Play</button>
+ </div>
 </div>
 
 <!-- Admin -->
 <div id="admin">
-  <input type="password" id="adminPass" placeholder="Admin password">
-  <button onclick="login()">Login</button>
+ <input type="password" id="pass" placeholder="Password">
+ <button onclick="login()">Login</button>
 
-  <div id="adminForm" style="display:none">
-    <input id="mTitle" placeholder="Movie title">
-    <input id="mPoster" placeholder="Poster URL">
-    <input id="mCat" placeholder="Category">
-    <button onclick="addMovie()">Add Movie</button>
-
-    <input id="newPass" placeholder="New admin password">
-    <button onclick="changePass()">Change Password</button>
-    <button onclick="closeAdmin()">Close</button>
-  </div>
+ <div id="form" style="display:none">
+  <input id="t" placeholder="Title">
+  <input id="p" placeholder="Poster URL">
+  <input id="v" placeholder="Video URL">
+  <input id="c" placeholder="Category">
+  <button onclick="addMovie()">Add Movie</button>
+  <button onclick="admin.style.display='none'">Close</button>
+ </div>
 </div>
 
 <script>
-const heroImages=[
+const heroImgs=[
  "https://picsum.photos/800/400?1",
  "https://picsum.photos/800/400?2"
 ];
-let heroIndex=0;
-
 let movies=JSON.parse(localStorage.getItem("movies")||"[]");
-let adminPassword=localStorage.getItem("adminPass")||"admin123";
-
-/* Init */
-initHero();renderCategories();renderMovies();
+let fav=JSON.parse(localStorage.getItem("fav")||"[]");
+let adminPass=localStorage.getItem("ap")||"admin123";
+let current=null;
 
 /* Hero */
-function initHero(){
- heroImages.forEach((img,i)=>{
-  const d=document.createElement("div");
-  d.className="hero-slide"+(i==0?" active":"");
-  d.style.backgroundImage=`url(${img})`;
-  hero.appendChild(d);
-
-  const s=document.createElement("span");
-  if(i==0)s.classList.add("active");
-  heroDots.appendChild(s);
- });
- setInterval(()=>{
-  const s=document.querySelectorAll(".hero-slide");
-  const d=document.querySelectorAll(".hero-dots span");
-  s[heroIndex].classList.remove("active");
-  d[heroIndex].classList.remove("active");
-  heroIndex=(heroIndex+1)%s.length;
-  s[heroIndex].classList.add("active");
-  d[heroIndex].classList.add("active");
- },3000);
-}
+heroImgs.forEach((i,n)=>{
+ let d=document.createElement("div");
+ d.className="hero-slide"+(n==0?" active":"");
+ d.style.backgroundImage=`url(${i})`;
+ hero.appendChild(d);
+});
 
 /* Categories */
-function renderCategories(){
- ["All","Action","Drama","Comedy","Romance"].forEach(c=>{
-  const b=document.createElement("button");
-  b.innerText=c;b.onclick=()=>renderMovies(c);
-  categories.appendChild(b);
- });
-}
+["All","Action","Drama","Comedy"].forEach(x=>{
+ let b=document.createElement("button");
+ b.innerText=x;
+ b.onclick=()=>renderMovies(x);
+ categories.appendChild(b);
+});
 
-/* Movies */
+/* Render */
+setTimeout(()=>renderMovies(),1200);
+
 function renderMovies(cat="All"){
- const q=searchBox.value.toLowerCase();
  moviesDiv.innerHTML="";
- movies
- .filter(x=>(cat=="All"||x.cat==cat)&&x.title.toLowerCase().includes(q))
- .forEach(x=>{
-  const d=document.createElement("div");
+ const q=search.value.toLowerCase();
+ movies.filter(x=>
+ (cat=="All"||x.cat==cat)&&x.title.toLowerCase().includes(q)
+ ).forEach(x=>{
+  let d=document.createElement("div");
   d.className="movie";
-  d.innerHTML=`<img src="${x.poster}">
-  <div class="play">▶</div><p>${x.title}</p>`;
+  let liked=fav.includes(x.title);
+  d.innerHTML=`
+   <span class="like ${liked?"active":""}" onclick="toggleFav(event,'${x.title}')">❤</span>
+   <img src="${x.poster}">
+   <div class="play">▶</div>
+   <p>${x.title}</p>`;
   d.onclick=()=>openModal(x);
   moviesDiv.appendChild(d);
  });
 }
 
+/* Favourite */
+function toggleFav(e,t){
+ e.stopPropagation();
+ if(fav.includes(t))fav=fav.filter(x=>x!=t);
+ else fav.push(t);
+ localStorage.setItem("fav",JSON.stringify(fav));
+ renderMovies();
+}
+
 /* Modal */
 function openModal(x){
+ current=x;
  modal.style.display="flex";
- modalImg.src=x.poster;
- modalTitle.innerText=x.title;
+ mImg.src=x.poster;
+ mTitle.innerText=x.title;
 }
 function closeModal(){modal.style.display="none"}
+function playMovie(){window.open(current.video,"_blank")}
 
 /* Admin */
 function openAdmin(){admin.style.display="block"}
-function closeAdmin(){admin.style.display="none"}
 function login(){
- if(adminPass.value===adminPassword){
-  adminForm.style.display="block";
- }else alert("Wrong password");
+ if(pass.value===adminPass){form.style.display="block"}
+ else alert("Wrong password");
 }
 function addMovie(){
- movies.push({title:mTitle.value,poster:mPoster.value,cat:mCat.value});
+ movies.push({title:t.value,poster:p.value,video:v.value,cat:c.value});
  localStorage.setItem("movies",JSON.stringify(movies));
- renderMovies();alert("Movie added");
-}
-function changePass(){
- adminPassword=newPass.value;
- localStorage.setItem("adminPass",adminPassword);
- alert("Password changed");
-}
-
-/* Nav */
-function setNav(btn){
- document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
- btn.classList.add("active");
+ alert("Added");renderMovies();
 }
 
 const moviesDiv=document.getElementById("movies");
