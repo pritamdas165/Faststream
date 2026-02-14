@@ -241,20 +241,33 @@ function toggleFav(i){
 }
 
 /* ===== ADS ===== */
-function ads(url){
- window.open(AD_POP,"_blank");
- adBox.style.display="flex";
- let t=AD_DELAY;
- adTimer.innerText="Wait "+t+" sec";
- let x=setInterval(()=>{
-  t--;adTimer.innerText="Wait "+t+" sec";
-  if(t<=0){
-   clearInterval(x);
-   adBox.style.display="none";
-   window.location.href=url;
-  }
- },1000);
+function runAds(finalURL){
+  // popup ad (new tab)
+  window.open(POP_AD_URL, "_blank");
+
+  // show ad box
+  const adBox = document.getElementById("adBox");
+  const adLink = document.getElementById("adLink");
+  const adTimer = document.getElementById("adTimer");
+
+  adBox.style.display = "flex";
+  adLink.href = DIRECT_AD_URL;
+
+  let t = 5;
+  adTimer.innerText = "Wait " + t + " sec";
+
+  let timer = setInterval(()=>{
+    t--;
+    adTimer.innerText = "Wait " + t + " sec";
+
+    if(t <= 0){
+      clearInterval(timer);
+      adBox.style.display = "none";
+      window.location.href = finalURL;
+    }
+  },1000);
 }
+
 
 /* ===== ADMIN ===== */
 function openAdmin(){admin.style.display="block"}
