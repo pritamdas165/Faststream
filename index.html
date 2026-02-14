@@ -1,302 +1,219 @@
-<!DOCTYPE html>
-<html>
+ <!DOCTYPE html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
+<title>MovieFlix v5</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nova Stream</title>
 
 <style>
-:root{
-  --glass:rgba(255,255,255,.08);
-  --blur:blur(14px);
-  --accent:#e50914;
-}
-*{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:system-ui;
-  background:#0b0b0f;
-  color:#fff;
-  overflow-x:hidden;
-}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+body{background:#000;color:#fff;padding-bottom:70px;overflow-x:hidden}
+
+/* HEADER */
 header{
-  position:fixed;
-  top:0;left:0;right:0;
-  padding:14px;
-  background:linear-gradient(#000,transparent);
-  z-index:10;
-  font-weight:bold;
+  position:sticky;top:0;z-index:10;
+  background:#111;padding:12px 15px;
+  display:flex;justify-content:space-between;align-items:center
 }
+.logo{color:#e50914;font-size:22px;font-weight:bold}
+#search{padding:6px;border-radius:4px;border:none;width:120px}
 
-/* PAGE TRANSITION */
-.page{
-  transition:opacity .4s, transform .4s;
-}
-.hide{
-  opacity:0;
-  transform:translateX(40px);
-  pointer-events:none;
-}
-.show{
-  opacity:1;
-  transform:translateX(0);
-}
+/* SECTION */
+.section{padding:15px;position:relative}
 
-/* HERO */
-.hero{
-  margin-top:50px;
-  height:60vh;
-  overflow:hidden;
-  position:relative;
-}
-.hero-slider{
+/* SCROLL GRID */
+.grid{
   display:flex;
-  height:100%;
-  transition:transform .7s ease;
-}
-.hero-slide{min-width:100%; position:relative}
-.hero-slide img{width:100%; height:100%; object-fit:cover}
-.hero-slide::after{
-  content:"";
-  position:absolute;
-  bottom:0;
-  width:100%;
-  height:60%;
-  background:linear-gradient(to top,rgba(0,0,0,.9),transparent);
-}
-.hero-content{
-  position:absolute;
-  bottom:30px;
-  left:16px;
-}
-.hero-content h1{margin:0 0 8px}
-.btn{
-  background:var(--accent);
-  border:none;
-  border-radius:999px;
-  padding:8px 16px;
-  color:white;
-  cursor:pointer;
-}
-.rating{
-  position:absolute;
-  top:15px;
-  right:15px;
-  background:var(--glass);
-  backdrop-filter:var(--blur);
-  padding:6px 10px;
-  border-radius:20px;
-}
-
-/* ROW + ARROWS */
-.section{margin-top:10px}
-.section h3{margin:10px}
-.row-wrap{position:relative}
-.row{
-  display:flex;
-  gap:12px;
+  gap:10px;
   overflow-x:auto;
   scroll-snap-type:x mandatory;
-  padding:10px;
+  scroll-behavior:smooth
 }
-.row::-webkit-scrollbar{display:none}
+.grid::-webkit-scrollbar{display:none}
+
+/* CARD */
 .card{
-  min-width:140px;
+  min-width:150px;
+  background:#111;border-radius:6px;
+  overflow:hidden;position:relative;
   scroll-snap-align:start;
-  border-radius:14px;
-  overflow:hidden;
-  background:var(--glass);
-  backdrop-filter:var(--blur);
-  cursor:pointer;
+  transition:transform .3s
 }
-.card img{width:100%; height:200px; object-fit:cover}
+.card:hover{transform:scale(1.05)}
+.card img{width:100%;height:160px;object-fit:cover}
+.card .info{padding:6px;font-size:12px}
 
-.arrow{
-  position:absolute;
-  top:40%;
+/* LIKE */
+.like{
+  position:absolute;top:6px;right:6px;
   background:rgba(0,0,0,.6);
-  border:none;
-  color:white;
-  font-size:22px;
-  padding:8px;
-  cursor:pointer;
-  z-index:5;
+  padding:4px 6px;border-radius:50%;
+  cursor:pointer
 }
-.arrow.left{left:0}
-.arrow.right{right:0}
+.like.active{color:red}
 
-/* GRID */
-.grid{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:12px;
-  padding:12px 12px 80px;
-}
-.tile{
-  position:relative;
-  border-radius:14px;
-  overflow:hidden;
-  cursor:pointer;
-}
-.tile img{width:100%; height:220px; object-fit:cover}
-.overlay{
-  position:absolute;
-  bottom:0;
-  width:100%;
-  padding:8px;
-  background:linear-gradient(to top,rgba(0,0,0,.9),transparent);
-}
+/* BUTTON */
+button{border:none;border-radius:4px;padding:6px;font-size:11px;cursor:pointer}
+.watch{background:#e50914;color:#fff;width:100%;margin-top:4px}
+.download{background:#333;color:#fff;width:100%;margin-top:4px}
 
-/* DETAILS */
-#details{padding:14px}
-.poster{
-  width:100%;
-  max-height:420px;
-  object-fit:cover;
-  border-radius:16px;
+/* SCROLL ARROWS */
+.arrow{
+  position:absolute;top:40%;
+  background:rgba(0,0,0,.7);
+  padding:8px;border-radius:50%;
+  cursor:pointer;z-index:5
 }
-.glass{
-  background:var(--glass);
-  backdrop-filter:var(--blur);
-  padding:14px;
-  border-radius:16px;
-  margin-top:12px;
-}
+.left{left:5px}
+.right{right:5px}
 
-/* TRAILER OVERLAY */
-#trailerOverlay{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.95);
-  display:none;
-  align-items:center;
-  justify-content:center;
+/* MODAL + SMOOTH */
+#modal{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.9);
   z-index:999;
+  justify-content:center;align-items:center;
+  animation:fade .4s
 }
-#trailerOverlay iframe{
-  width:90%;
-  height:50%;
+@keyframes fade{from{opacity:0}to{opacity:1}}
+#modalContent{
+  background:#111;padding:15px;
+  border-radius:6px;width:90%
 }
-.close{
-  position:absolute;
-  top:15px;
-  right:15px;
-  font-size:20px;
-  cursor:pointer;
+
+/* TRAILER */
+iframe{width:100%;height:200px;margin-top:10px}
+
+/* AD */
+#adBox{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.95);
+  z-index:1000;
+  display:flex;flex-direction:column;
+  justify-content:center;align-items:center
 }
+#adTimer{color:#e50914;margin-top:10px}
+
+/* BOTTOM NAV */
+.bottom-nav{
+  position:fixed;bottom:0;width:100%;
+  background:#111;display:flex;
+  justify-content:space-around;padding:8px 0
+}
+.bottom-nav button{background:none;color:#aaa}
+.bottom-nav .active{color:#e50914}
 </style>
 </head>
 
 <body>
 
-<header>Nova Stream</header>
+<header>
+  <div class="logo">MovieFlix</div>
+  <input id="search" placeholder="Search">
+</header>
 
-<div id="home" class="page show">
-  <div class="hero">
-    <div id="heroSlider" class="hero-slider"></div>
-    <div class="hero-content">
-      <h1 id="heroTitle"></h1>
-      <button class="btn" onclick="openTrailer()">▶ Trailer</button>
-    </div>
-    <div id="heroRating" class="rating"></div>
-  </div>
-
-  <div class="section">
-    <h3>🔥 Trending Now</h3>
-    <div class="row-wrap">
-      <button class="arrow left" onclick="scrollRow('trending',-1)">‹</button>
-      <div id="trending" class="row"></div>
-      <button class="arrow right" onclick="scrollRow('trending',1)">›</button>
-    </div>
-  </div>
-
-  <div class="section">
-    <h3>🆕 Latest Releases</h3>
-    <div class="row-wrap">
-      <button class="arrow left" onclick="scrollRow('latest',-1)">‹</button>
-      <div id="latest" class="row"></div>
-      <button class="arrow right" onclick="scrollRow('latest',1)">›</button>
-    </div>
-  </div>
-
-  <div id="grid" class="grid"></div>
+<div class="section">
+  <div class="arrow left" onclick="scrollGrid(-1)">‹</div>
+  <div class="arrow right" onclick="scrollGrid(1)">›</div>
+  <div class="grid" id="movieGrid"></div>
 </div>
 
-<div id="details" class="page hide"></div>
+<!-- MODAL -->
+<div id="modal" onclick="closeModal()">
+  <div id="modalContent" onclick="event.stopPropagation()"></div>
+</div>
 
-<div id="trailerOverlay">
-  <div class="close" onclick="closeTrailer()">✖</div>
-  <iframe id="trailerFrame" allowfullscreen></iframe>
+<!-- AD -->
+<div id="adBox">
+  <div>Advertisement</div>
+  <div id="adTimer">Wait 5s</div>
+</div>
+
+<div class="bottom-nav">
+  <button class="active">Home</button>
+  <button>Profile</button>
 </div>
 
 <script>
-const API="66cb706";
-let currentTitle="";
+const POP_AD="https://example.com";
+const AD_DELAY=5;
 
-async function load(){
-  const r=await fetch(`https://www.omdbapi.com/?apikey=${API}&s=avengers`);
-  const d=await r.json();
-  buildHero(d.Search.slice(0,5));
-  buildRow("trending",d.Search.slice(0,10));
-  buildRow("latest",d.Search.slice(5,15));
-  buildGrid(d.Search);
+let movies=[
+{
+ title:"Dhoom 3",
+ poster:"https://upload.wikimedia.org/wikipedia/en/4/4f/Dhoom_3_Film_Poster.jpg",
+ trailer:"https://www.youtube.com/embed/yeF_b8EQcK0?autoplay=1",
+ watch:"https://youtube.com",
+ download:"#"
+},
+{
+ title:"Love Me Love Me",
+ poster:"https://www.mymovies.it/film/2026/love-me-love-me/poster/0/",
+ trailer:"https://www.youtube.com/embed/B7prWpweShU?autoplay=1",
+ watch:"#",
+ download:"#"
+}
+];
+
+let likes=JSON.parse(localStorage.getItem("likes"))||[];
+
+function render(list){
+ movieGrid.innerHTML="";
+ list.forEach((m,i)=>{
+  movieGrid.innerHTML+=`
+  <div class="card">
+    <div class="like ${likes.includes(i)?"active":""}" onclick="toggleLike(${i})">♥</div>
+    <img src="${m.poster}" onclick="openModal(${i})">
+    <div class="info">
+      <b>${m.title}</b>
+      <button class="watch" onclick="runAds('${m.watch}')">Watch</button>
+      <button class="download" onclick="runAds('${m.download}')">Download</button>
+    </div>
+  </div>`;
+ });
 }
 
-function buildHero(list){
-  const h=document.getElementById("heroSlider");
-  h.innerHTML="";
-  list.forEach(async m=>{
-    const r=await fetch(`https://www.omdbapi.com/?apikey=${API}&i=${m.imdbID}`);
-    const f=await r.json();
-    const s=document.createElement("div");
-    s.className="hero-slide";
-    s.innerHTML=`<img src="${f.Poster}">`;
-    h.appendChild(s);
-    currentTitle=f.Title;
-    heroTitle.innerText=f.Title;
-    heroRating.innerText="⭐ "+f.imdbRating;
-  });
+function openModal(i){
+ modal.style.display="flex";
+ modalContent.innerHTML=`
+ <h3>${movies[i].title}</h3>
+ <iframe src="${movies[i].trailer}" allow="autoplay"></iframe>
+ `;
+}
+function closeModal(){modal.style.display="none";modalContent.innerHTML=""}
+
+function toggleLike(i){
+ likes.includes(i)?likes=likes.filter(x=>x!==i):likes.push(i);
+ localStorage.setItem("likes",JSON.stringify(likes));
+ render(movies);
 }
 
-function buildRow(id,list){
-  const r=document.getElementById(id);
-  r.innerHTML="";
-  list.forEach(m=>{
-    if(m.Poster==="N/A")return;
-    const c=document.createElement("div");
-    c.className="card";
-    c.innerHTML=`<img src="${m.Poster}">`;
-    r.appendChild(c);
-  });
+function runAds(url){
+ window.open(POP_AD,"_blank");
+ adBox.style.display="flex";
+ let t=AD_DELAY;
+ adTimer.innerText="Wait "+t+"s";
+ let timer=setInterval(()=>{
+  t--;
+  adTimer.innerText="Wait "+t+"s";
+  if(t<=0){
+   clearInterval(timer);
+   adBox.style.display="none";
+   window.location.href=url;
+  }
+ },1000);
 }
 
-function buildGrid(list){
-  const g=document.getElementById("grid");
-  g.innerHTML="";
-  list.forEach(m=>{
-    if(m.Poster==="N/A")return;
-    const t=document.createElement("div");
-    t.className="tile";
-    t.innerHTML=`<img src="${m.Poster}"><div class="overlay">${m.Title}</div>`;
-    g.appendChild(t);
-  });
+function scrollGrid(dir){
+ movieGrid.scrollBy({left:dir*200,behavior:"smooth"});
 }
 
-function scrollRow(id,dir){
-  const row=document.getElementById(id);
-  row.scrollBy({left:dir*200,behavior:"smooth"});
+search.oninput=()=>{
+ let q=search.value.toLowerCase();
+ render(movies.filter(m=>m.title.toLowerCase().includes(q)));
 }
 
-function openTrailer(){
-  trailerOverlay.style.display="flex";
-  trailerFrame.src=`https://www.youtube.com/embed?listType=search&list=${encodeURIComponent(currentTitle+" trailer")}&autoplay=1`;
-}
-function closeTrailer(){
-  trailerOverlay.style.display="none";
-  trailerFrame.src="";
-}
-
-load();
+render(movies);
 </script>
 
 </body>
