@@ -2,211 +2,258 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<title>MovieFlix – Netflix Style</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FastStream</title>
 
 <style>
-:root{
- --bg:#000;
- --card:#141414;
- --red:#e50914;
- --text:#fff;
- --muted:#777;
+/* ===============================
+   GLOBAL RESET
+================================ */
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family: Arial, Helvetica, sans-serif;
 }
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
-body{background:var(--bg);color:var(--text);padding-bottom:70px}
-
-/* Header */
-header{padding:14px;font-size:20px;color:var(--red);font-weight:bold}
-
-/* Search */
-#search{width:94%;margin:10px auto;display:block;
- padding:8px;border-radius:20px;border:none;background:#222;color:#fff}
-
-/* Hero */
-#hero{height:160px;position:relative;overflow:hidden}
-.hero-slide{position:absolute;inset:0;background-size:cover;
- background-position:center;opacity:0;transition:.8s}
-.hero-slide.active{opacity:1}
-
-/* Categories */
-#categories{display:flex;gap:10px;overflow-x:auto;padding:10px}
-#categories button{background:#222;color:#fff;border:none;
- padding:6px 14px;border-radius:20px}
-#categories button.active{background:var(--red)}
-
-/* Skeleton */
-.skeleton{
- background:linear-gradient(90deg,#222,#333,#222);
- background-size:200% 100%;
- animation:sk 1.5s infinite;
- height:160px;border-radius:6px
+body{
+  background:#000;
+  color:#fff;
+  overflow-x:hidden;
 }
-@keyframes sk{0%{background-position:200%}100%{background-position:-200%}}
 
-/* Movies */
-#movies{display:grid;
- grid-template-columns:repeat(auto-fill,minmax(110px,1fr));
- gap:10px;padding:10px}
-.movie{background:var(--card);border-radius:6px;overflow:hidden;
- position:relative;cursor:pointer}
-.movie img{width:100%;height:160px;object-fit:cover}
-.movie p{text-align:center;font-size:13px;padding:6px}
+/* ===============================
+   HEADER (NETFLIX STYLE)
+================================ */
+header{
+  position:fixed;
+  top:0;
+  width:100%;
+  z-index:20;
+  padding:12px 16px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  background:linear-gradient(to bottom,rgba(0,0,0,.9),transparent);
+}
+.logo{
+  font-size:22px;
+  font-weight:bold;
+  color:#e50914;
+}
 
-/* Play */
-.play{position:absolute;inset:0;display:flex;
- align-items:center;justify-content:center;
- background:rgba(0,0,0,.5);font-size:36px;opacity:0}
-.movie:hover .play{opacity:1}
+/* ===============================
+   HERO SLIDER (MOBILE FRIENDLY)
+================================ */
+.hero{
+  margin-top:55px;
+  position:relative;
+  height:220px; /* small banner for mobile */
+  overflow:hidden;
+}
+.slides{
+  display:flex;
+  height:100%;
+  transition:transform .6s ease-in-out;
+}
+.slide{
+  min-width:100%;
+  height:100%;
+  position:relative;
+}
+.slide img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  filter:brightness(.7);
+}
+.slide .caption{
+  position:absolute;
+  bottom:15px;
+  left:15px;
+}
+.slide h2{
+  font-size:18px;
+  margin-bottom:6px;
+}
+.slide p{
+  font-size:12px;
+  color:#ccc;
+}
 
-/* Like */
-.like{position:absolute;top:6px;right:6px;font-size:18px}
-.like.active{color:var(--red)}
+/* DOT INDICATORS */
+.dots{
+  position:absolute;
+  bottom:10px;
+  right:15px;
+  display:flex;
+  gap:6px;
+}
+.dots span{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#666;
+}
+.dots .active{
+  background:#e50914;
+}
 
-/* Nav */
-nav{position:fixed;bottom:0;left:0;right:0;
- background:#111;display:flex;justify-content:space-around;padding:10px}
-nav button{background:none;border:none;color:#aaa}
-nav button.active{color:var(--red)}
+/* ===============================
+   MOVIE SECTION
+================================ */
+.section{
+  padding:15px;
+}
+.section h3{
+  margin-bottom:10px;
+}
 
-/* Modal */
-#modal{position:fixed;inset:0;background:rgba(0,0,0,.9);
- display:none;align-items:center;justify-content:center}
-#modal div{background:#111;padding:12px;width:90%;max-width:320px}
-#modal img{width:100%;border-radius:6px}
+/* MOVIE ROW (NETFLIX STYLE SCROLL) */
+.row{
+  display:flex;
+  gap:10px;
+  overflow-x:auto;
+}
+.row::-webkit-scrollbar{
+  display:none;
+}
+.card{
+  min-width:130px;
+  background:#111;
+  border-radius:6px;
+  overflow:hidden;
+  transition:.3s;
+}
+.card:hover{
+  transform:scale(1.08);
+}
+.card img{
+  width:100%;
+  height:180px;
+  object-fit:cover;
+}
+.card p{
+  padding:6px;
+  font-size:12px;
+  text-align:center;
+}
 
-/* Admin */
-#admin{position:fixed;inset:0;background:#000;
- display:none;padding:20px;overflow:auto}
-#admin input{width:100%;padding:8px;margin:6px 0}
-#admin button{width:100%;padding:10px;
- background:var(--red);border:none;color:#fff}
+/* ===============================
+   BOTTOM NAV (APP STYLE)
+================================ */
+.bottom-nav{
+  position:fixed;
+  bottom:0;
+  width:100%;
+  background:#111;
+  display:flex;
+  justify-content:space-around;
+  padding:10px 0;
+  border-top:1px solid #222;
+}
+.bottom-nav div{
+  font-size:11px;
+  color:#aaa;
+}
+.bottom-nav .active{
+  color:#e50914;
+}
 </style>
 </head>
 
 <body>
 
-<header>FastStream</header>
-<input id="search" placeholder="Search movies..." oninput="renderMovies()">
+<!-- HEADER -->
+<header>
+  <div class="logo">MovieFlix</div>
+</header>
 
-<div id="hero"></div>
-<div id="categories"></div>
+<!-- HERO SLIDER -->
+<div class="hero">
+  <div class="slides" id="slides">
 
-<div id="movies">
- <div class="skeleton"></div>
- <div class="skeleton"></div>
- <div class="skeleton"></div>
+    <!-- SLIDE 1 -->
+    <div class="slide">
+      <img src="https://images.unsplash.com/photo-1524985069026-dd778a71c7b4?q=80&w=1920">
+      <div class="caption">
+        <h2>Action Blockbuster</h2>
+        <p>Watch Now • Full HD</p>
+      </div>
+    </div>
+
+    <!-- SLIDE 2 -->
+    <div class="slide">
+      <img src="https://images.unsplash.com/photo-1517602302552-471fe67acf66?q=80&w=1920">
+      <div class="caption">
+        <h2>Romantic Drama</h2>
+        <p>Trending Movie</p>
+      </div>
+    </div>
+
+    <!-- SLIDE 3 -->
+    <div class="slide">
+      <img src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=1920">
+      <div class="caption">
+        <h2>Thriller Night</h2>
+        <p>Premium Collection</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- DOTS -->
+  <div class="dots" id="dots">
+    <span class="active"></span>
+    <span></span>
+    <span></span>
+  </div>
 </div>
 
-<nav>
- <button class="active">Home</button>
- <button onclick="openAdmin()">Admin</button>
-</nav>
-
-<!-- Modal -->
-<div id="modal" onclick="closeModal()">
- <div onclick="event.stopPropagation()">
-  <img id="mImg">
-  <h3 id="mTitle"></h3>
-  <button onclick="playMovie()">▶ Play</button>
- </div>
+<!-- MOVIE ROW -->
+<div class="section">
+  <h3>Popular on MovieFlix</h3>
+  <div class="row">
+    <div class="card">
+      <img src="https://upload.wikimedia.org/wikipedia/en/4/4f/Dhoom_3_Film_Poster.jpg">
+      <p>Dhoom 3</p>
+    </div>
+    <div class="card">
+      <img src="https://www.mymovies.it/film/2026/love-me-love-me/poster/0/">
+      <p>Love Me Love Me</p>
+    </div>
+    <div class="card">
+      <img src="https://via.placeholder.com/300x450">
+      <p>Coming Soon</p>
+    </div>
+  </div>
 </div>
 
-<!-- Admin -->
-<div id="admin">
- <input type="password" id="pass" placeholder="Password">
- <button onclick="login()">Login</button>
-
- <div id="form" style="display:none">
-  <input id="t" placeholder="Title">
-  <input id="p" placeholder="Poster URL">
-  <input id="v" placeholder="Video URL">
-  <input id="c" placeholder="Category">
-  <button onclick="addMovie()">Add Movie</button>
-  <button onclick="admin.style.display='none'">Close</button>
- </div>
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <div class="active">Home</div>
+  <div>Search</div>
+  <div>Movies</div>
+  <div>Profile</div>
 </div>
 
 <script>
-const heroImgs=[
- "https://picsum.photos/800/400?1",
- "https://picsum.photos/800/400?2"
-];
-let movies=JSON.parse(localStorage.getItem("movies")||"[]");
-let fav=JSON.parse(localStorage.getItem("fav")||"[]");
-let adminPass=localStorage.getItem("ap")||"admin123";
-let current=null;
+/* ===============================
+   HERO AUTOPLAY SLIDER
+================================ */
+let index = 0;
+const slides = document.getElementById("slides");
+const dots = document.querySelectorAll(".dots span");
 
-/* Hero */
-heroImgs.forEach((i,n)=>{
- let d=document.createElement("div");
- d.className="hero-slide"+(n==0?" active":"");
- d.style.backgroundImage=`url(${i})`;
- hero.appendChild(d);
-});
-
-/* Categories */
-["All","Action","Drama","Comedy"].forEach(x=>{
- let b=document.createElement("button");
- b.innerText=x;
- b.onclick=()=>renderMovies(x);
- categories.appendChild(b);
-});
-
-/* Render */
-setTimeout(()=>renderMovies(),1200);
-
-function renderMovies(cat="All"){
- moviesDiv.innerHTML="";
- const q=search.value.toLowerCase();
- movies.filter(x=>
- (cat=="All"||x.cat==cat)&&x.title.toLowerCase().includes(q)
- ).forEach(x=>{
-  let d=document.createElement("div");
-  d.className="movie";
-  let liked=fav.includes(x.title);
-  d.innerHTML=`
-   <span class="like ${liked?"active":""}" onclick="toggleFav(event,'${x.title}')">❤</span>
-   <img src="${x.poster}">
-   <div class="play">▶</div>
-   <p>${x.title}</p>`;
-  d.onclick=()=>openModal(x);
-  moviesDiv.appendChild(d);
- });
+function showSlide(i){
+  slides.style.transform = `translateX(-${i * 100}%)`;
+  dots.forEach(d => d.classList.remove("active"));
+  dots[i].classList.add("active");
 }
 
-/* Favourite */
-function toggleFav(e,t){
- e.stopPropagation();
- if(fav.includes(t))fav=fav.filter(x=>x!=t);
- else fav.push(t);
- localStorage.setItem("fav",JSON.stringify(fav));
- renderMovies();
-}
-
-/* Modal */
-function openModal(x){
- current=x;
- modal.style.display="flex";
- mImg.src=x.poster;
- mTitle.innerText=x.title;
-}
-function closeModal(){modal.style.display="none"}
-function playMovie(){window.open(current.video,"_blank")}
-
-/* Admin */
-function openAdmin(){admin.style.display="block"}
-function login(){
- if(pass.value===adminPass){form.style.display="block"}
- else alert("Wrong password");
-}
-function addMovie(){
- movies.push({title:t.value,poster:p.value,video:v.value,cat:c.value});
- localStorage.setItem("movies",JSON.stringify(movies));
- alert("Added");renderMovies();
-}
-
-const moviesDiv=document.getElementById("movies");
+setInterval(()=>{
+  index = (index + 1) % dots.length;
+  showSlide(index);
+}, 3500);
 </script>
 
 </body>
