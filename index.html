@@ -6,160 +6,306 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
-body{background:#0f0f0f;color:#fff}
-
-/* HEADER */
-header{
-display:flex;align-items:center;justify-content:space-between;
-padding:15px 20px;background:#111;position:sticky;top:0;z-index:10
+/* ===============================
+   GLOBAL RESET & BASIC STYLE
+================================ */
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Arial,Helvetica,sans-serif;
 }
-.logo{font-size:24px;font-weight:bold;color:#ff3c3c}
-.search-box{flex:1;margin:0 20px;display:flex}
+body{
+  background:#0f0f0f;
+  color:#fff;
+}
+
+/* ===============================
+   HEADER SECTION
+================================ */
+header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:15px 20px;
+  background:#111;
+  position:sticky;
+  top:0;
+  z-index:10;
+}
+.logo{
+  font-size:24px;
+  font-weight:bold;
+  color:#ff3c3c;
+}
+
+/* SEARCH BOX */
+.search-box{
+  flex:1;
+  margin:0 20px;
+  display:flex;
+}
 .search-box input{
-flex:1;padding:8;border:none;border-radius:5px 0 0 5px
+  flex:1;
+  padding:8px;
+  border:none;
+  border-radius:5px 0 0 5px;
 }
 .search-box button{
-padding:8 12px;border:none;background:#ff3c3c;color:#fff;
-border-radius:0 5px 5px 0;cursor:pointer
+  padding:8px 12px;
+  border:none;
+  background:#ff3c3c;
+  color:#fff;
+  border-radius:0 5px 5px 0;
+  cursor:pointer;
 }
-nav a{
-margin-left:15px;color:#fff;text-decoration:none;font-size:14px
-}
-nav a:hover{color:#ff3c3c}
 
-/* HERO */
-.hero{
-background:linear-gradient(to right,#000,#111);
-padding:40px 20px;text-align:center
+/* MENU */
+nav a{
+  margin-left:15px;
+  color:#fff;
+  text-decoration:none;
+  font-size:14px;
 }
-.hero h1{font-size:32px;margin-bottom:10px}
-.hero p{color:#aaa}
+nav a:hover{
+  color:#ff3c3c;
+}
+
+/* ===============================
+   HERO SECTION
+================================ */
+.hero{
+  background:linear-gradient(to right,#000,#111);
+  padding:40px 20px;
+  text-align:center;
+}
+.hero h1{
+  font-size:32px;
+  margin-bottom:10px;
+}
+.hero p{
+  color:#aaa;
+}
+
+/* ===============================
+   MOVIE SECTION
+================================ */
+.section{
+  padding:20px;
+}
+.section h2{
+  margin-bottom:15px;
+}
 
 /* MOVIE GRID */
-.section{padding:20px}
-.section h2{margin-bottom:15px}
 .grid{
-display:grid;
-grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
-gap:15px
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+  gap:15px;
 }
-.card{
-background:#181818;border-radius:8px;overflow:hidden;
-transition:.3s;box-shadow:0 0 10px #000
-}
-.card:hover{transform:scale(1.05)}
-.card img{width:100%;height:230px;object-fit:cover}
-.card .info{padding:10px}
-.card button{
-width:100%;margin-top:5px;padding:7px;
-border:none;border-radius:5px;cursor:pointer
-}
-.watch{background:#ff3c3c;color:#fff}
-.download{background:#333;color:#fff}
 
-/* AD OVERLAY */
+/* MOVIE CARD */
+.card{
+  background:#181818;
+  border-radius:8px;
+  overflow:hidden;
+  transition:.3s;
+  box-shadow:0 0 10px #000;
+}
+.card:hover{
+  transform:scale(1.05);
+}
+.card img{
+  width:100%;
+  height:230px;
+  object-fit:cover;
+}
+.card .info{
+  padding:10px;
+}
+.card button{
+  width:100%;
+  margin-top:5px;
+  padding:7px;
+  border:none;
+  border-radius:5px;
+  cursor:pointer;
+}
+
+/* BUTTON COLORS */
+.watch{
+  background:#ff3c3c;
+  color:#fff;
+}
+.download{
+  background:#333;
+  color:#fff;
+}
+
+/* ===============================
+   AD OVERLAY SYSTEM
+================================ */
 #adBox{
-display:none;position:fixed;top:0;left:0;width:100%;height:100%;
-background:rgba(0,0,0,.9);z-index:999;
-align-items:center;justify-content:center;flex-direction:column
+  display:none;
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,.9);
+  z-index:999;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
 }
 #adBox a{
-color:#fff;font-size:20px;margin-bottom:15px
+  color:#fff;
+  font-size:20px;
+  margin-bottom:15px;
 }
-#adTimer{color:#ff3c3c;font-size:18px}
+#adTimer{
+  color:#ff3c3c;
+  font-size:18px;
+}
 </style>
 </head>
 
 <body>
 
+<!-- ===============================
+     HEADER HTML
+================================ -->
 <header>
-<div class="logo">MovieFlix</div>
-<div class="search-box">
-<input type="text" id="search" placeholder="Search movie...">
-<button onclick="renderMovies()">Search</button>
-</div>
-<nav>
-<a href="#">Home</a>
-<a href="#">Bollywood</a>
-<a href="#">Hollywood</a>
-<a href="#">South</a>
-<a href="#">Web Series</a>
-<a href="#">Bengali</a>
-</nav>
+  <div class="logo">MovieFlix</div>
+
+  <div class="search-box">
+    <input type="text" id="search" placeholder="Search movie...">
+    <button onclick="renderMovies()">Search</button>
+  </div>
+
+  <nav>
+    <a href="#">Home</a>
+    <a href="#">Bollywood</a>
+    <a href="#">Hollywood</a>
+    <a href="#">South</a>
+    <a href="#">Web Series</a>
+    <a href="#">Bengali</a>
+  </nav>
 </header>
 
+<!-- ===============================
+     HERO
+================================ -->
 <div class="hero">
-<h1>Watch & Download Movies</h1>
-<p>Fast • Clean • Premium Experience</p>
+  <h1>Watch & Download Movies</h1>
+  <p>Fast • Clean • Premium Experience</p>
 </div>
 
+<!-- ===============================
+     MOVIE LIST
+================================ -->
 <div class="section">
-<h2>Latest Movies</h2>
-<div class="grid" id="movieGrid"></div>
+  <h2>Latest Movies</h2>
+  <div class="grid" id="movieGrid"></div>
 </div>
 
-<!-- AD BOX -->
+<!-- ===============================
+     AD BOX
+================================ -->
 <div id="adBox">
-<a id="adLink" href="#" target="_blank">Advertisement</a>
-<div id="adTimer">Wait 8 sec...</div>
+  <a id="adLink" href="#" target="_blank">Advertisement</a>
+  <div id="adTimer">Wait 8 sec...</div>
 </div>
 
 <script>
-// ================== CONFIG ==================
+/* ==================================================
+   🔧 CONFIG SECTION (ADS SETTINGS)
+   এখানে নিজের ad network এর link বসাবে
+================================================== */
 const DIRECT_AD_URL = "https://YOUR_DIRECT_AD_LINK";
 const POP_AD_URL    = "https://YOUR_POP_AD_LINK";
 const AD_TIMER = 8;
 
-// ================== MOVIE DATA ==================
+/* ==================================================
+   🎬 MOVIE DATA SECTION
+   👉 নতুন movie add করতে নিচের format
+   copy‑paste করে শুধু data change করো
+================================================== */
 let movies = [
-{
- title:"Sample Movie",
- poster:"https://via.placeholder.com/300x450",
- watch:"https://EXTERNAL_WATCH_URL",
- download:"https://EXTERNAL_DOWNLOAD_URL",
- category:"bollywood"
-},
+
+  /* ===== SAMPLE MOVIE (EXAMPLE) ===== */
+  {
+    title:"Sample Movie",
+    poster:"https://via.placeholder.com/300x450",
+    watch:"https://EXTERNAL_WATCH_URL",
+    download:"https://EXTERNAL_DOWNLOAD_URL",
+    category:"bollywood"
+  },
+
+  /* ===== DOOM 3 (BOLLYWOOD) ===== */
+  {
+    title:"Dhoom 3",
+    poster:"https://upload.wikimedia.org/wikipedia/en/4/4f/Dhoom_3_Film_Poster.jpg",
+    watch:"https://YOUR_WATCH_LINK_HERE",
+    download:"https://YOUR_DOWNLOAD_LINK_HERE",
+    category:"bollywood"
+  }
+
 ];
 
-// ================== RENDER ==================
+/* ==================================================
+   🖥️ RENDER MOVIES FUNCTION
+   Search + Movie show করে
+================================================== */
 function renderMovies(){
-let q=document.getElementById("search").value.toLowerCase();
-let box=document.getElementById("movieGrid");
-box.innerHTML="";
-movies.filter(m=>m.title.toLowerCase().includes(q)).forEach(m=>{
-box.innerHTML+=`
-<div class="card">
-<img src="${m.poster}">
-<div class="info">
-<strong>${m.title}</strong>
-<button class="watch" onclick="runAds('${m.watch}')">Watch</button>
-<button class="download" onclick="runAds('${m.download}')">Download</button>
-</div>
-</div>`;
-});
+  let q = document.getElementById("search").value.toLowerCase();
+  let box = document.getElementById("movieGrid");
+  box.innerHTML = "";
+
+  movies
+    .filter(m => m.title.toLowerCase().includes(q))
+    .forEach(m => {
+      box.innerHTML += `
+      <div class="card">
+        <img src="${m.poster}">
+        <div class="info">
+          <strong>${m.title}</strong>
+          <button class="watch" onclick="runAds('${m.watch}')">Watch</button>
+          <button class="download" onclick="runAds('${m.download}')">Download</button>
+        </div>
+      </div>`;
+    });
 }
 
-// ================== ADS SYSTEM ==================
+/* ==================================================
+   💰 ADS + REDIRECT SYSTEM
+   1️⃣ Pop ad
+   2️⃣ Direct ad (timer)
+   3️⃣ Final movie link
+================================================== */
 function runAds(finalURL){
-window.open(POP_AD_URL,"_blank");
-document.getElementById("adBox").style.display="flex";
-document.getElementById("adLink").href=DIRECT_AD_URL;
+  window.open(POP_AD_URL,"_blank");
 
-let t=AD_TIMER;
-document.getElementById("adTimer").innerText="Wait "+t+" sec...";
-let timer=setInterval(()=>{
-t--;
-document.getElementById("adTimer").innerText="Wait "+t+" sec...";
-if(t<=0){
-clearInterval(timer);
-document.getElementById("adBox").style.display="none";
-window.location.href=finalURL;
-}
-},1000);
+  document.getElementById("adBox").style.display="flex";
+  document.getElementById("adLink").href = DIRECT_AD_URL;
+
+  let t = AD_TIMER;
+  document.getElementById("adTimer").innerText = "Wait "+t+" sec...";
+
+  let timer = setInterval(()=>{
+    t--;
+    document.getElementById("adTimer").innerText = "Wait "+t+" sec...";
+    if(t<=0){
+      clearInterval(timer);
+      document.getElementById("adBox").style.display="none";
+      window.location.href = finalURL;
+    }
+  },1000);
 }
 
-// ================== INIT ==================
+/* ==================================================
+   🚀 INIT (PAGE LOAD হলে auto run)
+================================================== */
 renderMovies();
 </script>
 
