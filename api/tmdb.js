@@ -1,7 +1,8 @@
 export default async function handler(req, res) {
   const { type } = req.query;
 
-  const TMDB_KEY = "YOUR_V3_API_KEY"; // <-- এখানে তোমার v3 key
+  const TMDB_KEY = "11a35ddf80fa31fe5fddf8087e313018";
+ // <-- এখানে তোমার v3 key
   const url = `https://api.themoviedb.org/3/${type}?api_key=${TMDB_KEY}`;
 
   try {
