@@ -2,101 +2,35 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>MovieFlix Pro</title>
+<title>MovieFlix TMDB</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
 body{background:#000;color:#fff;padding-bottom:70px}
-
-/* HEADER */
-header{
-  position:sticky;top:0;z-index:10;
-  background:#111;padding:12px 15px;
-  display:flex;justify-content:space-between;align-items:center
-}
+header{background:#111;padding:12px;display:flex;justify-content:space-between;align-items:center}
 .logo{color:#e50914;font-size:22px;font-weight:bold}
-#search{padding:6px;border-radius:4px;border:none;width:130px}
+#search{padding:6px;border-radius:4px;border:none}
 
-/* CATEGORY */
-.categories{
-  display:flex;gap:8px;padding:10px;
-  overflow-x:auto;background:#000
-}
-.categories button{
-  background:#222;color:#fff;border:none;
-  padding:6px 12px;border-radius:20px;
-  font-size:12px;cursor:pointer
-}
-.categories .active{background:#e50914}
-
-/* GRID */
-.section{padding:10px}
+.section{padding:15px}
 .grid{display:flex;gap:10px;overflow-x:auto}
 .grid::-webkit-scrollbar{display:none}
 
-.card{
-  min-width:150px;background:#111;border-radius:6px;
-  overflow:hidden;position:relative
-}
-.card img{width:100%;height:220px;object-fit:cover}
+.card{min-width:150px;background:#111;border-radius:6px;overflow:hidden}
+.card img{width:100%;height:200px;object-fit:cover}
 .info{padding:6px;font-size:12px}
-.watch,.download{
-  width:100%;margin-top:5px;
-  border:none;padding:6px;font-size:11px;
-  cursor:pointer;border-radius:4px
-}
+button{width:100%;margin-top:5px;padding:6px;border:none;border-radius:4px;font-size:12px}
 .watch{background:#e50914;color:#fff}
 .download{background:#333;color:#fff}
 
-/* MODAL */
-#modal{
-  display:none;position:fixed;inset:0;
-  background:rgba(0,0,0,.9);
-  z-index:999;justify-content:center;align-items:center
-}
-#modalContent{
-  width:92%;max-width:420px;
-  background:#111;border-radius:8px;
-  padding:15px
-}
+#modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:999;justify-content:center;align-items:center}
+#modalContent{width:92%;max-width:420px;background:#111;border-radius:8px;padding:15px}
 #modalContent img{width:100%;border-radius:6px}
-#modalContent h3{margin:10px 0}
-#modalContent p{font-size:13px;color:#ccc}
-iframe{width:100%;height:200px;margin-top:10px}
+#modalContent p{font-size:13px;color:#ccc;margin-top:8px}
+#modalContent iframe{width:100%;height:200px;margin-top:10px;border-radius:6px}
 
-/* ADMIN */
-#adminPanel{
-  display:none;position:fixed;inset:0;
-  background:#000;z-index:1000;
-  padding:15px;overflow:auto
-}
-#adminPanel input,select,textarea{
-  width:100%;margin-bottom:8px;
-  padding:6px;background:#111;
-  color:#fff;border:1px solid #333
-}
-#adminPanel button{
-  padding:8px;background:#e50914;
-  border:none;color:#fff;width:100%
-}
-
-/* ADS */
-#adBox{
-  display:none;position:fixed;inset:0;
-  background:#000;z-index:2000;
-  justify-content:center;align-items:center;
-  flex-direction:column
-}
+#adBox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:1000;justify-content:center;align-items:center;flex-direction:column}
 #adTimer{color:#e50914;margin-top:10px}
-
-/* BOTTOM */
-.bottom-nav{
-  position:fixed;bottom:0;width:100%;
-  background:#111;display:flex;
-  justify-content:space-around;padding:8px 0
-}
-.bottom-nav button{background:none;color:#aaa;border:none}
 </style>
 </head>
 
@@ -104,16 +38,8 @@ iframe{width:100%;height:200px;margin-top:10px}
 
 <header>
   <div class="logo">MovieFlix</div>
-  <input id="search" placeholder="Search">
+  <input id="search" placeholder="Search movie">
 </header>
-
-<div class="categories">
-  <button class="active" onclick="loadCategory('popular',this)">Popular</button>
-  <button onclick="loadCategory('trending',this)">Trending</button>
-  <button onclick="loadCategory('action',this)">Action</button>
-  <button onclick="loadCategory('romance',this)">Romance</button>
-  <button onclick="openAdmin()">Admin</button>
-</div>
 
 <div class="section">
   <div class="grid" id="movieGrid"></div>
@@ -130,118 +56,87 @@ iframe{width:100%;height:200px;margin-top:10px}
   <div id="adTimer">Wait 5s</div>
 </div>
 
-<!-- ADMIN PANEL -->
-<div id="adminPanel">
-  <h3>Add Movie</h3>
-  <input id="mTitle" placeholder="Title">
-  <input id="mPoster" placeholder="Poster URL">
-  <textarea id="mDesc" placeholder="Description"></textarea>
-  <input id="mTrailer" placeholder="Trailer URL">
-  <button onclick="addMovie()">Save Movie</button>
-  <br><br>
-  <button onclick="closeAdmin()">Close</button>
-</div>
-
-<div class="bottom-nav">
-  <button>Home</button>
-  <button>Profile</button>
-</div>
-
 <script>
-/* CONFIG */
-const TMDB_KEY="cc9374659de08b939499a50af4715216";
-const POP_AD="https://example.com";
-const AD_DELAY=5;
+/* ================= CONFIG ================= */
+const TMDB_KEY = "cc9374659de08b939499a50af4715216";
+const IMG_BASE = "https://image.tmdb.org/t/p/w500";
+const POP_AD = "https://example.com";
+const AD_DELAY = 5;
 
-/* ELEMENTS */
-const grid=document.getElementById("movieGrid");
-const modal=document.getElementById("modal");
-const modalContent=document.getElementById("modalContent");
-const adBox=document.getElementById("adBox");
-const adTimer=document.getElementById("adTimer");
+/* ================= ELEMENTS ================= */
+const movieGrid = document.getElementById("movieGrid");
+const modal = document.getElementById("modal");
+const modalContent = document.getElementById("modalContent");
+const adBox = document.getElementById("adBox");
+const adTimer = document.getElementById("adTimer");
+const search = document.getElementById("search");
 
-/* MOVIES */
-let localMovies=JSON.parse(localStorage.getItem("adminMovies"))||[];
-
-/* LOAD CATEGORY */
-function loadCategory(type,btn){
- document.querySelectorAll(".categories button").forEach(b=>b.classList.remove("active"));
- if(btn)btn.classList.add("active");
-
- let url="";
- if(type=="popular")url=`https://api.themoviedb.org/3/movie/popular?api_key=${TMDB_KEY}`;
- if(type=="trending")url=`https://api.themoviedb.org/3/trending/movie/week?api_key=${TMDB_KEY}`;
- if(type=="action")url=`https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_KEY}&with_genres=28`;
- if(type=="romance")url=`https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_KEY}&with_genres=10749`;
-
- fetch(url).then(r=>r.json()).then(d=>{
-   render([...localMovies,...d.results]);
- });
-}
-
-/* RENDER */
-function render(list){
- grid.innerHTML="";
- list.forEach(m=>{
-  grid.innerHTML+=`
-   <div class="card">
-    <img src="${m.poster_path?`https://image.tmdb.org/t/p/w500${m.poster_path}`:m.poster}">
-    <div class="info">
-     <b>${m.title}</b>
-     <button class="watch" onclick="runAds()">Watch</button>
-     <button class="download" onclick="runAds()">Download</button>
-     <button onclick='openModalData(${JSON.stringify(m)})'>Details</button>
-    </div>
-   </div>`;
- });
-}
-
-/* MODAL */
-function openModalData(m){
- modal.style.display="flex";
- modalContent.innerHTML=`
-  <img src="${m.poster_path?`https://image.tmdb.org/t/p/w500${m.poster_path}`:m.poster}">
-  <h3>${m.title}</h3>
-  <p>${m.overview||m.desc||""}</p>
- `;
-}
-function closeModal(){modal.style.display="none"}
-
-/* ADS */
-function runAds(){
+/* ================= ADS ================= */
+let adRunning=false;
+function runAds(url){
+ if(adRunning) return;
+ adRunning=true;
+ window.open(POP_AD,"_blank");
  adBox.style.display="flex";
  let t=AD_DELAY;
  adTimer.innerText="Wait "+t+"s";
  let timer=setInterval(()=>{
-  t--;adTimer.innerText="Wait "+t+"s";
-  if(t<=0){clearInterval(timer);adBox.style.display="none";}
+  t--;
+  adTimer.innerText="Wait "+t+"s";
+  if(t<=0){
+   clearInterval(timer);
+   adBox.style.display="none";
+   adRunning=false;
+   window.location.href=url;
+  }
  },1000);
 }
 
-/* ADMIN */
-function openAdmin(){
- let pass=prompt("Admin Password?");
- if(pass==="1234")adminPanel.style.display="block";
-}
-function closeAdmin(){adminPanel.style.display="none"}
-function addMovie(){
- localMovies.push({
-  title:mTitle.value,
-  poster:mPoster.value,
-  desc:mDesc.value
+/* ================= FETCH MOVIES ================= */
+let movies=[];
+fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${TMDB_KEY}`)
+.then(res=>res.json())
+.then(data=>{
+ movies=data.results;
+ render(movies);
+});
+
+/* ================= RENDER ================= */
+function render(list){
+ movieGrid.innerHTML="";
+ list.forEach((m,i)=>{
+  if(!m.poster_path) return;
+  movieGrid.innerHTML+=`
+   <div class="card">
+     <img src="${IMG_BASE + m.poster_path}" onclick="openModal(${i})">
+     <div class="info">
+       <b>${m.title}</b>
+       <button class="watch" onclick="runAds('https://youtube.com')">Watch</button>
+       <button class="download" onclick="runAds('#')">Download</button>
+     </div>
+   </div>`;
  });
- localStorage.setItem("adminMovies",JSON.stringify(localMovies));
- alert("Movie Added");
 }
 
-/* SEARCH */
+/* ================= MODAL ================= */
+function openModal(i){
+ modal.style.display="flex";
+ modalContent.innerHTML=`
+  <img src="${IMG_BASE + movies[i].poster_path}">
+  <h3>${movies[i].title}</h3>
+  <p>${movies[i].overview || "No description"}</p>
+ `;
+}
+function closeModal(){
+ modal.style.display="none";
+ modalContent.innerHTML="";
+}
+
+/* ================= SEARCH ================= */
 search.oninput=()=>{
  let q=search.value.toLowerCase();
- render(localMovies.filter(m=>m.title.toLowerCase().includes(q)));
+ render(movies.filter(m=>m.title.toLowerCase().includes(q)));
 };
-
-/* INIT */
-loadCategory("popular");
 </script>
 
 </body>
