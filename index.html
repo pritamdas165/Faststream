@@ -14,12 +14,9 @@ header{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  position:sticky;
-  top:0;
-  z-index:10
 }
 .logo{color:#e50914;font-size:22px;font-weight:bold}
-#search{padding:6px;border-radius:4px;border:none}
+#search{padding:6px;border:none;border-radius:4px}
 
 .section{padding:15px}
 .section h2{margin-bottom:10px}
@@ -32,31 +29,26 @@ header{
 .grid::-webkit-scrollbar{display:none}
 
 .card{
-  min-width:160px;
+  min-width:150px;
   background:#111;
   border-radius:6px;
   overflow:hidden;
 }
 .card img{
   width:100%;
-  height:230px;
+  height:220px;
   object-fit:cover;
 }
 .info{
   padding:6px;
   font-size:12px;
 }
-.info p{
-  color:#ccc;
-  font-size:11px;
-  margin:4px 0;
-  height:32px;
-  overflow:hidden;
-}
+.info b{display:block;margin-bottom:5px}
+
 button{
   width:100%;
-  margin-top:5px;
   padding:6px;
+  margin-top:5px;
   border:none;
   border-radius:4px;
   font-size:12px;
@@ -90,12 +82,6 @@ button{
   font-size:13px;
   color:#ccc;
   margin-top:8px;
-}
-#modalContent iframe{
-  width:100%;
-  height:200px;
-  margin-top:10px;
-  border-radius:6px;
 }
 
 /* ADS */
@@ -142,15 +128,15 @@ button{
 </div>
 
 <script>
-/* ================= CONFIG ================= */
+/* ========= CONFIG ========= */
 const TMDB_KEY = "cc9374659de08b939499a50af4715216";
 const IMG = "https://image.tmdb.org/t/p/w500";
 const POP_AD = "https://example.com";
 const AD_DELAY = 5;
 
-/* ================= ELEMENTS ================= */
+/* ========= ELEMENTS ========= */
 const trendingGrid = document.getElementById("trendingGrid");
-const popularGrid = document.getElementById("popularGrid");
+const popularGrid  = document.getElementById("popularGrid");
 const modal = document.getElementById("modal");
 const modalContent = document.getElementById("modalContent");
 const adBox = document.getElementById("adBox");
@@ -158,96 +144,91 @@ const adTimer = document.getElementById("adTimer");
 const search = document.getElementById("search");
 
 let trendingMovies = [];
-let popularMovies = [];
+let popularMovies  = [];
 
-/* ================= ADS ================= */
-let adRunning=false;
-function runAds(cb){
- if(adRunning) return;
- adRunning=true;
- window.open(POP_AD,"_blank");
- adBox.style.display="flex";
- let t=AD_DELAY;
- adTimer.innerText="Wait "+t+"s";
- let timer=setInterval(()=>{
-  t--;
-  adTimer.innerText="Wait "+t+"s";
-  if(t<=0){
-   clearInterval(timer);
-   adBox.style.display="none";
-   adRunning=false;
-   cb();
+/* ========= SAFE FETCH ========= */
+async function loadMovies(){
+  try{
+    const t = await fetch(
+      `https://api.themoviedb.org/3/trending/movie/day?api_key=${TMDB_KEY}`
+    ).then(r=>r.json());
+
+    const p = await fetch(
+      `https://api.themoviedb.org/3/movie/popular?api_key=${TMDB_KEY}`
+    ).then(r=>r.json());
+
+    trendingMovies = t.results || [];
+    popularMovies  = p.results || [];
+
+    render(trendingMovies, trendingGrid);
+    render(popularMovies, popularGrid);
+  }catch(e){
+    console.log("TMDB error:", e);
   }
- },1000);
 }
 
-/* ================= FETCH ================= */
-fetch(`https://api.themoviedb.org/3/trending/movie/week?api_key=${TMDB_KEY}`)
-.then(r=>r.json())
-.then(d=>{
- trendingMovies = d.results || [];
- render(trendingGrid, trendingMovies);
-})
-.catch(()=>{ trendingGrid.innerHTML="Failed to load"; });
-
-fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${TMDB_KEY}`)
-.then(r=>r.json())
-.then(d=>{
- popularMovies = d.results || [];
- render(popularGrid, popularMovies);
-})
-.catch(()=>{ popularGrid.innerHTML="Failed to load"; });
-
-/* ================= RENDER ================= */
-function render(grid, list){
- grid.innerHTML="";
- list.forEach((m,i)=>{
-  if(!m.poster_path) return;
-  grid.innerHTML += `
-   <div class="card">
-     <img src="${IMG+m.poster_path}" onclick="openModal(${m.id})">
-     <div class="info">
-       <b>${m.title}</b>
-       <p>${m.overview || "No description"}</p>
-       <button class="watch" onclick="runAds(()=>openModal(${m.id}))">Details</button>
-     </div>
-   </div>`;
- });
+/* ========= RENDER ========= */
+function render(list, target){
+  target.innerHTML="";
+  list.forEach((m,i)=>{
+    if(!m.poster_path) return;
+    target.innerHTML += `
+      <div class="card">
+        <img src="${IMG + m.poster_path}" onclick="openModal(${i}, '${target.id}')">
+        <div class="info">
+          <b>${m.title}</b>
+          <button class="watch" onclick="runAds()">Watch</button>
+          <button class="trailer" onclick="openModal(${i}, '${target.id}')">Trailer</button>
+        </div>
+      </div>
+    `;
+  });
 }
 
-/* ================= MODAL ================= */
-function openModal(id){
- modal.style.display="flex";
- modalContent.innerHTML="Loading...";
- fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${TMDB_KEY}&append_to_response=videos`)
- .then(r=>r.json())
- .then(m=>{
-   let trailer = "";
-   if(m.videos && m.videos.results.length){
-     let yt = m.videos.results.find(v=>v.site==="YouTube");
-     if(yt){
-       trailer = `<iframe src="https://www.youtube.com/embed/${yt.key}" allowfullscreen></iframe>`;
-     }
-   }
-   modalContent.innerHTML = `
-     <img src="${IMG+m.poster_path}">
-     <h3>${m.title}</h3>
-     <p>${m.overview}</p>
-     ${trailer || "<p>No trailer available</p>"}
-   `;
- });
+/* ========= MODAL ========= */
+function openModal(i, type){
+  const movie = type==="trendingGrid" ? trendingMovies[i] : popularMovies[i];
+  modal.style.display="flex";
+  modalContent.innerHTML = `
+    <img src="${IMG + movie.poster_path}">
+    <h3>${movie.title}</h3>
+    <p>${movie.overview || "No description available."}</p>
+  `;
 }
 function closeModal(){
- modal.style.display="none";
- modalContent.innerHTML="";
+  modal.style.display="none";
+  modalContent.innerHTML="";
 }
 
-/* ================= SEARCH ================= */
+/* ========= ADS (ONLY CLICK) ========= */
+let adRunning=false;
+function runAds(){
+  if(adRunning) return;
+  adRunning=true;
+  window.open(POP_AD,"_blank");
+  adBox.style.display="flex";
+  let t=AD_DELAY;
+  adTimer.innerText="Wait "+t+"s";
+  let timer=setInterval(()=>{
+    t--;
+    adTimer.innerText="Wait "+t+"s";
+    if(t<=0){
+      clearInterval(timer);
+      adBox.style.display="none";
+      adRunning=false;
+    }
+  },1000);
+}
+
+/* ========= SEARCH ========= */
 search.oninput=()=>{
- let q = search.value.toLowerCase();
- render(trendingGrid, trendingMovies.filter(m=>m.title.toLowerCase().includes(q)));
- render(popularGrid, popularMovies.filter(m=>m.title.toLowerCase().includes(q)));
+  const q = search.value.toLowerCase();
+  render(trendingMovies.filter(m=>m.title.toLowerCase().includes(q)), trendingGrid);
+  render(popularMovies.filter(m=>m.title.toLowerCase().includes(q)), popularGrid);
 };
+
+/* INIT */
+loadMovies();
 </script>
 
 </body>
