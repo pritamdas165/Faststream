@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -7,16 +7,19 @@
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
-body{background:#000;color:#fff;padding-bottom:80px}
+body{background:#000;color:#fff}
 header{
   background:#111;
   padding:12px 15px;
   display:flex;
   justify-content:space-between;
   align-items:center;
+  position:sticky;
+  top:0;
+  z-index:10;
 }
 .logo{color:#e50914;font-size:22px;font-weight:bold}
-#search{padding:6px;border:none;border-radius:4px}
+#search{padding:6px;border-radius:4px;border:none}
 
 .section{padding:15px}
 .section h2{margin-bottom:10px}
@@ -39,30 +42,24 @@ header{
   height:220px;
   object-fit:cover;
 }
-.info{
-  padding:6px;
-  font-size:12px;
-}
-.info b{display:block;margin-bottom:5px}
-
+.info{padding:6px;font-size:12px}
 button{
   width:100%;
-  padding:6px;
   margin-top:5px;
+  padding:6px;
   border:none;
   border-radius:4px;
   font-size:12px;
   cursor:pointer;
 }
 .watch{background:#e50914;color:#fff}
-.trailer{background:#333;color:#fff}
 
 /* MODAL */
 #modal{
   display:none;
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,.92);
+  background:rgba(0,0,0,.9);
   z-index:999;
   justify-content:center;
   align-items:center;
@@ -83,19 +80,6 @@ button{
   color:#ccc;
   margin-top:8px;
 }
-
-/* ADS */
-#adBox{
-  display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.95);
-  z-index:1000;
-  justify-content:center;
-  align-items:center;
-  flex-direction:column;
-}
-#adTimer{color:#e50914;margin-top:10px}
 </style>
 </head>
 
@@ -121,78 +105,63 @@ button{
   <div id="modalContent" onclick="event.stopPropagation()"></div>
 </div>
 
-<!-- ADS -->
-<div id="adBox">
-  <div>Advertisement</div>
-  <div id="adTimer">Wait 5s</div>
-</div>
-
 <script>
-/* ========= CONFIG ========= */
-const TMDB_KEY = "cc9374659de08b939499a50af4715216";
+/* ===== CONFIG ===== */
+const TMDB_KEY = "cc9374659de08b939499a50af4715216"; // v3 key
 const IMG = "https://image.tmdb.org/t/p/w500";
-const POP_AD = "https://example.com";
-const AD_DELAY = 5;
 
-/* ========= ELEMENTS ========= */
+/* ===== ELEMENTS ===== */
 const trendingGrid = document.getElementById("trendingGrid");
 const popularGrid  = document.getElementById("popularGrid");
 const modal = document.getElementById("modal");
 const modalContent = document.getElementById("modalContent");
-const adBox = document.getElementById("adBox");
-const adTimer = document.getElementById("adTimer");
 const search = document.getElementById("search");
 
-let trendingMovies = [];
-let popularMovies  = [];
-
-/* ========= SAFE FETCH ========= */
-async function loadMovies(){
-  try{
-    const t = await fetch(
-      `https://api.themoviedb.org/3/trending/movie/day?api_key=${TMDB_KEY}`
-    ).then(r=>r.json());
-
-    const p = await fetch(
-      `https://api.themoviedb.org/3/movie/popular?api_key=${TMDB_KEY}`
-    ).then(r=>r.json());
-
-    trendingMovies = t.results || [];
-    popularMovies  = p.results || [];
-
-    render(trendingMovies, trendingGrid);
-    render(popularMovies, popularGrid);
-  }catch(e){
-    console.log("TMDB error:", e);
-  }
+/* ===== FETCH ===== */
+async function getMovies(url){
+  const res = await fetch(url);
+  const data = await res.json();
+  return data.results || [];
 }
 
-/* ========= RENDER ========= */
-function render(list, target){
-  target.innerHTML="";
-  list.forEach((m,i)=>{
+async function load(){
+  const trending = await getMovies(
+    `https://api.themoviedb.org/3/trending/movie/week?api_key=${TMDB_KEY}`
+  );
+  const popular = await getMovies(
+    `https://api.themoviedb.org/3/movie/popular?api_key=${TMDB_KEY}`
+  );
+
+  render(trendingGrid, trending);
+  render(popularGrid, popular);
+
+  window.allMovies = [...trending, ...popular];
+}
+
+/* ===== RENDER ===== */
+function render(grid, list){
+  grid.innerHTML = "";
+  list.forEach(m=>{
     if(!m.poster_path) return;
-    target.innerHTML += `
+    grid.innerHTML += `
       <div class="card">
-        <img src="${IMG + m.poster_path}" onclick="openModal(${i}, '${target.id}')">
+        <img src="${IMG + m.poster_path}" onclick='openModal(${JSON.stringify(m)})'>
         <div class="info">
           <b>${m.title}</b>
-          <button class="watch" onclick="runAds()">Watch</button>
-          <button class="trailer" onclick="openModal(${i}, '${target.id}')">Trailer</button>
+          <button class="watch">Watch</button>
         </div>
       </div>
     `;
   });
 }
 
-/* ========= MODAL ========= */
-function openModal(i, type){
-  const movie = type==="trendingGrid" ? trendingMovies[i] : popularMovies[i];
+/* ===== MODAL ===== */
+function openModal(m){
   modal.style.display="flex";
-  modalContent.innerHTML = `
-    <img src="${IMG + movie.poster_path}">
-    <h3>${movie.title}</h3>
-    <p>${movie.overview || "No description available."}</p>
+  modalContent.innerHTML=`
+    <img src="${IMG + m.poster_path}">
+    <h3>${m.title}</h3>
+    <p>${m.overview || "No description available."}</p>
   `;
 }
 function closeModal(){
@@ -200,35 +169,23 @@ function closeModal(){
   modalContent.innerHTML="";
 }
 
-/* ========= ADS (ONLY CLICK) ========= */
-let adRunning=false;
-function runAds(){
-  if(adRunning) return;
-  adRunning=true;
-  window.open(POP_AD,"_blank");
-  adBox.style.display="flex";
-  let t=AD_DELAY;
-  adTimer.innerText="Wait "+t+"s";
-  let timer=setInterval(()=>{
-    t--;
-    adTimer.innerText="Wait "+t+"s";
-    if(t<=0){
-      clearInterval(timer);
-      adBox.style.display="none";
-      adRunning=false;
-    }
-  },1000);
-}
-
-/* ========= SEARCH ========= */
-search.oninput=()=>{
+/* ===== SEARCH ===== */
+search.oninput = ()=>{
   const q = search.value.toLowerCase();
-  render(trendingMovies.filter(m=>m.title.toLowerCase().includes(q)), trendingGrid);
-  render(popularMovies.filter(m=>m.title.toLowerCase().includes(q)), popularGrid);
+  if(!q){
+    load();
+    return;
+  }
+  const filtered = window.allMovies.filter(m =>
+    m.title.toLowerCase().includes(q)
+  );
+  trendingGrid.innerHTML="";
+  popularGrid.innerHTML="";
+  render(trendingGrid, filtered);
 };
 
 /* INIT */
-loadMovies();
+load();
 </script>
 
 </body>
