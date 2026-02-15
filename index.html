@@ -1,47 +1,146 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>MovieFlix</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FastStream Movies</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
-body{margin:0;background:#000;color:#fff;font-family:Arial}
-h2{margin:10px}
-.grid{display:flex;gap:10px;overflow-x:auto;padding:10px}
-.card{min-width:140px}
-.card img{width:100%;border-radius:6px}
-</style>
-</head>
-<body>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+body{background:#000;color:#fff}
 
-<h2>Trending</h2>
-<div class="grid" id="trending"></div>
-
-<h2>Popular</h2>
-<div class="grid" id="popular"></div>
-
-<script>
-const IMG = "https://image.tmdb.org/t/p/w500";
-
-async function load(type, el){
-  try{
-    const r = await fetch(`/api/tmdb?type=${type}`);
-    const d = await r.json();
-    el.innerHTML = "";
-    d.results.forEach(m=>{
-      if(!m.poster_path) return;
-      el.innerHTML += `
-        <div class="card">
-          <img src="${IMG + m.poster_path}">
-        </div>`;
-    });
-  }catch{
-    el.innerHTML = "Failed to load movies";
-  }
+header{
+  background:#111;
+  padding:12px;
+  display:flex;
+  gap:10px;
+  align-items:center;
 }
 
-load("trending/movie/day", document.getElementById("trending"));
-load("movie/popular", document.getElementById("popular"));
+.logo{
+  color:#e50914;
+  font-weight:bold;
+  font-size:20px;
+}
+
+#search{
+  flex:1;
+  padding:8px;
+  border:none;
+  border-radius:5px;
+  font-size:14px;
+}
+
+.section{padding:15px}
+.section h2{margin-bottom:10px}
+
+.row{
+  display:flex;
+  gap:10px;
+  overflow-x:auto;
+}
+.row::-webkit-scrollbar{display:none}
+
+.card{
+  min-width:140px;
+  background:#111;
+  border-radius:6px;
+  overflow:hidden;
+}
+
+.card img{
+  width:100%;
+  height:210px;
+  object-fit:cover;
+}
+
+.card p{
+  font-size:12px;
+  padding:6px;
+  text-align:center;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">FastStream</div>
+  <input id="search" placeholder="Search movies...">
+</header>
+
+<div class="section">
+  <h2>Trending</h2>
+  <div class="row" id="trending"></div>
+</div>
+
+<div class="section">
+  <h2>Popular</h2>
+  <div class="row" id="popular"></div>
+</div>
+
+<div class="section" id="searchSection" style="display:none">
+  <h2>Search Result</h2>
+  <div class="row" id="searchResult"></div>
+</div>
+
+<script>
+const API_KEY = "11a35ddf80fa31fe5fddf8087e313018";
+const IMG = "https://image.tmdb.org/t/p/w500";
+
+const trendingBox = document.getElementById("trending");
+const popularBox = document.getElementById("popular");
+const searchInput = document.getElementById("search");
+const searchBox = document.getElementById("searchResult");
+const searchSection = document.getElementById("searchSection");
+
+function movieCard(m){
+  if(!m.poster_path) return "";
+  return `
+    <div class="card">
+      <img src="${IMG + m.poster_path}">
+      <p>${m.title}</p>
+    </div>
+  `;
+}
+
+async function loadMovies(url, box){
+  box.innerHTML="Loading...";
+  const res = await fetch(url);
+  const data = await res.json();
+  box.innerHTML="";
+  data.results.forEach(m=>{
+    box.innerHTML += movieCard(m);
+  });
+}
+
+loadMovies(
+  `https://api.themoviedb.org/3/trending/movie/week?api_key=${API_KEY}`,
+  trendingBox
+);
+
+loadMovies(
+  `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}`,
+  popularBox
+);
+
+searchInput.addEventListener("input", async ()=>{
+  const q = searchInput.value.trim();
+  if(q.length < 2){
+    searchSection.style.display="none";
+    return;
+  }
+  searchSection.style.display="block";
+  searchBox.innerHTML="Searching...";
+  const res = await fetch(
+    `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${q}`
+  );
+  const data = await res.json();
+  searchBox.innerHTML="";
+  data.results.forEach(m=>{
+    searchBox.innerHTML += movieCard(m);
+  });
+});
 </script>
 
 </body>
