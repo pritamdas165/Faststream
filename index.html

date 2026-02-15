@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>FastStream</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+body{background:#000;color:#fff}
+
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:12px;
+  background:#111;
+}
+.logo{color:#e50914;font-size:22px;font-weight:bold}
+#search{
+  padding:7px;
+  border-radius:4px;
+  border:none;
+  width:140px;
+}
+
+.section{padding:12px}
+.section h2{margin-bottom:8px}
+
+.row{
+  display:flex;
+  gap:10px;
+  overflow-x:auto;
+}
+.row::-webkit-scrollbar{display:none}
+
+.card{
+  min-width:140px;
+  background:#111;
+  border-radius:6px;
+  overflow:hidden;
+}
+.card img{
+  width:100%;
+  height:210px;
+  object-fit:cover;
+}
+.card p{
+  font-size:12px;
+  padding:6px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">FastStream</div>
+  <input id="search" placeholder="Search movie">
+</header>
+
+<div class="section">
+  <h2>Trending</h2>
+  <div class="row" id="trending"></div>
+</div>
+
+<div class="section">
+  <h2>Popular</h2>
+  <div class="row" id="popular"></div>
+</div>
+
+<div class="section">
+  <h2>Search Result</h2>
+  <div class="row" id="searchResult"></div>
+</div>
+
+<script>
+/* ===== CONFIG ===== */
+const API_KEY = "PASTE_YOUR_TMDB_V3_KEY_HERE"; 
+const IMG = "https://image.tmdb.org/t/p/w500";
+
+/* ===== ELEMENTS ===== */
+const trendingBox = document.getElementById("trending");
+const popularBox = document.getElementById("popular");
+const searchBox = document.getElementById("searchResult");
+const searchInput = document.getElementById("search");
+
+/* ===== FETCH FUNCTION ===== */
+async function fetchMovies(url, box){
+  box.innerHTML = "";
+  try{
+    const r = await fetch(url);
+    const d = await r.json();
+    d.results.forEach(m=>{
+      if(!m.poster_path) return;
+      box.innerHTML += `
+        <div class="card">
+          <img src="${IMG + m.poster_path}">
+          <p>${m.title || m.name}</p>
+        </div>
+      `;
+    });
+  }catch(e){
+    box.innerHTML = "<p>Failed to load movies</p>";
+  }
+}
+
+/* ===== LOAD DATA ===== */
+fetchMovies(
+  `https://api.themoviedb.org/3/trending/movie/week?api_key=${API_KEY}`,
+  trendingBox
+);
+
+fetchMovies(
+  `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}`,
+  popularBox
+);
+
+/* ===== SEARCH ===== */
+searchInput.addEventListener("input", ()=>{
+  const q = searchInput.value.trim();
+  if(q.length < 2){
+    searchBox.innerHTML = "";
+    return;
+  }
+  fetchMovies(
+    `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(q)}`,
+    searchBox
+  );
+});
+</script>
+
+</body>
+</html>
