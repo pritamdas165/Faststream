@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MovieFlix</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+body{background:#000;color:#fff}
+header{background:#111;padding:12px;display:flex;justify-content:space-between}
+.logo{color:#e50914;font-size:22px;font-weight:bold}
+#search{padding:6px;border-radius:4px;border:none}
+
+.section{padding:15px}
+.section h2{margin-bottom:10px}
+
+.grid{display:flex;gap:10px;overflow-x:auto}
+.grid::-webkit-scrollbar{display:none}
+
+.card{min-width:150px;background:#111;border-radius:6px;overflow:hidden}
+.card img{width:100%;height:220px;object-fit:cover}
+.info{padding:6px;font-size:12px}
+
+button{width:100%;margin-top:5px;padding:6px;border:none;border-radius:4px;font-size:12px}
+.watch{background:#e50914;color:#fff}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">MovieFlix</div>
+  <input id="search" placeholder="Search movie">
+</header>
+
+<div class="section">
+  <h2>Trending</h2>
+  <div class="grid" id="trending"></div>
+</div>
+
+<div class="section">
+  <h2>Popular</h2>
+  <div class="grid" id="popular"></div>
+</div>
+
+<script>
+/* ===== TMDB CONFIG (V3 ONLY) ===== */
+const API_KEY = "cc9374659de08b939499a50af4715216";
+const IMG = "https://image.tmdb.org/t/p/w500";
+
+/* ===== ELEMENTS ===== */
+const trendingBox = document.getElementById("trending");
+const popularBox = document.getElementById("popular");
+const search = document.getElementById("search");
+
+/* ===== FETCH SAFE ===== */
+async function loadMovies(url, box){
+  try{
+    const res = await fetch(url);
+    const data = await res.json();
+    render(data.results, box);
+  }catch(e){
+    box.innerHTML = "<p>Failed to load movies</p>";
+  }
+}
+
+/* ===== RENDER ===== */
+function render(list, box){
+  box.innerHTML="";
+  list.forEach(m=>{
+    if(!m.poster_path) return;
+    box.innerHTML += `
+      <div class="card">
+        <img src="${IMG + m.poster_path}">
+        <div class="info">
+          <b>${m.title}</b>
+          <button class="watch">Watch</button>
+        </div>
+      </div>
+    `;
+  });
+}
+
+/* ===== LOAD ===== */
+loadMovies(
+  `https://api.themoviedb.org/3/trending/movie/day?api_key=${API_KEY}`,
+  trendingBox
+);
+
+loadMovies(
+  `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}`,
+  popularBox
+);
+</script>
+
+</body>
+</html>
