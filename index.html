@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>MovieFlix Final</title>
+<title>MovieFlix Pro</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -13,30 +13,39 @@ body{background:#000;color:#fff;padding-bottom:70px}
 header{
   position:sticky;top:0;z-index:10;
   background:#111;padding:12px 15px;
-  display:flex;gap:8px;align-items:center
+  display:flex;justify-content:space-between;align-items:center
 }
 .logo{color:#e50914;font-size:22px;font-weight:bold}
-#search,#category{
-  padding:6px;border-radius:4px;border:none
-}
+#search{padding:6px;border-radius:4px;border:none;width:130px}
 
-/* SECTION */
-.section{padding:15px}
+/* CATEGORY */
+.categories{
+  display:flex;gap:8px;padding:10px;
+  overflow-x:auto;background:#000
+}
+.categories button{
+  background:#222;color:#fff;border:none;
+  padding:6px 12px;border-radius:20px;
+  font-size:12px;cursor:pointer
+}
+.categories .active{background:#e50914}
 
 /* GRID */
-.grid{
-  display:flex;gap:10px;overflow-x:auto
-}
+.section{padding:10px}
+.grid{display:flex;gap:10px;overflow-x:auto}
 .grid::-webkit-scrollbar{display:none}
 
-/* CARD */
 .card{
   min-width:150px;background:#111;border-radius:6px;
   overflow:hidden;position:relative
 }
-.card img{width:100%;height:160px;object-fit:cover}
+.card img{width:100%;height:220px;object-fit:cover}
 .info{padding:6px;font-size:12px}
-button{width:100%;margin-top:4px;padding:6px;border:none;border-radius:4px;cursor:pointer}
+.watch,.download{
+  width:100%;margin-top:5px;
+  border:none;padding:6px;font-size:11px;
+  cursor:pointer;border-radius:4px
+}
 .watch{background:#e50914;color:#fff}
 .download{background:#333;color:#fff}
 
@@ -44,41 +53,50 @@ button{width:100%;margin-top:4px;padding:6px;border:none;border-radius:4px;curso
 #modal{
   display:none;position:fixed;inset:0;
   background:rgba(0,0,0,.9);
-  justify-content:center;align-items:center;z-index:999
+  z-index:999;justify-content:center;align-items:center
 }
 #modalContent{
   width:92%;max-width:420px;
-  background:#111;border-radius:8px;padding:15px
+  background:#111;border-radius:8px;
+  padding:15px
 }
 #modalContent img{width:100%;border-radius:6px}
+#modalContent h3{margin:10px 0}
 #modalContent p{font-size:13px;color:#ccc}
-iframe{width:100%;height:200px;margin-top:10px;border-radius:6px}
-
-/* AD */
-#adBox{
-  display:none;position:fixed;inset:0;
-  background:rgba(0,0,0,.95);
-  justify-content:center;align-items:center;
-  flex-direction:column;z-index:1000
-}
+iframe{width:100%;height:200px;margin-top:10px}
 
 /* ADMIN */
-#admin{
-  display:none;padding:15px;background:#111
+#adminPanel{
+  display:none;position:fixed;inset:0;
+  background:#000;z-index:1000;
+  padding:15px;overflow:auto
 }
-#admin input, #admin select{
-  width:100%;margin:5px 0;padding:6px
+#adminPanel input,select,textarea{
+  width:100%;margin-bottom:8px;
+  padding:6px;background:#111;
+  color:#fff;border:1px solid #333
 }
-#admin button{background:#e50914;color:#fff;margin-top:6px}
+#adminPanel button{
+  padding:8px;background:#e50914;
+  border:none;color:#fff;width:100%
+}
 
-/* BOTTOM NAV */
+/* ADS */
+#adBox{
+  display:none;position:fixed;inset:0;
+  background:#000;z-index:2000;
+  justify-content:center;align-items:center;
+  flex-direction:column
+}
+#adTimer{color:#e50914;margin-top:10px}
+
+/* BOTTOM */
 .bottom-nav{
   position:fixed;bottom:0;width:100%;
   background:#111;display:flex;
   justify-content:space-around;padding:8px 0
 }
-.bottom-nav button{background:none;color:#aaa}
-.bottom-nav .active{color:#e50914}
+.bottom-nav button{background:none;color:#aaa;border:none}
 </style>
 </head>
 
@@ -87,13 +105,15 @@ iframe{width:100%;height:200px;margin-top:10px;border-radius:6px}
 <header>
   <div class="logo">MovieFlix</div>
   <input id="search" placeholder="Search">
-  <select id="category">
-    <option value="all">All</option>
-    <option>Action</option>
-    <option>Romance</option>
-    <option>Thriller</option>
-  </select>
 </header>
+
+<div class="categories">
+  <button class="active" onclick="loadCategory('popular',this)">Popular</button>
+  <button onclick="loadCategory('trending',this)">Trending</button>
+  <button onclick="loadCategory('action',this)">Action</button>
+  <button onclick="loadCategory('romance',this)">Romance</button>
+  <button onclick="openAdmin()">Admin</button>
+</div>
 
 <div class="section">
   <div class="grid" id="movieGrid"></div>
@@ -104,143 +124,124 @@ iframe{width:100%;height:200px;margin-top:10px;border-radius:6px}
   <div id="modalContent" onclick="event.stopPropagation()"></div>
 </div>
 
-<!-- AD -->
+<!-- ADS -->
 <div id="adBox">
   <div>Advertisement</div>
   <div id="adTimer">Wait 5s</div>
 </div>
 
 <!-- ADMIN PANEL -->
-<div id="admin">
-  <h3>Admin Panel</h3>
-  <input id="aTitle" placeholder="Title">
-  <input id="aPoster" placeholder="Poster URL">
-  <input id="aTrailer" placeholder="Trailer URL">
-  <input id="aDesc" placeholder="Description">
-  <select id="aCat">
-    <option>Action</option>
-    <option>Romance</option>
-    <option>Thriller</option>
-  </select>
+<div id="adminPanel">
+  <h3>Add Movie</h3>
+  <input id="mTitle" placeholder="Title">
+  <input id="mPoster" placeholder="Poster URL">
+  <textarea id="mDesc" placeholder="Description"></textarea>
+  <input id="mTrailer" placeholder="Trailer URL">
   <button onclick="addMovie()">Save Movie</button>
+  <br><br>
+  <button onclick="closeAdmin()">Close</button>
 </div>
 
 <div class="bottom-nav">
-  <button class="active" onclick="showHome()">Home</button>
-  <button onclick="showAdmin()">Admin</button>
+  <button>Home</button>
+  <button>Profile</button>
 </div>
 
 <script>
-/* ===== ELEMENTS ===== */
+/* CONFIG */
+const TMDB_KEY="cc9374659de08b939499a50af4715216";
+const POP_AD="https://example.com";
+const AD_DELAY=5;
+
+/* ELEMENTS */
 const grid=document.getElementById("movieGrid");
 const modal=document.getElementById("modal");
 const modalContent=document.getElementById("modalContent");
 const adBox=document.getElementById("adBox");
 const adTimer=document.getElementById("adTimer");
-const search=document.getElementById("search");
-const category=document.getElementById("category");
 
-/* ===== ADS ===== */
-const POP_AD="https://example.com";
-const AD_DELAY=5;
-let adRunning=false;
+/* MOVIES */
+let localMovies=JSON.parse(localStorage.getItem("adminMovies"))||[];
 
-/* ===== DATA ===== */
-let movies=JSON.parse(localStorage.getItem("movies"))||[
-{
- title:"Dhoom 3",
- poster:"https://upload.wikimedia.org/wikipedia/en/4/4f/Dhoom_3_Film_Poster.jpg",
- trailer:"https://www.youtube.com/embed/yeF_b8EQcK0",
- desc:"Action blockbuster",
- cat:"Action"
-}
-];
+/* LOAD CATEGORY */
+function loadCategory(type,btn){
+ document.querySelectorAll(".categories button").forEach(b=>b.classList.remove("active"));
+ if(btn)btn.classList.add("active");
 
-function save(){localStorage.setItem("movies",JSON.stringify(movies))}
+ let url="";
+ if(type=="popular")url=`https://api.themoviedb.org/3/movie/popular?api_key=${TMDB_KEY}`;
+ if(type=="trending")url=`https://api.themoviedb.org/3/trending/movie/week?api_key=${TMDB_KEY}`;
+ if(type=="action")url=`https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_KEY}&with_genres=28`;
+ if(type=="romance")url=`https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_KEY}&with_genres=10749`;
 
-/* ===== RENDER ===== */
-function render(list){
- grid.innerHTML="";
- list.forEach((m,i)=>{
-  grid.innerHTML+=`
-  <div class="card">
-    <img src="${m.poster}" onclick="openModal(${i})">
-    <div class="info">
-      <b>${m.title}</b>
-      <button class="watch" onclick="runAds('${m.trailer}')">Watch</button>
-      <button class="download" onclick="runAds('${m.trailer}')">Download</button>
-    </div>
-  </div>`;
+ fetch(url).then(r=>r.json()).then(d=>{
+   render([...localMovies,...d.results]);
  });
 }
 
-/* ===== MODAL ===== */
-function openModal(i){
+/* RENDER */
+function render(list){
+ grid.innerHTML="";
+ list.forEach(m=>{
+  grid.innerHTML+=`
+   <div class="card">
+    <img src="${m.poster_path?`https://image.tmdb.org/t/p/w500${m.poster_path}`:m.poster}">
+    <div class="info">
+     <b>${m.title}</b>
+     <button class="watch" onclick="runAds()">Watch</button>
+     <button class="download" onclick="runAds()">Download</button>
+     <button onclick='openModalData(${JSON.stringify(m)})'>Details</button>
+    </div>
+   </div>`;
+ });
+}
+
+/* MODAL */
+function openModalData(m){
  modal.style.display="flex";
  modalContent.innerHTML=`
- <img src="${movies[i].poster}">
- <h3>${movies[i].title}</h3>
- <p>${movies[i].desc}</p>
- <iframe src="${movies[i].trailer}" allow="autoplay"></iframe>
+  <img src="${m.poster_path?`https://image.tmdb.org/t/p/w500${m.poster_path}`:m.poster}">
+  <h3>${m.title}</h3>
+  <p>${m.overview||m.desc||""}</p>
  `;
 }
 function closeModal(){modal.style.display="none"}
 
-/* ===== ADS ONLY ON CLICK ===== */
-function runAds(url){
- if(adRunning) return;
- adRunning=true;
- window.open(POP_AD,"_blank");
+/* ADS */
+function runAds(){
  adBox.style.display="flex";
  let t=AD_DELAY;
  adTimer.innerText="Wait "+t+"s";
  let timer=setInterval(()=>{
-  t--;
-  adTimer.innerText="Wait "+t+"s";
-  if(t<=0){
-   clearInterval(timer);
-   adBox.style.display="none";
-   adRunning=false;
-   window.location.href=url;
-  }
+  t--;adTimer.innerText="Wait "+t+"s";
+  if(t<=0){clearInterval(timer);adBox.style.display="none";}
  },1000);
 }
 
-/* ===== SEARCH + CATEGORY ===== */
-function filter(){
- let q=search.value.toLowerCase();
- let c=category.value;
- render(movies.filter(m=>
-  m.title.toLowerCase().includes(q) &&
-  (c=="all"||m.cat==c)
- ));
+/* ADMIN */
+function openAdmin(){
+ let pass=prompt("Admin Password?");
+ if(pass==="1234")adminPanel.style.display="block";
 }
-search.oninput=filter;
-category.onchange=filter;
-
-/* ===== ADMIN ===== */
-function showAdmin(){
- document.querySelector(".section").style.display="none";
- document.getElementById("admin").style.display="block";
-}
-function showHome(){
- document.querySelector(".section").style.display="block";
- document.getElementById("admin").style.display="none";
- render(movies);
-}
+function closeAdmin(){adminPanel.style.display="none"}
 function addMovie(){
- movies.push({
-  title:aTitle.value,
-  poster:aPoster.value,
-  trailer:aTrailer.value,
-  desc:aDesc.value,
-  cat:aCat.value
+ localMovies.push({
+  title:mTitle.value,
+  poster:mPoster.value,
+  desc:mDesc.value
  });
- save();showHome();
+ localStorage.setItem("adminMovies",JSON.stringify(localMovies));
+ alert("Movie Added");
 }
+
+/* SEARCH */
+search.oninput=()=>{
+ let q=search.value.toLowerCase();
+ render(localMovies.filter(m=>m.title.toLowerCase().includes(q)));
+};
 
 /* INIT */
-render(movies);
+loadCategory("popular");
 </script>
 
 </body>
