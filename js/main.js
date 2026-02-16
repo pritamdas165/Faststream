@@ -1,60 +1,70 @@
-// ===== CONFIG =====
-const API_KEY = "cc9374659de08b939499a50af4715216";
+ const API_KEY = "cc9374659de08b939499a50af4715216";
 const BASE_URL = "https://api.themoviedb.org/3";
 const IMAGE_BASE = "https://image.tmdb.org/t/p/w500";
 
-// Container
 const moviesContainer = document.getElementById("movies");
+const loader = document.getElementById("loader");
+const searchForm = document.getElementById("searchForm");
+const searchInput = document.getElementById("searchInput");
 
-// ===== FETCH POPULAR MOVIES =====
-async function fetchPopularMovies() {
-  try {
-    const response = await fetch(
-      `${BASE_URL}/movie/popular?api_key=${API_KEY}&language=en-US&page=1`
-    );
+const modal = document.getElementById("modal");
+const modalBody = document.getElementById("modalBody");
+const closeModal = document.getElementById("closeModal");
 
-    if (!response.ok) {
-      throw new Error("TMDB API error");
-    }
-
-    const data = await response.json();
-    displayMovies(data.results);
-  } catch (error) {
-    console.error(error);
-    moviesContainer.innerHTML = `
-      <p style="color:red;text-align:center;">
-        ❌ Movies load failed. Please try again later.
-      </p>
-    `;
-  }
-}
-
-// ===== DISPLAY MOVIES =====
-function displayMovies(movies) {
+// FETCH MOVIES
+async function fetchMovies(url) {
+  loader.classList.remove("hidden");
   moviesContainer.innerHTML = "";
 
-  movies.forEach((movie) => {
-    const movieCard = document.createElement("div");
-    movieCard.classList.add("movie-card");
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+    displayMovies(data.results);
+  } catch {
+    moviesContainer.innerHTML = "<p>Error loading movies</p>";
+  }
 
-    movieCard.innerHTML = `
-      <img 
-        src="${
-          movie.poster_path
-            ? IMAGE_BASE + movie.poster_path
-            : "https://via.placeholder.com/500x750?text=No+Image"
-        }" 
-        alt="${movie.title}"
-      />
+  loader.classList.add("hidden");
+}
+
+// DISPLAY
+function displayMovies(movies) {
+  movies.forEach(movie => {
+    const div = document.createElement("div");
+    div.classList.add("movie-card");
+
+    div.innerHTML = `
+      <img src="${movie.poster_path ? IMAGE_BASE + movie.poster_path : ''}">
       <div class="movie-info">
-        <h3>${movie.title}</h3>
-        <span>⭐ ${movie.vote_average}</span>
+        <h4>${movie.title}</h4>
+        <p>⭐ ${movie.vote_average}</p>
       </div>
     `;
 
-    moviesContainer.appendChild(movieCard);
+    div.onclick = () => showDetails(movie);
+    moviesContainer.appendChild(div);
   });
 }
 
-// ===== INIT =====
-fetchPopularMovies();
+// MODAL
+function showDetails(movie) {
+  modal.classList.remove("hidden");
+  modalBody.innerHTML = `
+    <h2>${movie.title}</h2>
+    <p>${movie.overview}</p>
+  `;
+}
+
+closeModal.onclick = () => modal.classList.add("hidden");
+
+// SEARCH
+searchForm.addEventListener("submit", e => {
+  e.preventDefault();
+  const q = searchInput.value;
+  if (q) {
+    fetchMovies(`${BASE_URL}/search/movie?api_key=${API_KEY}&query=${q}`);
+  }
+});
+
+// INIT
+fetchMovies(`${BASE_URL}/movie/popular?api_key=${API_KEY}`);
