@@ -1,4 +1,4 @@
-import { getPopularMovies } from "../api/tmdb.js";
+import { getPopularMovies } from "./tmdb.js";
 
 const movieContainer = document.getElementById("movie-container");
 
