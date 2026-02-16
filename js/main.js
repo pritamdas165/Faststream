@@ -11,7 +11,12 @@ async function loadMovies() {
     movieDiv.classList.add("movie");
 
     movieDiv.innerHTML = `
-      <img src="https://image.tmdb.org/t/p/w300${movie.poster_path}">
+      <img src="${
+  movie.poster_path
+    ? `https://image.tmdb.org/t/p/w300${movie.poster_path}`
+    : 'https://via.placeholder.com/300x450?text=No+Image'
+}">
+
       <h3>${movie.title}</h3>
     `;
 
