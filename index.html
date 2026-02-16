@@ -5,30 +5,31 @@
   <title>FastStream 🎬</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- CSS -->
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
 
-  <!-- HEADER -->
   <header class="header">
     <h1>🎬 FastStream</h1>
-    <p>Popular Movies</p>
+
+    <form id="searchForm">
+      <input type="text" id="searchInput" placeholder="Search movies..." />
+    </form>
   </header>
 
-  <!-- MOVIE CONTAINER -->
   <main>
-    <div id="movies" class="movies-container">
-      <!-- Movies will be injected here by JS -->
-    </div>
+    <div id="loader" class="loader">Loading...</div>
+    <div id="movies" class="movies-container"></div>
   </main>
 
-  <!-- FOOTER -->
-  <footer class="footer">
-    <p>Powered by TMDB API</p>
-  </footer>
+  <!-- MODAL -->
+  <div id="modal" class="modal hidden">
+    <div class="modal-content">
+      <span id="closeModal">&times;</span>
+      <div id="modalBody"></div>
+    </div>
+  </div>
 
-  <!-- JS -->
   <script src="js/main.js"></script>
 </body>
 </html>
