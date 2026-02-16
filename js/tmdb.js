@@ -8,6 +8,10 @@ export async function getPopularMovies() {
     `${BASE_URL}/movie/popular?api_key=${API_KEY}&language=en-US&page=1`
   );
 
+  if (!response.ok) {
+    throw new Error("TMDB API error");
+  }
+
   const data = await response.json();
   return data.results;
 }
