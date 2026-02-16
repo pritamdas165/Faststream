@@ -1,26 +1,9 @@
- // js/main.js
+ import { getPopularMovies } from "../api/tmdb.js";
 
-// Temporary demo data (later API দিয়ে replace করা হবে)
-const movies = [
-  {
-    title: "Movie One",
-    image: "https://via.placeholder.com/300x450?text=Movie+1"
-  },
-  {
-    title: "Movie Two",
-    image: "https://via.placeholder.com/300x450?text=Movie+2"
-  },
-  {
-    title: "Movie Three",
-    image: "https://via.placeholder.com/300x450?text=Movie+3"
-  }
-];
-
-// DOM element
 const movieContainer = document.getElementById("movie-container");
 
-// Load movies
-function loadMovies() {
+async function loadMovies() {
+  const movies = await getPopularMovies();
   movieContainer.innerHTML = "";
 
   movies.forEach(movie => {
@@ -28,7 +11,7 @@ function loadMovies() {
     movieDiv.classList.add("movie");
 
     movieDiv.innerHTML = `
-      <img src="${movie.image}" alt="${movie.title}">
+      <img src="https://image.tmdb.org/t/p/w300${movie.poster_path}">
       <h3>${movie.title}</h3>
     `;
 
@@ -36,5 +19,4 @@ function loadMovies() {
   });
 }
 
-// Call function on page load
 loadMovies();
