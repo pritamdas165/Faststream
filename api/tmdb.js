@@ -1,10 +1,12 @@
-export default async function handler(req, res) {
-  const { type } = req.query;
-  const KEY = "YOUR_TMDB_V3_KEY";
+ // api/tmdb.js
 
-  const url = `https://api.themoviedb.org/3/${type}?api_key=${KEY}`;
-  const r = await fetch(url);
-  const data = await r.json();
+const API_KEY = "PASTE_YOUR_API_KEY_HERE";
+const BASE_URL = "https://api.themoviedb.org/3";
 
-  res.status(200).json(data);
+export async function getPopularMovies() {
+  const res = await fetch(
+    `${BASE_URL}/movie/popular?api_key=${API_KEY}&language=en-US&page=1`
+  );
+  const data = await res.json();
+  return data.results;
 }
