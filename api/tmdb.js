@@ -1,6 +1,5 @@
  // api/tmdb.js
-
-const API_KEY = "PASTE_YOUR_API_KEY_HERE";
+const API_KEY = "cc9374659de08b939499a50af4715216";
 const BASE_URL = "https://api.themoviedb.org/3";
 
 export async function getPopularMovies() {
