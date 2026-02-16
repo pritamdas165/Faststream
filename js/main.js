@@ -1,31 +1,60 @@
-import { getPopularMovies } from "./tmdb.js";
+// ===== CONFIG =====
+const API_KEY = "cc9374659de08b939499a50af4715216";
+const BASE_URL = "https://api.themoviedb.org/3";
+const IMAGE_BASE = "https://image.tmdb.org/t/p/w500";
 
-const movieContainer = document.getElementById("movie-container");
+// Container
+const moviesContainer = document.getElementById("movies");
 
-async function loadMovies() {
+// ===== FETCH POPULAR MOVIES =====
+async function fetchPopularMovies() {
   try {
-    const movies = await getPopularMovies();
-    movieContainer.innerHTML = "";
+    const response = await fetch(
+      `${BASE_URL}/movie/popular?api_key=${API_KEY}&language=en-US&page=1`
+    );
 
-    movies.forEach(movie => {
-      const div = document.createElement("div");
-      div.className = "movie";
+    if (!response.ok) {
+      throw new Error("TMDB API error");
+    }
 
-      div.innerHTML = `
-        <img src="${
-          movie.poster_path
-            ? `https://image.tmdb.org/t/p/w300${movie.poster_path}`
-            : "https://via.placeholder.com/300x450?text=No+Image"
-        }" />
-        <h3>${movie.title}</h3>
-      `;
-
-      movieContainer.appendChild(div);
-    });
+    const data = await response.json();
+    displayMovies(data.results);
   } catch (error) {
-    movieContainer.innerHTML = "<p>Error loading movies</p>";
     console.error(error);
+    moviesContainer.innerHTML = `
+      <p style="color:red;text-align:center;">
+        ❌ Movies load failed. Please try again later.
+      </p>
+    `;
   }
 }
 
-loadMovies();
+// ===== DISPLAY MOVIES =====
+function displayMovies(movies) {
+  moviesContainer.innerHTML = "";
+
+  movies.forEach((movie) => {
+    const movieCard = document.createElement("div");
+    movieCard.classList.add("movie-card");
+
+    movieCard.innerHTML = `
+      <img 
+        src="${
+          movie.poster_path
+            ? IMAGE_BASE + movie.poster_path
+            : "https://via.placeholder.com/500x750?text=No+Image"
+        }" 
+        alt="${movie.title}"
+      />
+      <div class="movie-info">
+        <h3>${movie.title}</h3>
+        <span>⭐ ${movie.vote_average}</span>
+      </div>
+    `;
+
+    moviesContainer.appendChild(movieCard);
+  });
+}
+
+// ===== INIT =====
+fetchPopularMovies();
